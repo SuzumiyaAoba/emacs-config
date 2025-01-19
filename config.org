@@ -1,3 +1,13 @@
-#+begin_src emacs-lisp :tangle true
-(message "load config.org")
+#+TITLE: Emacs Configuration
+
+* early-init.el
+#+begin_src emacs-lisp :tangle early-init.el
+(global-display-line-numbers-mode t)
 #+end_src
+
+
+* init.el
+#+begin_src emacs-lisp :tangle init.el
+(message "load init.el")
+#+end_src
+
