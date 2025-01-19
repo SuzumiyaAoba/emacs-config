@@ -9,5 +9,17 @@
 * init.el
 #+begin_src emacs-lisp :tangle init.el
 (message "load init.el")
+
+(add-to-list 'load-path (expand-file-name "site-lisp" user-emacs-directory))
+
+(message (expand-file-name "site-lisp" user-emacs-directory))
+
+(require 'seq)
+(require 'compat)
+(require 'dash)
+(require 'transient)
+(require 'with-editor)
+(require 'magit)
 #+end_src
 
+ 
