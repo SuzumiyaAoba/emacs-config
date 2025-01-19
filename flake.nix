@@ -9,7 +9,13 @@
   };
 
   outputs =
-    { nixpkgs, flake-utils, emacs-overlay, nvfetcher, ... }:
+    {
+      nixpkgs,
+      flake-utils,
+      emacs-overlay,
+      nvfetcher,
+      ...
+    }:
     flake-utils.lib.eachDefaultSystem (
       system:
       let
@@ -18,103 +24,13 @@
         initDirectory = "$HOME/.local/share/emacs/SuzumiyaAoba";
 
         # nvfetcherの設定を追加
-        sources = pkgs.callPackage ./_sources/generated.nix {};
+        sources = pkgs.callPackage ./_sources/generated.nix { };
 
         # Emacsパッケージを設定
         emacsPackage = pkgs.emacsWithPackagesFromUsePackage {
           package = pkgs.emacs-unstable;
           config = ./config.org;
-          extraEmacsPackages = epkgs: with epkgs; [
-            seq
-            compat
-            dash
-            transient
-            with-editor
-            magit
-          ];
-          override = self: super: {
-            seq = self.trivialBuild {
-              pname = "seq";
-              version = sources.seq.version;
-              src = sources.seq.src;
-              installPhase = ''
-                mkdir -p $out/share/emacs/site-lisp
-                cp *.el *.elc $out/share/emacs/site-lisp/
-              '';
-            };
-
-            compat = self.trivialBuild {
-              pname = "compat";
-              version = sources.compat.version;
-              src = sources.compat.src;
-              packageRequires = with self; [ seq ];
-              installPhase = ''
-                mkdir -p $out/share/emacs/site-lisp
-                cp *.el *.elc $out/share/emacs/site-lisp/
-              '';
-            };
-
-            dash = self.trivialBuild {
-              pname = "dash";
-              version = sources.dash.version;
-              src = sources.dash.src;
-              installPhase = ''
-                mkdir -p $out/share/emacs/site-lisp
-                cp *.el *.elc $out/share/emacs/site-lisp/
-              '';
-            };
-
-            transient = self.trivialBuild {
-              pname = "transient";
-              version = sources.transient.version;
-              src = sources.transient.src;
-              packageRequires = with self; [ compat ];
-              buildInputs = with pkgs; [
-                texlive.combined.scheme-basic
-                texinfo
-              ];
-              buildPhase = ''
-                cd lisp
-                make
-                cd ..
-              '';
-              installPhase = ''
-                mkdir -p $out/share/emacs/site-lisp
-                cp lisp/*.el lisp/*.elc $out/share/emacs/site-lisp/
-              '';
-            };
-
-            with-editor = self.trivialBuild {
-              pname = "with-editor";
-              version = sources.with-editor.version;
-              src = sources.with-editor.src;
-              packageRequires = with self; [ compat ];
-              buildPhase = ''
-                make lisp
-              '';
-              installPhase = ''
-                mkdir -p $out/share/emacs/site-lisp
-                cp lisp/*.el lisp/*.elc $out/share/emacs/site-lisp/
-              '';
-            };
-
-            magit = self.trivialBuild {
-              pname = "magit";
-              version = sources.magit.version;
-              src = sources.magit.src;
-              packageRequires = with self; [ dash transient with-editor ];
-              buildInputs = [ pkgs.git ];
-              buildPhase = ''
-                cd lisp
-                make lisp
-                cd ..
-              '';
-              installPhase = ''
-                mkdir -p $out/share/emacs/site-lisp
-                cp lisp/*.el lisp/*.elc $out/share/emacs/site-lisp/
-              '';
-            };
-          };
+          extraEmacsPackages = import ./epkgs { inherit pkgs sources; };
         };
 
         # 設定ファイルを tangle して .emacs.d を作成する derivation
@@ -159,16 +75,18 @@
             "$@"
         '';
       in
-        {
-          packages.default = wrappedEmacs;
+      {
+        packages.default = wrappedEmacs;
 
-          # nvfetcherのアップデートコマンドを追加
-          apps.update = {
-            type = "app";
-            program = toString (pkgs.writeShellScript "update" ''
+        # nvfetcherのアップデートコマンドを追加
+        apps.update = {
+          type = "app";
+          program = toString (
+            pkgs.writeShellScript "update" ''
               ${nvfetcher.packages.${system}.default}/bin/nvfetcher
-            '');
-          };
-        }
+            ''
+          );
+        };
+      }
     );
 }
