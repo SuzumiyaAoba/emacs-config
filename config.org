@@ -1,0 +1,3 @@
+#+begin_src emacs-lisp :tangle true
+(message "load config.org")
+#+end_src
