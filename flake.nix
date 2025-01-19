@@ -15,6 +15,7 @@
       let
         overlays = [ emacs-overlay.overlay ];
         pkgs = import nixpkgs { inherit system overlays; };
+        initDirectory = "$HOME/.local/share/emacs/SuzumiyaAoba";
 
         # nvfetcherの設定を追加
         sources = pkgs.callPackage ./_sources/generated.nix {};
@@ -138,23 +139,23 @@
           dontFixup = true;
         };
 
-        # Emacsの起動スクリプト
+        # Emacsの起動スクリプト（設定ディレクトリを指定）
         wrappedEmacs = pkgs.writeScriptBin "emacs" ''
           #!${pkgs.bash}/bin/bash
 
-          # ネイティブコンパイル用のディレクトリを設定
-          XDG_DATA_HOME="$HOME/.local/share"
-          EMACS_DIR="$XDG_DATA_HOME/emacs/SuzumiyaAoba"
+          if [ ! -e "${initDirectory}" ]; then
+            mkdir -p "${initDirectory}"
+          fi
 
-          mkdir -p $EMACS_DIR
-
-          ln -sf ${emacsConfig}/.emacs.d/init.el       $EMACS_DIR/init.el
-          ln -sf ${emacsConfig}/.emacs.d/early-init.el $EMACS_DIR/early-init.el
-
-          export EMACS_NATIVE_COMP_DIR="$EMACS_DIR/eln-cache"
+          if [ ! -e "${initDirectory}/init.el" ]; then
+            ln -sf "${emacsConfig}/.emacs.d/init.el"       "${initDirectory}/init.el"
+          fi
+          if [ ! -e "${initDirectory}/early-init.el" ]; then
+            ln -sf "${emacsConfig}/.emacs.d/early-init.el" "${initDirectory}/early-init.el"
+          fi
 
           exec ${emacsPackage}/bin/emacs \
-            --init-directory="$EMACS_DIR" \
+            --init-directory="${initDirectory}" \
             "$@"
         '';
       in
