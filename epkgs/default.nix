@@ -7,6 +7,8 @@ let
   transient = import ./packages/transient.nix { inherit epkgs pkgs sources; };
   with-editor = import ./packages/with-editor.nix { inherit epkgs sources; };
   magit = import ./packages/magit.nix { inherit epkgs pkgs sources; };
+
+  nix-mode = import ./packages/nix-mode.nix { inherit epkgs sources; }; 
 in
 [
   seq
@@ -15,4 +17,6 @@ in
   transient
   with-editor
   magit
+
+  nix-mode
 ]

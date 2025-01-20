@@ -43,7 +43,7 @@
     },
     "magit": {
         "cargoLocks": null,
-        "date": "2025-01-17",
+        "date": "2025-01-19",
         "extract": null,
         "name": "magit",
         "passthru": null,
@@ -55,12 +55,33 @@
             "name": null,
             "owner": "magit",
             "repo": "magit",
-            "rev": "8b1438487826e4a4a28521cf749c17cfd278b839",
-            "sha256": "sha256-FKvZa70g9Zhqpu6scQqxOC52o+EDj2RiPpNm3SXJ3Vc=",
+            "rev": "8f15054d095e146917d0578062ba92b4f2eca125",
+            "sha256": "sha256-ZWxnWrdCaAFkoP5TblH45sSjT9GQtm2b9sxdyJxJJTg=",
             "sparseCheckout": [],
             "type": "github"
         },
-        "version": "8b1438487826e4a4a28521cf749c17cfd278b839"
+        "version": "8f15054d095e146917d0578062ba92b4f2eca125"
+    },
+    "nix-mode": {
+        "cargoLocks": null,
+        "date": "2023-04-21",
+        "extract": null,
+        "name": "nix-mode",
+        "passthru": null,
+        "pinned": false,
+        "src": {
+            "deepClone": false,
+            "fetchSubmodules": false,
+            "leaveDotGit": false,
+            "name": null,
+            "owner": "NixOS",
+            "repo": "nix-mode",
+            "rev": "719feb7868fb567ecfe5578f6119892c771ac5e5",
+            "sha256": "sha256-W/bxCAn4cvzKGbhILxtTiWJ5Wln2w6g4TPgk+ziCXsQ=",
+            "sparseCheckout": [],
+            "type": "github"
+        },
+        "version": "719feb7868fb567ecfe5578f6119892c771ac5e5"
     },
     "seq": {
         "cargoLocks": null,
@@ -85,7 +106,7 @@
     },
     "transient": {
         "cargoLocks": null,
-        "date": "2025-01-08",
+        "date": "2025-01-19",
         "extract": null,
         "name": "transient",
         "passthru": null,
@@ -97,12 +118,12 @@
             "name": null,
             "owner": "magit",
             "repo": "transient",
-            "rev": "69202c123205f396fefd35acdbc66fe8d0dfad12",
-            "sha256": "sha256-MZ8pPamIZVJOIYU5L8JNjDIa9TQCoQxngDe3gpMcxYY=",
+            "rev": "13f3f5e0da85805e9ead0db70ba76a6bbc62d3a7",
+            "sha256": "sha256-hdmcXHTrIkinu9V2aM2fWMXBCp/R6+LUbWJaEVBSq0U=",
             "sparseCheckout": [],
             "type": "github"
         },
-        "version": "69202c123205f396fefd35acdbc66fe8d0dfad12"
+        "version": "13f3f5e0da85805e9ead0db70ba76a6bbc62d3a7"
     },
     "with-editor": {
         "cargoLocks": null,
