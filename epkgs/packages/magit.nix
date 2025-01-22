@@ -5,5 +5,6 @@
 }:
 epkgs.melpaPackages.magit.overrideAttrs (old: {
   src = sources.magit.src;
-  version = "4.2.0";
+  version = "20230421.2036";
+  packageRequires = with epkgs; [ compat dash magit-section transient with-editor ];
 })

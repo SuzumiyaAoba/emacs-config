@@ -1,10 +1,6 @@
 { sources, epkgs }:
-epkgs.trivialBuild {
+epkgs.melpaBuild {
   pname = "dash";
-  version = sources.dash.version;
+  version = "2.19.1";
   src = sources.dash.src;
-  installPhase = ''
-    mkdir -p $out/share/emacs/site-lisp
-    cp *.el *.elc $out/share/emacs/site-lisp/
-  '';
 }

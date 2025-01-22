@@ -1,5 +1,12 @@
 { sources, epkgs }:
-epkgs.melpaPackages.nix-mode.overrideAttrs (old: {
+epkgs.melpaBuild {
+  pname = "nix-mode";
   src = sources.nix-mode.src;
-  version = "1.5.0";
-})
+  version = "20230421.2036";
+  packageRequires = with epkgs; [
+    magit-section
+    transient
+    company
+    mmm-mode
+  ];
+}

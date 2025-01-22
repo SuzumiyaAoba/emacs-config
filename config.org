@@ -5,21 +5,26 @@
 (global-display-line-numbers-mode t)
 #+end_src
 
-
 * init.el
+
+** Backup
+
 #+begin_src emacs-lisp :tangle init.el
-(message "load init.el")
-
-(add-to-list 'load-path (expand-file-name "site-lisp" user-emacs-directory))
-
-(message (expand-file-name "site-lisp" user-emacs-directory))
-
-(require 'seq)
-(require 'compat)
-(require 'dash)
-(require 'transient)
-(require 'with-editor)
-(require 'magit)
+(setq make-backup-files nil)
+(setq backup-inhibited nil)
+(setq auto-save-default nil)
 #+end_src
 
- 
+** Setup El
+
+** Git
+
+*** magit
+
+#+begin_src emacs-lisp :tangle init.el
+#+end_src
+
+*** org-mode
+
+#+begin_src emacs-lisp :tangle init.el
+#+end_src

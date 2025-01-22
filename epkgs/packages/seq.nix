@@ -1,10 +1,6 @@
 { sources, epkgs }:
-epkgs.trivialBuild {
+epkgs.melpaBuild {
   pname = "seq";
-  version = sources.seq.version;
+  version = "2.24";
   src = sources.seq.src;
-  installPhase = ''
-    mkdir -p $out/share/emacs/site-lisp
-    cp *.el *.elc $out/share/emacs/site-lisp/
-  '';
 }

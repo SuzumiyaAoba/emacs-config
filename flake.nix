@@ -23,14 +23,15 @@
         pkgs = import nixpkgs { inherit system overlays; };
         initDirectory = "$HOME/.local/share/emacs/SuzumiyaAoba";
 
-        # nvfetcherの設定を追加
-        sources = pkgs.callPackage ./_sources/generated.nix { };
-
         # Emacsパッケージを設定
         emacsPackage = pkgs.emacsWithPackagesFromUsePackage {
           package = pkgs.emacs-unstable;
           config = ./config.org;
-          extraEmacsPackages = import ./epkgs { inherit pkgs sources; };
+          extraEmacsPackages = epkgs: with epkgs; [
+            magit
+            nix-mode
+          ];
+          override = import ./epkgs { inherit pkgs; };
         };
 
         # 設定ファイルを tangle して .emacs.d を作成する derivation
