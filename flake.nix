@@ -29,9 +29,10 @@
           config = ./config.org;
           extraEmacsPackages =
             epkgs: with epkgs; [
-              setup
+              consult
               magit
               nix-mode
+              setup
             ];
           override = import ./epkgs { inherit pkgs; };
         };
