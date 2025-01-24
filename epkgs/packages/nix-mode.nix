@@ -1,7 +1,7 @@
 { sources, epkgs }:
 epkgs.melpaBuild {
   pname = "nix-mode";
-  src = sources.nix-mode.src;
+  src = sources.emacs-nix-mode.src;
   version = "20230421.2036";
   packageRequires = with epkgs; [
     magit-section

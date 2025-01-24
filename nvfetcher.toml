@@ -1,34 +1,9 @@
-[magit]
+[emacs-magit]
 src.git = "https://github.com/magit/magit"
 src.branch = "main"
 fetch.github = "magit/magit"
 
-[dash]
-src.git = "https://github.com/magnars/dash.el"
-src.branch = "master"
-fetch.github = "magnars/dash.el"
-
-[transient]
-src.git = "https://github.com/magit/transient"
-src.branch = "main"
-fetch.github = "magit/transient"
-
-[with-editor]
-src.git = "https://github.com/magit/with-editor"
-src.branch = "main"
-fetch.github = "magit/with-editor"
-
-[compat]
-src.git = "https://github.com/emacs-compat/compat"
-src.branch = "main"
-fetch.github = "emacs-compat/compat"
-
-[seq]
-src.git = "https://github.com/NicolasPetton/seq.el"
-src.branch = "master"
-fetch.github = "NicolasPetton/seq.el"
-
-[nix-mode]
+[emacs-nix-mode]
 src.git = "https://github.com/NixOS/nix-mode"
 src.branch = "master"
 fetch.github = "NixOS/nix-mode"

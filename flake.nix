@@ -27,10 +27,11 @@
         emacsPackage = pkgs.emacsWithPackagesFromUsePackage {
           package = pkgs.emacs-unstable;
           config = ./config.org;
-          extraEmacsPackages = epkgs: with epkgs; [
-            magit
-            nix-mode
-          ];
+          extraEmacsPackages =
+            epkgs: with epkgs; [
+              magit
+              nix-mode
+            ];
           override = import ./epkgs { inherit pkgs; };
         };
 
