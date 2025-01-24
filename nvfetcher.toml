@@ -3,6 +3,11 @@ src.git = "https://github.com/minad/consult"
 src.branch = "main"
 fetch.github = "minad/consult"
 
+[emacs-consult-ghq]
+src.git = "https://github.com/tomoya/consult-ghq"
+src.branch = "main"
+fetch.github = "tomoya/consult-ghq"
+
 [emacs-magit]
 src.git = "https://github.com/magit/magit"
 src.branch = "main"

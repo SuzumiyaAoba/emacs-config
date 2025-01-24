@@ -48,6 +48,14 @@
    "C-x b" consult-buffer))
 #+end_src
 
+**** consult-ghq
+
+#+begin_src emacs-lisp :tangle init.el
+(setup consult-ghq
+  (:global
+   "C-c C-g" consult-ghq-switch-project))
+#+end_src
+
 ** Git
 
 *** magit

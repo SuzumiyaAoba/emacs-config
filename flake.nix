@@ -30,6 +30,7 @@
           extraEmacsPackages =
             epkgs: with epkgs; [
               consult
+              consult-ghq
               magit
               nix-mode
               setup

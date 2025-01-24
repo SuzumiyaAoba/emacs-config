@@ -20,6 +20,27 @@
         },
         "version": "31b5c191f9869aa26bedf35991635e03539a1270"
     },
+    "emacs-consult-ghq": {
+        "cargoLocks": null,
+        "date": "2023-11-11",
+        "extract": null,
+        "name": "emacs-consult-ghq",
+        "passthru": null,
+        "pinned": false,
+        "src": {
+            "deepClone": false,
+            "fetchSubmodules": false,
+            "leaveDotGit": false,
+            "name": null,
+            "owner": "tomoya",
+            "repo": "consult-ghq",
+            "rev": "65a99980fb313d473376542cb87464a8a44ff25e",
+            "sha256": "sha256-kLF06zQSLb1fZGKZ3XWJoPoSiIR4MzRV8ujpd/v5a/8=",
+            "sparseCheckout": [],
+            "type": "github"
+        },
+        "version": "65a99980fb313d473376542cb87464a8a44ff25e"
+    },
     "emacs-magit": {
         "cargoLocks": null,
         "date": "2025-01-20",
