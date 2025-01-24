@@ -25,4 +25,18 @@
     };
     date = "2023-04-21";
   };
+  emacs-setup = {
+    pname = "emacs-setup";
+    version = "992e7b49f0dbbd6979598902e67079fa9607febf";
+    src = fetchgit {
+      url = "https://git.sr.ht/~pkal/setup";
+      rev = "992e7b49f0dbbd6979598902e67079fa9607febf";
+      fetchSubmodules = false;
+      deepClone = false;
+      leaveDotGit = false;
+      sparseCheckout = [ ];
+      sha256 = "sha256-cIIPrzQvQjBekM5YJcWUYDIp1xV/YBEKm5txdASl4qY=";
+    };
+    date = "2024-12-24";
+  };
 }

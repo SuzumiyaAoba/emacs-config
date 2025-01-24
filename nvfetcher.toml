@@ -7,3 +7,8 @@ fetch.github = "magit/magit"
 src.git = "https://github.com/NixOS/nix-mode"
 src.branch = "master"
 fetch.github = "NixOS/nix-mode"
+
+[emacs-setup]
+src.git = "https://git.sr.ht/~pkal/setup"
+src.branch = "master"
+fetch.git = "https://git.sr.ht/~pkal/setup"

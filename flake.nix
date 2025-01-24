@@ -29,6 +29,7 @@
           config = ./config.org;
           extraEmacsPackages =
             epkgs: with epkgs; [
+              setup
               magit
               nix-mode
             ];

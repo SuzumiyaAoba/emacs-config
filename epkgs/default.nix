@@ -8,4 +8,5 @@ epkgs
 // {
   magit = import ./packages/magit.nix { inherit epkgs pkgs sources; };
   nix-mode = import ./packages/nix-mode.nix { inherit epkgs sources; };
+  setup = import ./packages/setup.nix { inherit epkgs sources; };
 }

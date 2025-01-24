@@ -1,8 +1,11 @@
 #+TITLE: Emacs Configuration
 
 * early-init.el
+
 #+begin_src emacs-lisp :tangle early-init.el
-(global-display-line-numbers-mode t)
+(setq inhibit-splash-screen t)
+(setq frame-inhibit-implied-resize t)
+(setq inhibit-compacting-font-caches t)
 #+end_src
 
 * init.el
@@ -16,6 +19,12 @@
 #+end_src
 
 ** Setup El
+
+** Looks & Feels
+
+#+begin_src emacs-lisp :tangle init.el
+(display-line-numbers-mode)
+#+end_src
 
 ** Git
 

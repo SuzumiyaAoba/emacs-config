@@ -40,5 +40,25 @@
             "type": "github"
         },
         "version": "719feb7868fb567ecfe5578f6119892c771ac5e5"
+    },
+    "emacs-setup": {
+        "cargoLocks": null,
+        "date": "2024-12-24",
+        "extract": null,
+        "name": "emacs-setup",
+        "passthru": null,
+        "pinned": false,
+        "src": {
+            "deepClone": false,
+            "fetchSubmodules": false,
+            "leaveDotGit": false,
+            "name": null,
+            "rev": "992e7b49f0dbbd6979598902e67079fa9607febf",
+            "sha256": "sha256-cIIPrzQvQjBekM5YJcWUYDIp1xV/YBEKm5txdASl4qY=",
+            "sparseCheckout": [],
+            "type": "git",
+            "url": "https://git.sr.ht/~pkal/setup"
+        },
+        "version": "992e7b49f0dbbd6979598902e67079fa9607febf"
     }
 }
