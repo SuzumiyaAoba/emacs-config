@@ -33,6 +33,7 @@
               magit
               nix-mode
               setup
+              vertico
             ];
           override = import ./epkgs { inherit pkgs; };
         };
@@ -41,22 +42,22 @@
         emacsConfig = pkgs.stdenv.mkDerivation {
           name = "emacs-config";
           src = ./.;
+          dontFixup = true;
+
           buildInputs = [
             pkgs.emacs-unstable
           ];
           buildPhase = ''
-            mkdir -p $out/.emacs.d
-
-            # config.org を tangle
             emacs --batch \
               --eval "(require 'org)" \
               --eval "(org-babel-tangle-file \"config.org\")"
+          '';
 
+          installPhase = ''
+            mkdir -p $out/.emacs.d
             mv init.el $out/.emacs.d/
             mv early-init.el $out/.emacs.d/
           '';
-          dontInstall = true;
-          dontFixup = true;
         };
 
         # Emacsの起動スクリプト（設定ディレクトリを指定）
@@ -67,12 +68,8 @@
             mkdir -p "${initDirectory}"
           fi
 
-          if [ ! -e "${initDirectory}/init.el" ]; then
-            ln -sf "${emacsConfig}/.emacs.d/init.el"       "${initDirectory}/init.el"
-          fi
-          if [ ! -e "${initDirectory}/early-init.el" ]; then
-            ln -sf "${emacsConfig}/.emacs.d/early-init.el" "${initDirectory}/early-init.el"
-          fi
+          ln -sf "${emacsConfig}/.emacs.d/init.el"       "${initDirectory}/init.el"
+          ln -sf "${emacsConfig}/.emacs.d/early-init.el" "${initDirectory}/early-init.el"
 
           exec ${emacsPackage}/bin/emacs \
             --init-directory="${initDirectory}" \

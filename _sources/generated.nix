@@ -51,4 +51,18 @@
     };
     date = "2024-12-24";
   };
+  emacs-vertico = {
+    pname = "emacs-vertico";
+    version = "fef56a0c7fe571c28ad102b54b26e07ebbbd5e82";
+    src = fetchgit {
+      url = "https://github.com/minad/vertico";
+      rev = "fef56a0c7fe571c28ad102b54b26e07ebbbd5e82";
+      fetchSubmodules = false;
+      deepClone = false;
+      leaveDotGit = false;
+      sparseCheckout = [ ];
+      sha256 = "sha256-iamNT7u+5Fe86WEx1lHT92y/xz+0XGjUKhWxJXm9ElM=";
+    };
+    date = "2025-01-17";
+  };
 }

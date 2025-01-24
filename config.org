@@ -20,10 +20,32 @@
 
 ** Setup El
 
+#+begin_src emacs-lisp :tangle init.el
+(require 'setup)
+#+end_src
+
 ** Looks & Feels
 
 #+begin_src emacs-lisp :tangle init.el
 (display-line-numbers-mode)
+#+end_src
+
+** Completion
+
+*** vertico
+
+#+begin_src emacs-lisp :tangle init.el
+(setup vertico
+  (vertico-mode))
+#+end_src
+
+*** consult
+
+#+begin_src emacs-lisp :tangle init.el
+(setup consult
+  (:global
+   "C-s"   consult-line
+   "C-x b" consult-buffer))
 #+end_src
 
 ** Git
@@ -32,6 +54,8 @@
 
 #+begin_src emacs-lisp :tangle init.el
 #+end_src
+
+** Documents
 
 *** org-mode
 
