@@ -271,6 +271,27 @@
         },
         "version": "36763dde3bc70d3e43ff2f8e61c783a8ff0f8532"
     },
+    "emacs-rg": {
+        "cargoLocks": null,
+        "date": "2025-01-02",
+        "extract": null,
+        "name": "emacs-rg",
+        "passthru": null,
+        "pinned": false,
+        "src": {
+            "deepClone": false,
+            "fetchSubmodules": false,
+            "leaveDotGit": false,
+            "name": null,
+            "owner": "dajva",
+            "repo": "rg.el",
+            "rev": "94813ba3a7ccf3af68beb23a2c39154a99e8c9ec",
+            "sha256": "sha256-IEG/wg9Rpp81xWQRcPXqcdohE/aDdHwcmf+2aOUEHqw=",
+            "sparseCheckout": [],
+            "type": "github"
+        },
+        "version": "94813ba3a7ccf3af68beb23a2c39154a99e8c9ec"
+    },
     "emacs-setup": {
         "cargoLocks": null,
         "date": "2024-12-24",

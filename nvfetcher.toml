@@ -63,6 +63,11 @@ src.git = "https://github.com/bbatsov/projectile"
 src.branch = "master"
 fetch.github = "bbatsov/projectile"
 
+[emacs-rg]
+src.git = "https://github.com/dajva/rg.el"
+src.branch = "master"
+fetch.github = "dajva/rg.el"
+
 [emacs-setup]
 src.git = "https://git.sr.ht/~pkal/setup"
 src.branch = "master"

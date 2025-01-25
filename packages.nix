@@ -13,6 +13,7 @@ epkgs: with epkgs; [
   nix-mode
   orderless
   projectile
+  ripgrep
   setup
   vertico
 ]

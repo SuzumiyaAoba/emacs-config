@@ -159,6 +159,18 @@
     };
     date = "2025-01-24";
   };
+  emacs-rg = {
+    pname = "emacs-rg";
+    version = "94813ba3a7ccf3af68beb23a2c39154a99e8c9ec";
+    src = fetchFromGitHub {
+      owner = "dajva";
+      repo = "rg.el";
+      rev = "94813ba3a7ccf3af68beb23a2c39154a99e8c9ec";
+      fetchSubmodules = false;
+      sha256 = "sha256-IEG/wg9Rpp81xWQRcPXqcdohE/aDdHwcmf+2aOUEHqw=";
+    };
+    date = "2025-01-02";
+  };
   emacs-setup = {
     pname = "emacs-setup";
     version = "992e7b49f0dbbd6979598902e67079fa9607febf";

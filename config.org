@@ -312,6 +312,12 @@ The expansion is a string indicating the package has been disabled."
   (copy-face 'mode-line 'anzu-mode-line))
 #+end_src
 
+*** ripgrep
+
+#+begin_src emacs-lisp :tangle init.el
+(setup ripgrep)
+#+end_src
+
 ** dired
 
 #+begin_src emacs-lisp :tangle init.el
