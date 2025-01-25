@@ -25,6 +25,18 @@
     };
     date = "2023-11-11";
   };
+  emacs-devil = {
+    pname = "emacs-devil";
+    version = "c2dc9fc2886471daff654e12b46a144a4d1361ae";
+    src = fetchFromGitHub {
+      owner = "susam";
+      repo = "devil";
+      rev = "c2dc9fc2886471daff654e12b46a144a4d1361ae";
+      fetchSubmodules = false;
+      sha256 = "sha256-GMpVFZs2vugh5hAJkRVKw698pBkuGY+g/tWs3lPfR/A=";
+    };
+    date = "2024-01-29";
+  };
   emacs-magit = {
     pname = "emacs-magit";
     version = "e9614a336ffef61e8660188a95ae5d78674ed36d";

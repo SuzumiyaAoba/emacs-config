@@ -8,6 +8,11 @@ src.git = "https://github.com/tomoya/consult-ghq"
 src.branch = "main"
 fetch.github = "tomoya/consult-ghq"
 
+[emacs-devil]
+src.git = "https://github.com/susam/devil"
+src.branch = "main"
+fetch.github = "susam/devil"
+
 [emacs-magit]
 src.git = "https://github.com/magit/magit"
 src.branch = "main"
