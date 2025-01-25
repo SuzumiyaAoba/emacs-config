@@ -5,6 +5,7 @@ epkgs: with epkgs; [
   # devil
   magit
   modus-themes
+  moody
   nix-mode
   orderless
   projectile

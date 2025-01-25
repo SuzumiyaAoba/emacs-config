@@ -104,6 +104,27 @@
         },
         "version": "75791f5efc49ebb7e714fe2e0d813a0d1e70c25d"
     },
+    "emacs-moody": {
+        "cargoLocks": null,
+        "date": "2025-01-01",
+        "extract": null,
+        "name": "emacs-moody",
+        "passthru": null,
+        "pinned": false,
+        "src": {
+            "deepClone": false,
+            "fetchSubmodules": false,
+            "leaveDotGit": false,
+            "name": null,
+            "owner": "tarsius",
+            "repo": "moody",
+            "rev": "26dd59b300c149a0e2e332023115b280b42ead12",
+            "sha256": "sha256-AivCBH2/Y/T5tlMq5Un36/H833ZG0ZA0FpYFchuE168=",
+            "sparseCheckout": [],
+            "type": "github"
+        },
+        "version": "26dd59b300c149a0e2e332023115b280b42ead12"
+    },
     "emacs-nix-mode": {
         "cargoLocks": null,
         "date": "2023-04-21",

@@ -23,6 +23,11 @@ src.git = "https://github.com/protesilaos/modus-themes"
 src.branch = "main"
 fetch.github = "protesilaos/modus-themes"
 
+[emacs-moody]
+src.git = "https://github.com/tarsius/moody"
+src.branch = "main"
+fetch.github = "tarsius/moody"
+
 [emacs-nix-mode]
 src.git = "https://github.com/NixOS/nix-mode"
 src.branch = "master"

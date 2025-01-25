@@ -230,6 +230,16 @@ The expansion is a string indicating the package has been disabled."
   (load-theme 'modus-vivendi-tritanopia t))
 #+end_src
 
+*** Modeline
+
+#+begin_src emacs-lisp :tangle init.el
+(setup moody
+  (:opt x-underline-at-decent-line t)
+
+  (moody-replace-mode-line-front-space)
+  (moody-replace-mode-line-buffer-identification))
+#+end_src
+
 *** Terminal
 
 #+begin_src emacs-lisp :tangle init.el

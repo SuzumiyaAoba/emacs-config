@@ -61,6 +61,18 @@
     };
     date = "2025-01-22";
   };
+  emacs-moody = {
+    pname = "emacs-moody";
+    version = "26dd59b300c149a0e2e332023115b280b42ead12";
+    src = fetchFromGitHub {
+      owner = "tarsius";
+      repo = "moody";
+      rev = "26dd59b300c149a0e2e332023115b280b42ead12";
+      fetchSubmodules = false;
+      sha256 = "sha256-AivCBH2/Y/T5tlMq5Un36/H833ZG0ZA0FpYFchuE168=";
+    };
+    date = "2025-01-01";
+  };
   emacs-nix-mode = {
     pname = "emacs-nix-mode";
     version = "719feb7868fb567ecfe5578f6119892c771ac5e5";
