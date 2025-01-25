@@ -83,6 +83,27 @@
         },
         "version": "719feb7868fb567ecfe5578f6119892c771ac5e5"
     },
+    "emacs-projectile": {
+        "cargoLocks": null,
+        "date": "2025-01-24",
+        "extract": null,
+        "name": "emacs-projectile",
+        "passthru": null,
+        "pinned": false,
+        "src": {
+            "deepClone": false,
+            "fetchSubmodules": false,
+            "leaveDotGit": false,
+            "name": null,
+            "owner": "bbatsov",
+            "repo": "projectile",
+            "rev": "36763dde3bc70d3e43ff2f8e61c783a8ff0f8532",
+            "sha256": "sha256-1UZPD7SdCzew45J8SLFDA92IHxrvBCJTUeoVLhsMgmg=",
+            "sparseCheckout": [],
+            "type": "github"
+        },
+        "version": "36763dde3bc70d3e43ff2f8e61c783a8ff0f8532"
+    },
     "emacs-setup": {
         "cargoLocks": null,
         "date": "2024-12-24",

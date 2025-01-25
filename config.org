@@ -44,7 +44,7 @@
 #+begin_src emacs-lisp :tangle init.el
 (setup consult
   (:global
-   "C-s"   consult-line
+   "M-s"   consult-line
    "C-x b" consult-buffer))
 #+end_src
 
@@ -54,6 +54,18 @@
 (setup consult-ghq
   (:global
    "C-c C-g" consult-ghq-switch-project))
+#+end_src
+
+** Project
+
+*** projectile
+
+#+begin_src emacs-lisp :tangle init.el
+(setup projectile
+  (:with-map projectile-mode-map
+    (:bind
+      "C-c p" projectile-command-map))
+  (projectile-mode +1))
 #+end_src
 
 ** Git

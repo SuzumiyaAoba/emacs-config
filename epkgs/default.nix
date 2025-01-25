@@ -9,6 +9,7 @@ epkgs
   consult = import ./packages/consult.nix { inherit epkgs sources; };
   magit = import ./packages/magit.nix { inherit epkgs pkgs sources; };
   nix-mode = import ./packages/nix-mode.nix { inherit epkgs sources; };
+  projectile = import ./packages/projectile.nix { inherit epkgs sources; };
   setup = import ./packages/setup.nix { inherit epkgs sources; };
   vertico = import ./packages/vertico.nix { inherit epkgs sources; };
 }

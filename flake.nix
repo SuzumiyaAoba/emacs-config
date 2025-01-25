@@ -33,6 +33,7 @@
               consult-ghq
               magit
               nix-mode
+              projectile
               setup
               vertico
             ];
