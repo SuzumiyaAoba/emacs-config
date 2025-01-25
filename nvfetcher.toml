@@ -13,6 +13,11 @@ src.git = "https://github.com/magit/magit"
 src.branch = "main"
 fetch.github = "magit/magit"
 
+[emacs-modus-themes]
+src.git = "https://github.com/protesilaos/modus-themes"
+src.branch = "main"
+fetch.github = "protesilaos/modus-themes"
+
 [emacs-nix-mode]
 src.git = "https://github.com/NixOS/nix-mode"
 src.branch = "master"

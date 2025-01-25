@@ -18,7 +18,40 @@
   (setq read-process-output-max 1048576))
 #+end_src
 
+** Frame
+
+#+begin_src emacs-lisp :tangle early-init.el
+(push '(vertical-scroll-bars) default-frame-alist)
+(push '(menu-bar-lines . 0) default-frame-alist)
+(push '(tool-bar-lines . 0) default-frame-alist)
+#+end_src
+
+** Fonts
+
+#+begin_src emacs-lisp :tangle early-init.el
+(set-face-attribute 'default nil :family "Cascadia Next JP" :height 120)
+(set-face-attribute 'default nil :family "Cascadia Code NF" :height 120)
+#+end_src
+
 * init.el
+
+** Header
+
+文字コードを UTF-8 に設定し、レキシカルバインディングを有効にする。
+
+#+begin_src emacs-lisp :tangle init.el
+;; init.el --- SuzumiyaAoba's init.el -*- lexical-binding: t; coding: utf-8 -*-
+#+end_src
+
+** Garbage collection
+
+Emacs 起動時に GC が走らないように設定する。
+=init.el= の最後に閾値を設定し直す。
+
+#+begin_src emacs-lisp :tangle early-init.el
+(setq gc-cons-threshold most-positive-fixnum)
+(setq garbage-collection-messages nil)
+#+end_src
 
 ** Backup
 
@@ -90,6 +123,73 @@ The expansion is a string indicating the package has been disabled."
                                     (not window-system)))
 #+end_src
 
+** Performance tips
+
+#+begin_src emacs-lisp :tangle init.el
+(setup simple
+  (:opt blink-matching-paren nil
+        auto-mode-case-fold nil
+        vc-handled-backends '(Git)
+        bidi-display-reordering 'left-to-right
+        bidi-inhibit-bpa t
+        cursor-in-non-selected-windows nil
+        highlight-nonselected-windows nil
+        fast-but-imprecise-scrolling t
+        jit-lock-defer-time 0
+        ffap-machine-p-known 'reject
+        idle-update-delay 1.0
+        redisplay-skip-fontification-on-input t
+        process-adaptive-read-buffering t)
+  (:only-if is-darwin)
+  (:opt command-line-ns-option-alist nil))
+#+end_src
+
+** Basic behavior
+
+#+begin_src emacs-lisp :tangle init.el
+(setq make-backup-files nil)
+(setq backup-inhibited nil)
+(setq create-lockfiles nil)
+(setq auto-save-default nil)
+(setq delete-by-moving-to-trash t)
+(setq vc-follow-symlinks t)
+(setq ring-bell-function 'ignore)
+(defalias 'yes-or-no-p 'y-or-n-p)
+(setq inhibit-startup-message t)
+(setq kill-whole-line t)
+
+(setq-default indent-tabs-mode nil)
+#+end_src
+
+*** show-trailing-whitespace
+
+#+begin_src emacs-lisp :tangle init.el
+(setq-default show-trailing-whitespace t)
+
+(defun my/disable-trailing-mode-hook ()
+  "Disable show tail whitespace."
+  (setq show-trailing-whitespace nil))
+
+(defvar my/disable-trailing-modes
+  '(eshell-mode
+    eww-mode
+    term-mode
+    special-mode
+    coq-goals-mode))
+
+(mapc
+ (lambda (mode)
+   (add-hook (intern (concat (symbol-name mode) "-hook"))
+             'my/disable-trailing-mode-hook))
+ my/disable-trailing-modes)
+#+end_src
+
+*** blink-cursor-mode
+
+#+begin_src emacs-lisp :tangle init.el
+(blink-cursor-mode -1)
+#+end_src
+
 ** Scroll
 
 #+begin_src emacs-lisp :tangle init.el
@@ -107,6 +207,84 @@ The expansion is a string indicating the package has been disabled."
 
 #+begin_src emacs-lisp :tangle init.el
 (display-line-numbers-mode)
+#+end_src
+
+*** Theme
+
+#+begin_src emacs-lisp :tangle init.el
+(setup modus-themes
+  (:opt modus-themes-italic-constructs t
+        modus-themes-bold-constructs t
+        modus-themes-region '(bg-only no-extend)
+        modus-themes-mixed-fonts t
+        modus-themes-subtle-line-numbers t
+        modus-themes-org-blocks 'gray-background
+        modus-themes-common-palette-overrides
+	'(
+          (comment yellow-cooler)
+          ;; (comment yellow-warmer)
+          ;; (string green-cooler)
+          (string green-warmer)
+          ;; (keyword cyan-cooler)
+          ))
+  (load-theme 'modus-vivendi-tritanopia t))
+#+end_src
+
+*** Terminal
+
+#+begin_src emacs-lisp :tangle init.el
+(setup
+  (:only-if is-darwin-not-window)
+  (set-face-attribute 'vertical-border nil :foreground "gray")
+  (set-display-table-slot standard-display-table 'vertical-border (make-glyph-code ?\u2502)))
+
+(setup xterm-mouse-mode
+  (:only-if is-darwin-not-window)
+  (xterm-mouse-mode t))
+
+(setup mouse-wheel-mode
+  (:only-if is-darwin-not-window)
+  (mouse-wheel-mode t))
+#+end_src
+
+** Languages & Encoding
+
+#+begin_src emacs-lisp :tangle init.el
+(setup simple
+  (set-language-environment "Japanese")
+  (prefer-coding-system 'utf-8)
+  (set-default-coding-systems 'utf-8)
+  (set-terminal-coding-system 'utf-8)
+  (set-keyboard-coding-system 'utf-8)
+  (set-selection-coding-system 'utf-8)
+  (set-file-name-coding-system 'utf-8)
+  (set-clipboard-coding-system 'utf-8)
+  (set-buffer-file-coding-system 'utf-8))
+#+end_src
+
+** Case ignore
+
+#+begin_src emacs-lisp :tangle init.el
+(setq read-file-name-completion-ignore-case t)
+(setq read-buffer-completion-ignore-case t)
+(setq completion-ignore-case t)
+#+end_src
+
+** Copy & Pasge
+
+#+begin_src emacs-lisp :tangle init.el
+(setup (:only-if is-darwin)
+  (defun copy-from-osx ()
+    (shell-command-to-string "pbpaste"))
+
+  (defun paste-to-osx (text &optional push)
+    (let ((process-connection-type nil))
+      (let ((proc (start-process "pbcopy" "*Messages*" "pbcopy")))
+        (process-send-string proc text)
+        (process-send-eof proc))))
+
+  (setq interprogram-cut-function 'paste-to-osx)
+  (setq interprogram-paste-function 'copy-from-osx))
 #+end_src
 
 ** Completion
@@ -174,4 +352,98 @@ The expansion is a string indicating the package has been disabled."
 *** org-mode
 
 #+begin_src emacs-lisp :tangle init.el
+(setup org
+  (:opt
+   org-startup-indented t
+   org-latex-create-formula-image-program 'dvisvgm
+
+   org-log-done 'time
+   org-src-fontify-natively t
+   org-src-preserve-indentation t
+   org-src-tab-acts-natively t
+
+   system-time-locate nil
+   org-startup-with-inline-images t
+   org-ellipsis " ▼"
+   org-hide-emphasis-markers t
+   org-fontify-quote-and-verse-blocks t
+   org-use-speed-commands t
+   org-return-follows-link t
+
+   org-special-ctrl-a/e t
+   org-auto-align-tags nil
+   org-tags-column 0
+
+   org-display-custom-times t
+   org-image-actual-width nil
+
+   org-todo-keywords '((sequence "TODO(t)" "WAIT(w)" "WIP(p)" "REMIND(r)" "SOMEDAY(s)" "|" "DONE(d)"))
+   org-enforce-todo-dependencies t
+   org-hierarchical-todo-statistics nil
+
+   org-emphasis-regexp-components '("-[:space:]('\"{[:nonascii:]"
+                                    "-[:space:].,:!?;'\")}\\[[:nonascii:]"
+                                    "[:space:]"
+                                    "."
+                                    1)
+   org-match-substring-regexp
+        (concat
+         "\\([0-9a-zA-Zα-γΑ-Ω]\\)\\([_^]\\)\\("
+         "\\(?:" (org-create-multibrace-regexp "{" "}" org-match-sexp-depth) "\\)"
+         "\\|"
+         "\\(?:" (org-create-multibrace-regexp "(" ")" org-match-sexp-depth) "\\)"
+         "\\|"
+         "\\(?:\\*\\|[+-]?[[:alnum:].,\\]*[[:alnum:]]\\)\\)")
+
+   ;; org-agenda
+   org-agenda-span 'day
+   org-agenda-tags-column 0
+   ;; org-agenda-block-separator ?─
+   org-agenda-time-grid '((daily today require-timed)
+                          (800 1000 1200 1400 1600 1800 2000)
+                          " ┄┄┄┄┄ " "┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄")
+   org-agenda-current-time-string "⭠ now ─────────────────────────────────────────────────"
+
+  ;; see: https://misohena.jp/blog/2021-08-29-colorize-saturday-and-japanese-holidays-in-org-agenda.html
+   org-agenda-day-face-function (lambda (date)
+                                  (let ((face (cond
+                                               ;; 土曜日
+                                               ((= (calendar-day-of-week date) 6)
+                                                '(:inherit org-agenda-date :foreground "#0df"))
+                                               ;; 日曜日か日本の祝日
+                                               ((or (= (calendar-day-of-week date) 0)
+                                                    (let ((calendar-holidays japanese-holidays))
+                                                      (calendar-check-holidays date)))
+                                                'org-agenda-date-weekend)
+                                               ;; 普通の日
+                                               (t 'org-agenda-date))))
+                                    ;; 今日は色を反転
+                                    (if (org-agenda-today-p date) (list :inherit face :inverse-video t) face)))
+   org-time-stamp-custom-formats '("<%Y年%m月%d日(%a)>" . "<%Y年%m月%d日(%a)%H時%M分>"))
+
+  (:when-loaded
+   ;; see: https://github.com/lijigang/emacs.d/blob/main/readme.org
+   (require 'org)
+   (org-set-emph-re 'org-emphasis-regexp-components org-emphasis-regexp-components)
+   (org-element-update-syntax)
+
+   (defun org-babel-execute:jshell (body params)
+     "Execute a block of jshell code snippets or commands with org-babel"
+     (message "Executing jshell snippets")
+     (org-babel-eval "jshell -q" (concat body "\n/exit")))
+   (add-to-list 'org-src-lang-modes '("jshell" . "java")))
+)
+#+end_src
+
+#+begin_src emacs-lisp :tangle init.el
+#+end_src
+
+** Finalization
+
+*** Garbage Collection
+
+GC が利用できるメモリの上限を無制限から戻す。
+
+#+begin_src emacs-lisp :tangle init.el
+(setq gc-cons-threshold 100 * 1024 * 1024) ;; 100 mb
 #+end_src

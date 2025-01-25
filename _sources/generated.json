@@ -62,6 +62,27 @@
         },
         "version": "e9614a336ffef61e8660188a95ae5d78674ed36d"
     },
+    "emacs-modus-themes": {
+        "cargoLocks": null,
+        "date": "2025-01-22",
+        "extract": null,
+        "name": "emacs-modus-themes",
+        "passthru": null,
+        "pinned": false,
+        "src": {
+            "deepClone": false,
+            "fetchSubmodules": false,
+            "leaveDotGit": false,
+            "name": null,
+            "owner": "protesilaos",
+            "repo": "modus-themes",
+            "rev": "75791f5efc49ebb7e714fe2e0d813a0d1e70c25d",
+            "sha256": "sha256-1updJxXXtkzQ3ObhoCnMt92Nlev3yXPbed8felEua0Q=",
+            "sparseCheckout": [],
+            "type": "github"
+        },
+        "version": "75791f5efc49ebb7e714fe2e0d813a0d1e70c25d"
+    },
     "emacs-nix-mode": {
         "cargoLocks": null,
         "date": "2023-04-21",
