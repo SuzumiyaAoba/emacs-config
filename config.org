@@ -190,6 +190,28 @@ The expansion is a string indicating the package has been disabled."
 (blink-cursor-mode -1)
 #+end_src
 
+*** auto-revert-mode
+
+#+begin_src emacs-lisp :tangle init.el
+(setup auto-revert-mode
+  (global-auto-revert-mode t))
+#+end_src
+
+*** recentf-mode
+
+#+begin_src emacs-lisp :tangle init.el
+(setup recentf-mode
+  (:opt recentf-max-saved-items 100)
+  (recentf-mode +1))
+#+end_src
+
+*** savehist-mode
+
+#+begin_src emacs-lisp :tangle init.el
+(with-eval-after-load 'savehist-mode
+  (savehist-mode +1))
+#+end_src
+
 ** Scroll
 
 #+begin_src emacs-lisp :tangle init.el
