@@ -83,6 +83,27 @@
         },
         "version": "719feb7868fb567ecfe5578f6119892c771ac5e5"
     },
+    "emacs-orderless": {
+        "cargoLocks": null,
+        "date": "2025-01-01",
+        "extract": null,
+        "name": "emacs-orderless",
+        "passthru": null,
+        "pinned": false,
+        "src": {
+            "deepClone": false,
+            "fetchSubmodules": false,
+            "leaveDotGit": false,
+            "name": null,
+            "owner": "oantolin",
+            "repo": "orderless",
+            "rev": "411051c3257d60f0492cf88065193bb443b6ca0d",
+            "sha256": "sha256-ttDlbaDdU7+7ly1DLeqJ/1dwwBVzrJ/0FD/q8UeBxRY=",
+            "sparseCheckout": [],
+            "type": "github"
+        },
+        "version": "411051c3257d60f0492cf88065193bb443b6ca0d"
+    },
     "emacs-projectile": {
         "cargoLocks": null,
         "date": "2025-01-24",

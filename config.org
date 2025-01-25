@@ -22,6 +22,47 @@
 
 #+begin_src emacs-lisp :tangle init.el
 (require 'setup)
+
+(defmacro -setup (order &rest body)
+  "Execute BODY in `setup' declaration after ORDER is finished.
+If the :disabled keyword is present in body, the package is completely ignored.
+This happens regardless of the value associated with :disabled.
+The expansion is a string indicating the package has been disabled."
+  (declare (indent 1))
+  (if (memq :disabled body)
+      (format "%S :disabled by -setup" order)
+    (let ((o order))
+      (when-let ((ensure (cl-position :ensure body)))
+        (setq o (if (null (nth (1+ ensure) body)) nil order)
+              body (append (cl-subseq body 0 ensure)
+                           (cl-subseq body (+ ensure 2)))))
+      `(elpaca ,o (setup
+                    ,(if-let (((memq (car-safe order) '(quote \`)))
+                              (feature (flatten-tree order)))
+                         (cadr feature)
+                       (elpaca--first order))
+                    ,@body)))))
+
+(setup-define :load-after
+  (lambda (&rest features)
+    (let ((body `(require ',(setup-get 'feature))))
+      (dolist (feature (nreverse features))
+        (setq body `(with-eval-after-load ',feature ,body)))
+      body))
+  :documentation "Load the current feature after FEATURES.")
+
+(setup-define :opt
+  (lambda (&rest pairs)
+    `(setopt ,@pairs))
+  :after-loaded t)
+
+(setup-define :face
+    (lambda (face spec) `(custom-set-faces (quote (,face ,spec))))
+    :documentation "Customize FACE to SPEC."
+    :signature '(face spec ...)
+    :debug '(setup)
+    :repeatable t
+    :after-loaded t)
 #+end_src
 
 ** Looks & Feels
@@ -54,6 +95,21 @@
 (setup consult-ghq
   (:global
    "C-c C-g" consult-ghq-switch-project))
+#+end_src
+
+*** orderless
+
+#+begin_src emacs-lisp :tangle init.el
+(setup orderless
+  (:opt completion-style '(orderless basic)
+    	completion-category-overrides '((file (styles basic partial-completion)))))
+
+(setup minibuffer
+  (:when-loaded
+    (:opt completion-styles '(orderless)
+          completion-category-overrides '((file (styles basic partial-completion))))
+    (add-to-list 'completion-styles-alist '(orderless orderless-try-completion orderless-all-completions
+                                                      "Completion of multiple components, in any order."))))
 #+end_src
 
 ** Project

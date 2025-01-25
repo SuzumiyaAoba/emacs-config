@@ -27,16 +27,7 @@
         emacsPackage = pkgs.emacsWithPackagesFromUsePackage {
           package = pkgs.emacs-unstable;
           config = ./config.org;
-          extraEmacsPackages =
-            epkgs: with epkgs; [
-              consult
-              consult-ghq
-              magit
-              nix-mode
-              projectile
-              setup
-              vertico
-            ];
+          extraEmacsPackages = import ./packages.nix { };
           override = import ./epkgs { inherit pkgs; };
         };
 

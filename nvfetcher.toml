@@ -18,6 +18,11 @@ src.git = "https://github.com/NixOS/nix-mode"
 src.branch = "master"
 fetch.github = "NixOS/nix-mode"
 
+[emacs-orderless]
+src.git = "https://github.com/oantolin/orderless"
+src.branch = "master"
+fetch.github = "oantolin/orderless"
+
 [emacs-projectile]
 src.git = "https://github.com/bbatsov/projectile"
 src.branch = "master"
