@@ -28,6 +28,11 @@ src.git = "https://github.com/tarsius/moody"
 src.branch = "main"
 fetch.github = "tarsius/moody"
 
+[emacs-nerd-icons-dired]
+src.git = "https://github.com/rainstormstudio/nerd-icons-dired"
+src.branch = "main"
+fetch.github = "rainstormstudio/nerd-icons-dired"
+
 [emacs-nix-mode]
 src.git = "https://github.com/NixOS/nix-mode"
 src.branch = "master"

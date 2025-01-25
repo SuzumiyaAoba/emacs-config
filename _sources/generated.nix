@@ -73,6 +73,18 @@
     };
     date = "2025-01-01";
   };
+  emacs-nerd-icons-dired = {
+    pname = "emacs-nerd-icons-dired";
+    version = "c0b0cda2b92f831d0f764a7e8c0c6728d6a27774";
+    src = fetchFromGitHub {
+      owner = "rainstormstudio";
+      repo = "nerd-icons-dired";
+      rev = "c0b0cda2b92f831d0f764a7e8c0c6728d6a27774";
+      fetchSubmodules = false;
+      sha256 = "sha256-yoiwuf90qhwzSGQgaXZb+Zo+cTxjeEIt6NoZKQb8mMc=";
+    };
+    date = "2024-10-13";
+  };
   emacs-nix-mode = {
     pname = "emacs-nix-mode";
     version = "719feb7868fb567ecfe5578f6119892c771ac5e5";

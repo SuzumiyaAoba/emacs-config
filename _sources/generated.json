@@ -125,6 +125,27 @@
         },
         "version": "26dd59b300c149a0e2e332023115b280b42ead12"
     },
+    "emacs-nerd-icons-dired": {
+        "cargoLocks": null,
+        "date": "2024-10-13",
+        "extract": null,
+        "name": "emacs-nerd-icons-dired",
+        "passthru": null,
+        "pinned": false,
+        "src": {
+            "deepClone": false,
+            "fetchSubmodules": false,
+            "leaveDotGit": false,
+            "name": null,
+            "owner": "rainstormstudio",
+            "repo": "nerd-icons-dired",
+            "rev": "c0b0cda2b92f831d0f764a7e8c0c6728d6a27774",
+            "sha256": "sha256-yoiwuf90qhwzSGQgaXZb+Zo+cTxjeEIt6NoZKQb8mMc=",
+            "sparseCheckout": [],
+            "type": "github"
+        },
+        "version": "c0b0cda2b92f831d0f764a7e8c0c6728d6a27774"
+    },
     "emacs-nix-mode": {
         "cargoLocks": null,
         "date": "2023-04-21",

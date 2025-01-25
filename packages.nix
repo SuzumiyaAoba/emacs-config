@@ -6,6 +6,7 @@ epkgs: with epkgs; [
   magit
   modus-themes
   moody
+  nerd-icons-dired
   nix-mode
   orderless
   projectile

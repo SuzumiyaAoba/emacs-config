@@ -297,6 +297,18 @@ The expansion is a string indicating the package has been disabled."
   (setq interprogram-paste-function 'copy-from-osx))
 #+end_src
 
+** dired
+
+#+begin_src emacs-lisp :tangle init.el
+(setup nerd-icons-dired
+  (:with-mode dired-mode
+    (:hook nerd-icons-dired-mode))
+  (:require nerd-icons)
+
+  (add-to-list 'nerd-icons-extension-icon-alist
+               '("mdx" nerd-icons-octicon "nf-oct-markdown" :face nerd-icons-lblue)))
+#+end_src
+
 ** Completion
 
 *** vertico
