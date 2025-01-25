@@ -77,15 +77,15 @@
   };
   emacs-magit = {
     pname = "emacs-magit";
-    version = "e9614a336ffef61e8660188a95ae5d78674ed36d";
+    version = "a43c1d8d7a99dd2b9f865285bed442dddb0e5ce8";
     src = fetchFromGitHub {
       owner = "magit";
       repo = "magit";
-      rev = "e9614a336ffef61e8660188a95ae5d78674ed36d";
+      rev = "a43c1d8d7a99dd2b9f865285bed442dddb0e5ce8";
       fetchSubmodules = false;
-      sha256 = "sha256-LGqdDfdU+77qbRnOrBij83Gct1haSH+5DI7RdwdUvjk=";
+      sha256 = "sha256-ziqdyqwi7khj4k1j+3XFxPajJ2uvUd0peWBpegWwtmA=";
     };
-    date = "2025-01-20";
+    date = "2025-01-25";
   };
   emacs-modus-themes = {
     pname = "emacs-modus-themes";

@@ -5,6 +5,7 @@ epkgs: with epkgs; [
   consult-ghq
   corfu
   corfu-terminal
+  ddskk
   # devil
   magit
   modus-themes

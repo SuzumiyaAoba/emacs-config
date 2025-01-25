@@ -435,6 +435,26 @@ The expansion is a string indicating the package has been disabled."
                                                       "Completion of multiple components, in any order."))))
 #+end_src
 
+** IME
+
+#+begin_src emacs-lisp :tangle init.el
+(setup ddskk
+  (:global
+   "C-x j" skk-mode)
+  (:opt skk-preload t
+        default-input-method "japanese-skk"
+        skk-byte-compile-init-file t
+        skk-isearch-mode-enable 'always
+        skk-egg-like-newline t
+        skk-show-annotation nil
+        skk-auto-insert-paren t)
+
+  (defun my/enable-skk-latin-mode ()
+    (skk-latin-mode 1))
+  (add-hook 'find-file-hook #'my/enable-skk-latin-mode))
+#+end_src
+
+
 ** Project
 
 *** projectile
