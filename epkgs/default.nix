@@ -6,6 +6,7 @@ in
 epkgs:
 epkgs
 // {
+  anzu = import ./packages/anzu.nix { inherit epkgs sources; };
   consult = import ./packages/consult.nix { inherit epkgs sources; };
   corfu = import ./packages/corfu.nix { inherit epkgs sources; };
   corfu-terminal = import ./packages/corfu-terminal.nix { inherit epkgs sources; };

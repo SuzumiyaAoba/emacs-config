@@ -297,6 +297,21 @@ The expansion is a string indicating the package has been disabled."
   (setq interprogram-paste-function 'copy-from-osx))
 #+end_src
 
+** Search
+
+*** anzu
+
+#+begin_src emacs-lisp :tangle init.el
+(setup anzu
+  (:global [remap query-replace] anzu-query-replace
+           [remap query-replace-regexp] anzu-query-replace-regex)
+  (:opt anzu-replace-threshold 1000
+        anzu-search-threshold 1000)
+  (:with-mode emacs-startup
+    (:hook global-anzu-mode))
+  (copy-face 'mode-line 'anzu-mode-line))
+#+end_src
+
 ** dired
 
 #+begin_src emacs-lisp :tangle init.el

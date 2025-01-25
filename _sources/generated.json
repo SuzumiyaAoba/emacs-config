@@ -1,4 +1,25 @@
 {
+    "emacs-anzu": {
+        "cargoLocks": null,
+        "date": "2024-09-28",
+        "extract": null,
+        "name": "emacs-anzu",
+        "passthru": null,
+        "pinned": false,
+        "src": {
+            "deepClone": false,
+            "fetchSubmodules": false,
+            "leaveDotGit": false,
+            "name": null,
+            "owner": "emacsorphanage",
+            "repo": "anzu",
+            "rev": "21cb5ab2295614372cb9f1a21429381e49a6255f",
+            "sha256": "sha256-xnBSzfxcrLIprMVtj2HYgEZIdWIVM0An5XS55G4ueOU=",
+            "sparseCheckout": [],
+            "type": "github"
+        },
+        "version": "21cb5ab2295614372cb9f1a21429381e49a6255f"
+    },
     "emacs-consult": {
         "cargoLocks": null,
         "date": "2025-01-21",

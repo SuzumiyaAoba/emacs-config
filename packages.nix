@@ -1,5 +1,6 @@
 { }:
 epkgs: with epkgs; [
+  anzu
   consult
   consult-ghq
   corfu
