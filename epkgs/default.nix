@@ -17,5 +17,7 @@ epkgs
   projectile = import ./packages/projectile.nix { inherit epkgs sources; };
   ripgrep = import ./packages/ripgrep.nix { inherit epkgs sources; };
   setup = import ./packages/setup.nix { inherit epkgs sources; };
+  undohist = import ./packages/undohist.nix { inherit epkgs sources; };
   vertico = import ./packages/vertico.nix { inherit epkgs sources; };
+  vundo = import ./packages/vundo.nix { inherit epkgs sources; };
 }

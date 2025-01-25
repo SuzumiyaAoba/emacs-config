@@ -73,7 +73,17 @@ src.git = "https://git.sr.ht/~pkal/setup"
 src.branch = "master"
 fetch.git = "https://git.sr.ht/~pkal/setup"
 
+[emacs-undohist]
+src.git = "https://github.com/emacsorphanage/undohist"
+src.branch = "master"
+fetch.github = "emacsorphanage/undohist"
+
 [emacs-vertico]
 src.git = "https://github.com/minad/vertico"
 src.branch = "main"
 fetch.git = "https://github.com/minad/vertico"
+
+[emacs-vundo]
+src.git = "https://github.com/casouri/vundo"
+src.branch = "master"
+fetch.github = "casouri/vundo"

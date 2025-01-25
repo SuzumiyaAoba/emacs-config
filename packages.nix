@@ -15,5 +15,7 @@ epkgs: with epkgs; [
   projectile
   ripgrep
   setup
+  undohist
   vertico
+  vundo
 ]

@@ -319,6 +319,22 @@ The expansion is a string indicating the package has been disabled."
   (setq interprogram-paste-function 'copy-from-osx))
 #+end_src
 
+** Undo & Redo
+
+*** vundo
+
+#+begin_src emacs-lisp :tangle init.el
+(setup vundo
+  (:global "C-x u" vundo))
+#+end_src
+
+*** undohist
+
+#+begin_src emacs-lisp :tangle init.el
+(setup undohist
+  (undohist-initialize))
+#+end_src
+
 ** Search
 
 *** anzu

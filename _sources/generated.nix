@@ -185,6 +185,18 @@
     };
     date = "2024-12-24";
   };
+  emacs-undohist = {
+    pname = "emacs-undohist";
+    version = "fd11900663f307958dc7e1d7ea1b0004f6cdb4d0";
+    src = fetchFromGitHub {
+      owner = "emacsorphanage";
+      repo = "undohist";
+      rev = "fd11900663f307958dc7e1d7ea1b0004f6cdb4d0";
+      fetchSubmodules = false;
+      sha256 = "sha256-pbnevZCJInOIgLaIGSBn5rcYyRL5dzE59fBWbiubvcQ=";
+    };
+    date = "2024-09-25";
+  };
   emacs-vertico = {
     pname = "emacs-vertico";
     version = "fef56a0c7fe571c28ad102b54b26e07ebbbd5e82";
@@ -198,5 +210,17 @@
       sha256 = "sha256-iamNT7u+5Fe86WEx1lHT92y/xz+0XGjUKhWxJXm9ElM=";
     };
     date = "2025-01-17";
+  };
+  emacs-vundo = {
+    pname = "emacs-vundo";
+    version = "288892ee93214ddcaf65fdd9f3134c1bd10100ee";
+    src = fetchFromGitHub {
+      owner = "casouri";
+      repo = "vundo";
+      rev = "288892ee93214ddcaf65fdd9f3134c1bd10100ee";
+      fetchSubmodules = false;
+      sha256 = "sha256-dJZqPOWq9IK/il2RjAKYy0rSQyKpW4TShkBh7ytwrLg=";
+    };
+    date = "2025-01-14";
   };
 }
