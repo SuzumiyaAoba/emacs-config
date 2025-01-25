@@ -25,6 +25,18 @@
     };
     date = "2023-11-11";
   };
+  emacs-corfu = {
+    pname = "emacs-corfu";
+    version = "a401b6a3a645705b4767d938a2efa02183ba96f4";
+    src = fetchFromGitHub {
+      owner = "minad";
+      repo = "corfu";
+      rev = "a401b6a3a645705b4767d938a2efa02183ba96f4";
+      fetchSubmodules = false;
+      sha256 = "sha256-o21CjnhW/ZT3BtO0j67u7EpdZiqAm43v452GdXnZOu0=";
+    };
+    date = "2025-01-20";
+  };
   emacs-devil = {
     pname = "emacs-devil";
     version = "c2dc9fc2886471daff654e12b46a144a4d1361ae";

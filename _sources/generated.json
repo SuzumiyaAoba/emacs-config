@@ -41,6 +41,27 @@
         },
         "version": "65a99980fb313d473376542cb87464a8a44ff25e"
     },
+    "emacs-corfu": {
+        "cargoLocks": null,
+        "date": "2025-01-20",
+        "extract": null,
+        "name": "emacs-corfu",
+        "passthru": null,
+        "pinned": false,
+        "src": {
+            "deepClone": false,
+            "fetchSubmodules": false,
+            "leaveDotGit": false,
+            "name": null,
+            "owner": "minad",
+            "repo": "corfu",
+            "rev": "a401b6a3a645705b4767d938a2efa02183ba96f4",
+            "sha256": "sha256-o21CjnhW/ZT3BtO0j67u7EpdZiqAm43v452GdXnZOu0=",
+            "sparseCheckout": [],
+            "type": "github"
+        },
+        "version": "a401b6a3a645705b4767d938a2efa02183ba96f4"
+    },
     "emacs-devil": {
         "cargoLocks": null,
         "date": "2024-01-29",

@@ -7,6 +7,7 @@ epkgs:
 epkgs
 // {
   consult = import ./packages/consult.nix { inherit epkgs sources; };
+  corfu = import ./packages/corfu.nix { inherit epkgs sources; };
   magit = import ./packages/magit.nix { inherit epkgs pkgs sources; };
   modus-themes = import ./packages/modus-themes.nix { inherit epkgs sources; };
   nerd-icons-dired = import ./packages/nerd-icons-dired.nix { inherit epkgs sources; };

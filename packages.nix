@@ -2,6 +2,7 @@
 epkgs: with epkgs; [
   consult
   consult-ghq
+  corfu
   # devil
   magit
   modus-themes

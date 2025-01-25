@@ -311,6 +311,23 @@ The expansion is a string indicating the package has been disabled."
 
 ** Completion
 
+*** corfu
+
+#+begin_src emacs-lisp :tangle init.el
+(setup corfu
+  (:opt corfu-auto t
+        corfu-auto-delay 0.5
+        corfu-popupifo-delay 0.5
+        corfu-quit-no-match t
+        corfu-auto-prefix 1
+        tab-always-indent 'complete
+        text-mode-ispell-word-completion nil)
+  ;; (:with-map corfu-mode-map
+  ;;   (:bind
+  ;;    "SPC" corfu-insert-separator))
+  (global-corfu-mode))
+#+end_src
+
 *** vertico
 
 #+begin_src emacs-lisp :tangle init.el
