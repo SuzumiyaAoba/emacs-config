@@ -454,7 +454,6 @@ The expansion is a string indicating the package has been disabled."
   (add-hook 'find-file-hook #'my/enable-skk-latin-mode))
 #+end_src
 
-
 ** Project
 
 *** projectile

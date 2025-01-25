@@ -72,6 +72,8 @@
       {
         packages.default = wrappedEmacs;
 
+        allowUnfree = true;
+
         # nvfetcherのアップデートコマンドを追加
         apps.update = {
           type = "app";
