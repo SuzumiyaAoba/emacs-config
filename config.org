@@ -2,10 +2,20 @@
 
 * early-init.el
 
+** Inhibit
+
 #+begin_src emacs-lisp :tangle early-init.el
 (setq inhibit-splash-screen t)
 (setq frame-inhibit-implied-resize t)
 (setq inhibit-compacting-font-caches t)
+#+end_src
+
+** I/O
+
+#+begin_src emacs-lisp :tangle early-init.el
+(when (boundp 'read-process-output-max)
+  ;; 1MB in bytes, default 4096 bytes
+  (setq read-process-output-max 1048576))
 #+end_src
 
 * init.el
@@ -63,6 +73,34 @@ The expansion is a string indicating the package has been disabled."
     :debug '(setup)
     :repeatable t
     :after-loaded t)
+#+end_src
+
+** OS
+
+;; is-darwin
+#+begin_src emacs-lisp :tangle init.el
+(defconst is-darwin (string= system-type "darwin"))
+
+;; is-darwin-window
+(defconst is-darwin-window (and (string= system-type "darwin")
+                                window-system))
+
+;; when-darwin-not-window-system
+(defconst is-darwin-not-window (and (string= system-type "darwin")
+                                    (not window-system)))
+#+end_src
+
+** Scroll
+
+#+begin_src emacs-lisp :tangle init.el
+(setup simple
+  (setq scroll-margin 0)
+  (setq scroll-conservatively 100000)
+  (setq scroll-preserve-screen-position t))
+
+(setup pixel-scroll-precision-mode
+  (:only-if is-darwin-window)
+  (pixel-scroll-precision-mode t))
 #+end_src
 
 ** Looks & Feels
