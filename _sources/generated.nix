@@ -37,6 +37,20 @@
     };
     date = "2025-01-20";
   };
+  emacs-corfu-terminal = {
+    pname = "emacs-corfu-terminal";
+    version = "501548c3d51f926c687e8cd838c5865ec45d03cc";
+    src = fetchgit {
+      url = "https://codeberg.org/akib/emacs-corfu-terminal";
+      rev = "501548c3d51f926c687e8cd838c5865ec45d03cc";
+      fetchSubmodules = false;
+      deepClone = false;
+      leaveDotGit = false;
+      sparseCheckout = [ ];
+      sha256 = "sha256-0qdSsuPE2s+DVu6yuqebMEt/29ypRlvb7TbvWEMHsjU=";
+    };
+    date = "2023-08-10";
+  };
   emacs-devil = {
     pname = "emacs-devil";
     version = "c2dc9fc2886471daff654e12b46a144a4d1361ae";

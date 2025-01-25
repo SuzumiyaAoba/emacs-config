@@ -328,6 +328,15 @@ The expansion is a string indicating the package has been disabled."
   (global-corfu-mode))
 #+end_src
 
+**** corfu-terminal
+
+#+begin_src emacs-lisp :tangle init.el
+(setup corfu-terminal
+  (:load-after corfu)
+  (:when-loaded
+    (corfu-terminal-mode +1)))
+#+end_src
+
 *** vertico
 
 #+begin_src emacs-lisp :tangle init.el
