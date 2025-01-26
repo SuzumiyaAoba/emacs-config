@@ -262,6 +262,15 @@ The expansion is a string indicating the package has been disabled."
   (moody-replace-mode-line-buffer-identification))
 #+end_src
 
+*** mlscroll
+
+#+begin_src emacs-lisp :tangle init.el
+(setup mlscroll
+  (if (daemonp)
+      (add-hook 'server-after-make-frame-hook #'mlscroll-mode)
+    (mlscroll-mode 1)))
+#+end_src
+
 *** Terminal
 
 #+begin_src emacs-lisp :tangle init.el
