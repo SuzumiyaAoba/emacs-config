@@ -29,8 +29,8 @@
 ** Fonts
 
 #+begin_src emacs-lisp :tangle early-init.el
-(set-face-attribute 'default nil :family "Cascadia Next JP" :height 120)
-(set-face-attribute 'default nil :family "Cascadia Code NF" :height 120)
+(set-face-attribute 'default nil :family "Cascadia Next JP" :height 140)
+(set-face-attribute 'default nil :family "Cascadia Code NF" :height 140)
 #+end_src
 
 * init.el
@@ -394,6 +394,15 @@ The expansion is a string indicating the package has been disabled."
   (:load-after corfu)
   (:when-loaded
     (corfu-terminal-mode +1)))
+#+end_src
+
+**** nerd-icons-corfu
+
+#+begin_src emacs-lisp :tangle init.el
+(setup nerd-icons-corfu
+  (:load-after corfu)
+  (:when-loaded
+    (add-to-list 'corfu-margin-formatters #'nerd-icons-corfu-formatter)))
 #+end_src
 
 *** vertico
