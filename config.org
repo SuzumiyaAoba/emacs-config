@@ -299,6 +299,13 @@ see: https://github.com/meatcar/emacs.d?tab=readme-ov-file#fast-scroll
   (mouse-wheel-mode t))
 #+end_src
 
+*** minions
+
+#+begin_src emacs-lisp :tangle init.el
+(setup minions
+  (minions-mode))
+#+end_src
+
 ** Languages & Encoding
 
 #+begin_src emacs-lisp :tangle init.el
