@@ -34,7 +34,7 @@
           package = pkgs.emacs-unstable;
           config = ./config.org;
           extraEmacsPackages = import ./packages.nix { };
-          override = import ./epkgs { inherit pkgs; };
+          override = epkgs: import ./epkgs { inherit pkgs epkgs; };
         };
 
         # 設定ファイルを tangle して .emacs.d を作成する derivation

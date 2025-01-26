@@ -144,6 +144,13 @@ The expansion is a string indicating the package has been disabled."
   (:opt command-line-ns-option-alist nil))
 #+end_src
 
+*** so-long
+
+#+begin_src emacs-lisp :tangle init.el
+(setup so-long
+  (global-so-long-mode +1))
+#+end_src
+
 ** Basic behavior
 
 #+begin_src emacs-lisp :tangle init.el
@@ -212,6 +219,13 @@ The expansion is a string indicating the package has been disabled."
   (savehist-mode +1))
 #+end_src
 
+*** delsel
+
+#+begin_src emacs-lisp :tangle init.el
+(setup delsel
+  (delete-selection-mode +1))
+#+end_src
+
 ** Scroll
 
 #+begin_src emacs-lisp :tangle init.el
@@ -239,7 +253,12 @@ see: https://github.com/meatcar/emacs.d?tab=readme-ov-file#fast-scroll
 ** Looks & Feels
 
 #+begin_src emacs-lisp :tangle init.el
-(display-line-numbers-mode)
+(setup display-line-numbers
+  (:opt display-line-numbers-grow-only t)
+  (:with-mode prog-mode
+    (:hook display-line-numbers-mode))
+  (:with-mode text-mode
+    (:hook display-line-numbers-mode)))
 #+end_src
 
 *** Theme
@@ -306,12 +325,44 @@ see: https://github.com/meatcar/emacs.d?tab=readme-ov-file#fast-scroll
   (minions-mode))
 #+end_src
 
-*** svg-tab-mode
+*** svg-tag-mode
 
 #+begin_src emacs-lisp :tagnle init.el
 (setup svg-tag-mode
   (global-svg-tag-mode))
 #+end_src
+
+*** keycast
+
+#+begin_src emacs-lisp :tangle init.el
+(setup keycast
+  (:load-after moody)
+  (:require keycast)
+  ;; (keycast-tab-bar-mode)
+  ;; (keycast-mode-line-mode)
+
+  (define-minor-mode keycast-mode
+    "Show current command and its key binding in the mode line (fix for use with doom-modeline)."
+    :global t
+    (if keycast-mode
+	(add-hook 'pre-command-hook 'keycast--update t)
+      (remove-hook 'pre-command-hook 'keycast--update)))
+
+  (add-to-list 'global-mode-string '("" keycast-mode-line))
+
+  (keycast-mode))
+#+end_src
+
+** Window
+
+*** ace-window
+
+#+begin_src emacs-lisp :tangle init.el
+(setup ace-window
+  (:global "M-o" ace-window)
+  (:opt aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l)))
+#+end_src
+
 
 ** Languages & Encoding
 
@@ -393,6 +444,18 @@ see: https://github.com/meatcar/emacs.d?tab=readme-ov-file#fast-scroll
 ** dired
 
 #+begin_src emacs-lisp :tangle init.el
+(setup dired
+  (:opt dired-dwim-target t
+        dired-do-revert-buffer t
+        dired-recursive-copies 'always
+        dired-isearch-filenames t)
+
+  (require 'dired-x))
+#+end_src
+
+*** nerd-icons-dired
+
+#+begin_src emacs-lisp :tangle init.el
 (setup nerd-icons-dired
   (:with-mode dired-mode
     (:hook nerd-icons-dired-mode))
@@ -401,6 +464,58 @@ see: https://github.com/meatcar/emacs.d?tab=readme-ov-file#fast-scroll
   (add-to-list 'nerd-icons-extension-icon-alist
                '("mdx" nerd-icons-octicon "nf-oct-markdown" :face nerd-icons-lblue)))
 #+end_src
+
+** key
+
+#+begin_src emacs-lisp :tangle init.el
+;; (setup devil
+;;   (global-devil-mode))
+#+end_src
+
+*** which-key
+
+#+begin_src emacs-lisp :tangle init.el
+(setup which-key
+  (which-key-mode))
+#+end_src
+
+*** hydra
+
+#+begin_src emacs-lisp :tangle init.el
+(setup hydra)
+#+end_src
+
+** Parens
+
+*** electric-pair
+
+#+begin_src emacs-lisp :tangle init.el
+(setup electric-pair
+  (electric-pair-mode 1))
+#+end_src
+
+*** rainbow-delimiters
+
+#+begin_src emacs-lisp :tangle init.el
+(setup rainbow-delimiters
+  (:with-mode prog-mode
+    (:hook rainbow-delimiters-mode)))
+#+end_src
+
+** Flymake
+
+
+#+begin_src emacs-lisp :tangle init.el
+(setup flymake)
+#+end_src
+
+*** flymake-popon
+
+#+begin_src emacs-lisp :tangle init.el
+(setup flymake-popon
+  (global-flymake-popon-mode))
+#+end_src
+
 
 ** Completion
 
@@ -430,6 +545,17 @@ see: https://github.com/meatcar/emacs.d?tab=readme-ov-file#fast-scroll
     (corfu-terminal-mode +1)))
 #+end_src
 
+**** corfu-prescient
+
+#+begin_src emacs-lisp :tangle init.el
+(setup corfu-prescient
+  (:opt corfu-prescient-enable-filtering nil
+        prescient-aggressive-file-save t)
+  (require 'prescient)
+  (prescient-persist-mode +1)
+  (corfu-prescient-mode +1))
+#+end_src
+
 **** nerd-icons-corfu
 
 #+begin_src emacs-lisp :tangle init.el
@@ -443,16 +569,66 @@ see: https://github.com/meatcar/emacs.d?tab=readme-ov-file#fast-scroll
 
 #+begin_src emacs-lisp :tangle init.el
 (setup vertico
-  (vertico-mode))
+  (:with-map vertico-map
+    (:bind "C-r" vertico-previous
+           "C-s" vertico-next))
+  (:opt vertico-count 12
+        vertico-cycle t)
+  (:opt marginalia-mode t)
+  (defvar +vertico-current-arrow t)
+
+  (vertico-mode)
+
+  ;; vertico-directory
+  (:with-map vertico-map
+    (:bind "C-l" vertico-directory-up
+           "DEL" vertico-directory-delete-char)))
+#+end_src
+
+**** vertico-prescient
+
+#+begin_src emacs-lisp :tangle init.el
+(setup vertico-prescient
+  (:load-after prescient)
+  (:opt vertico-prescient-enable-filtering nil)
+  (vertico-prescient-mode +1))
 #+end_src
 
 *** consult
 
 #+begin_src emacs-lisp :tangle init.el
 (setup consult
+  (:opt consult-preview-raw-size 1024000
+        consult-preview-max-size 1024000
+        consult-preview-key 'any
+        xref-show-xrefs-function #'consult-xref
+        xref-show-definitions-function #'consult-xref)
   (:global
-   "M-s"   consult-line
-   "C-x b" consult-buffer))
+   "C-x b" consult-buffer
+
+   "M-y" consult-yank-pop
+
+   "M-g f" consult-flymake
+   "M-g o" consult-outline
+   "M-g i" consult-imenu
+
+   "M-s s" consult-line-at
+   "M-s d" consult-find
+   "M-s r" consult-ripgrep
+   "M-s u" consult-focus-lines)
+  (:when-loaded
+    (consult-customize
+     consult-buffer
+     consult-recent-file
+     consult-xref
+     :preview-key '(:debounce 0.4 any)))
+
+  (defun consult-line-at (&optional at-point)
+    "Consult-line uses things-at-point if set C-u prefix."
+    (interactive "P")
+    (if at-point
+        (consult-line (thing-at-point 'symbol))
+      (consult-line))))
 #+end_src
 
 **** consult-ghq
@@ -461,6 +637,24 @@ see: https://github.com/meatcar/emacs.d?tab=readme-ov-file#fast-scroll
 (setup consult-ghq
   (:global
    "C-c C-g" consult-ghq-switch-project))
+#+end_src
+
+**** consult-projectile
+
+#+begin_src emacs-lisp :tangle init.el
+(setup consult-projectile
+  (:load-after projectile)
+  (:when-loaded
+    (advice-add 'projectile-switch-to-buffer :override #'consult-projectile-switch-to-buffer)
+    (advice-add 'projectile-switch-to-buffer-other-window :override #'consult-projectile-switch-to-buffer-other-window)
+    (advice-add 'projectile-switch-to-buffer-other-frame :override #'consult-projectile-switch-to-buffer-other-frame)
+    (advice-add 'projectile-find-dir :override #'consult-projectile-find-dir)
+    (advice-add 'projectile-find-file :override #'consult-projectile-find-file)
+    (advice-add 'projectile-find-file-other-window :override #'consult-projectile-find-file-other-window)
+    (advice-add 'projectile-find-file-other-frame :override #'consult-projectile-find-file-other-frame)
+    (advice-add 'projectile-recentf :override #'consult-projectile-recentf)
+    (advice-add 'projectile-switch-project :override #'consult-projectile-switch-project)
+    (advice-add 'projectile-ripgrep :override #'consult-ripgrep)))
 #+end_src
 
 *** orderless
@@ -476,6 +670,16 @@ see: https://github.com/meatcar/emacs.d?tab=readme-ov-file#fast-scroll
           completion-category-overrides '((file (styles basic partial-completion))))
     (add-to-list 'completion-styles-alist '(orderless orderless-try-completion orderless-all-completions
                                                       "Completion of multiple components, in any order."))))
+#+end_src
+
+*** cape
+
+#+begin_src emacs-lisp :tangle init.el
+(setup cape
+  (add-to-list 'completion-at-point-functions #'cape-dabbrev)
+  (add-to-list 'completion-at-point-functions #'cape-file)
+  (add-to-list 'completion-at-point-functions #'cape-elisp-block)
+  (add-to-list 'completion-at-point-functions #'cape-history))
 #+end_src
 
 *** marginalia
@@ -495,6 +699,44 @@ see: https://github.com/meatcar/emacs.d?tab=readme-ov-file#fast-scroll
     (nerd-icons-completion-mode)))
 #+end_src
 
+*** prescient
+
+#+begin_src emacs-lisp :tangle init.el
+(setup prescient
+  (:opt prescient-aggressive-file-save t)
+  (:require prescient)
+  (prescient-persist-mode +1))
+#+end_src
+
+** embark
+
+#+begin_src emacs-lisp :tangle init.el
+(setup embark
+  (:global
+   "C-." embark-act)
+  ;; (:opt embark-indicators
+  ;;       '(embark-highlight-indicator
+  ;;         embark-isearch-highlight-indicator
+  ;;         embark-minimal-indicator))
+
+  (add-to-list 'display-buffer-alist
+               '("\\*Embark Actions\\*"
+                 (display-buffer-in-side-window)
+                 (side . bottom)
+                 (slot . 0)
+                 (window-height . 0.5)))
+  )
+#+end_src
+
+*** embark-consult
+
+#+begin_src emacs-lisp :tangle init.el
+(setup embark-consult
+  (:load-after consult embark)
+  (:with-mode consult-preview-at-point-mode
+    (:hook embark-collect-mode)))
+#+end_src
+
 ** IME
 
 #+begin_src emacs-lisp :tangle init.el
@@ -512,6 +754,25 @@ see: https://github.com/meatcar/emacs.d?tab=readme-ov-file#fast-scroll
   (defun my/enable-skk-latin-mode ()
     (skk-latin-mode 1))
   (add-hook 'find-file-hook #'my/enable-skk-latin-mode))
+#+end_src
+
+*** ddskk-posframe
+
+#+begin_src emacs-lisp :tangle init.el
+(setup ddskk-posframe
+  (:load-after ddskk)
+  (:only-if is-darwin-window)
+  (ddskk-posframe-mode t))
+#+end_src
+
+** Move
+
+*** avy
+
+#+begin_src emacs-lisp :tangle init.el
+(setup avy
+  (:global "C-:" 'avy-goto-char
+           "C-'" 'avy-goto-char-2))
 #+end_src
 
 ** Highlight
@@ -667,6 +928,46 @@ see: https://github.com/meatcar/emacs.d?tab=readme-ov-file#fast-scroll
 #+begin_src emacs-lisp :tangle init.el
 #+end_src
 
+*** git-modes
+
+#+begin_src emacs-lisp :tangle init.el
+(setup git-modes)
+#+end_src
+
+*** git-gutter
+
+#+begin_src emacs-lisp :tangle init.el
+(setup git-gutter
+  (:when-loaded
+    (custom-set-variables
+     '(git-gutter:modified-sign " ")
+     '(git-gutter:added-sign " ")
+     '(git-gutter:deleted-sign " "))
+
+    (set-face-background 'git-gutter:modified "purple")
+    (set-face-background 'git-gutter:added "green")
+    (set-face-background 'git-gutter:deleted "red"))
+
+  (global-git-gutter-mode t))
+#+end_src
+
+*** blamer
+
+#+begin_src emacs-lisp :tangle init.el
+(setup blamer
+  (:face blamer-face ((t :foreground "#7a88cf"
+                         :background nil
+                         :height 120
+                         :italic t))))
+#+end_src
+
+*** git-timemachine
+
+
+#+begin_src emacs-lisp :tangle init.el
+(setup git-timemachine)
+#+end_src
+
 *** fill-column-indicator
 
 #+begin_src emacs-lisp :tangle init.el
@@ -803,6 +1104,280 @@ see: https://github.com/meatcar/emacs.d?tab=readme-ov-file#fast-scroll
 (setup org-modern-indent
   (:with-mode org-mode
     (:hook org-modern-indent-mode)))
+#+end_src
+
+*** markdown-mode
+
+#+begin_src emacs-lisp :tangle init.el
+(setup markdown-mode
+  (:file-match "\\.mdx\\'")
+  (:opt markdown-fontify-code-blocks-natively t))
+#+end_src
+
+** eldoc
+
+
+#+begin_src emacs-lisp :tangle init.el
+(setup eldoc
+  (:opt eldoc-echo-area-use-multiline-p nil)
+  (:global
+   "C-c q" toggle-eldoc-doc-buffer)
+  (defun get-buffer-by-regex (regex)
+    (car (seq-filter (lambda (buf)
+                       (string-match-p regex (buffer-name buf)))
+                     (buffer-list))))
+
+  (seq-filter (lambda (buf)
+                (string-match-p "^*scratch" (buffer-name buf)))
+              (buffer-list))
+
+  (setq eldoc-buffer-regex "^\\*eldoc\\( for [^*]+\\)\?\\*")
+
+  (add-to-list 'display-buffer-alist
+               `(,eldoc-buffer-regex
+                 display-buffer-at-bottom
+                 (window-height . 20)))
+
+  (defun my/eldoc-doc-buffer-active ()
+    (let* ((buffer (get-buffer-by-regex eldoc-buffer-regex))
+           (window (get-buffer-window buffer)))
+      (when window
+        (select-window window))))
+  (add-hook 'window-configuration-change-hook 'my/eldoc-doc-buffer-active)
+
+  (defun toggle-eldoc-doc-buffer (&optional interactive)
+    "Toggle the display of the eldoc documentation buffer."
+    (interactive '(t))
+    (let ((buffer (get-buffer-by-regex eldoc-buffer-regex)))
+      (if (and buffer (get-buffer-window buffer))
+          (delete-window (get-buffer-window buffer))
+        (eldoc-print-current-symbol-info interactive)))))
+#+end_src
+
+** Programming
+
+*** Tree Sitter
+
+#+begin_src emacs-lisp :tangle init.el
+(setup treesit-auto
+  (:opt treesit-auto-install t)
+  (:require treesit-auto)
+  (treesit-auto-add-to-auto-mode-alist 'all)
+  (global-treesit-auto-mode))
+#+end_src
+
+*** ligature
+
+#+begin_src emacs-lisp :tangle init.el
+(setup ligature
+  (setq ligature-symbols '("-->" "//" "/**" "/*" "*/" "<!--" ":=" "->>" "<<-" "->" "<-"
+                           "<=>" "==" "!=" "<=" ">=" "=:=" "!==" "&&" "||" "..." ".."
+                           "|||" "///" "&&&" "===" "++" "--" "=>" "|>" "<|" "||>" "<||"
+                           "|||>" "<|||" ">>" "<<" "::=" "|]" "[|" "{|" "|}"
+                           "[<" ">]" ":?>" ":?" "/=" "[||]" "!!" "?:" "?." "::"
+                           "+++" "??" "###" "##" ":::" "####" ".?" "?=" "=!=" "<|>"
+                           "<:" ":<" ":>" ">:" "<>" "***" ";;" "/==" ".=" ".-" "__"
+                           "=/=" "<-<" "<<<" ">>>" "<=<" "<<=" "<==" "<==>" "==>" "=>>"
+                           ">=>" ">>=" ">>-" ">-" "<~>" "-<" "-<<" "=<<" "---" "<-|"
+                           "<=|" "/\\" "\\/" "|=>" "|~>" "<~~" "<~" "~~" "~~>" "~>"
+                           "<$>" "<$" "$>" "<+>" "<+" "+>" "<*>" "<*" "*>" "</>" "</" "/>"
+                           "<->" "..<" "~=" "~-" "-~" "~@" "^=" "-|" "_|_" "|-" "||-"
+                           "|=" "||=" "#{" "#[" "]#" "#(" "#?" "#_" "#_(" "#:" "#!" "#="
+                           "&="))
+
+  (ligature-set-ligatures 't '("www"))
+  (ligature-set-ligatures 'prog-mode ligature-symbols)
+  (ligature-set-ligatures 'coq-goals-mode ligature-symbols)
+
+  (global-ligature-mode t))
+#+end_src
+
+*** editorconfig
+
+#+begin_src emacs-lisp :tangle init.el
+(setup editorconfig
+  (editorconfig-mode))
+#+end_src
+
+*** rainbow-mode
+
+#+begin_src emacs-lisp :tangle init.el
+(setup rainbow-mode
+  (:with-mode prog-mode
+    (:hook rainbow-mode)))
+#+end_src
+
+*** dap-mode
+
+#+begin_src emacs-lisp :tangle init.el
+(setup dap-mode
+  (:with-mode scala-mode
+    (:hook dap-mode
+           dap-ui-mode))
+  (dap-auto-configure-mode))
+#+end_src
+
+*** Emacs Lisp
+
+**** highlight-defined
+
+#+begin_src emacs-lisp :tangle init.el
+(setup highlight-defined
+  (:with-mode emacs-lisp-mode
+    (:hook highlight-defined-mode)))
+#+end_src
+
+**** highlight-quoted
+
+#+begin_src emacs-lisp :tangle init.el
+(setup highlight-quoted
+  (:with-mode emacs-lisp-mode
+    (:hook highlight-quoted-mode)))
+#+end_src
+
+*** Docker
+
+**** dockerfile-mode
+
+#+begin_src emacs-lisp :tangle init.el
+(setup dockerfile-mode)
+#+end_src
+
+*** YAML
+
+#+begin_src emacs-lisp :tangle init.el
+(setup yaml-mode)
+#+end_src
+
+*** Groovy
+
+#+begin_src emacs-lisp :tangle init.el
+(setup groovy-mode
+  (:with-mode groovy-mode
+    (:hook (lambda ()
+             (setq indent-tabs-mode t)
+             (setq tab-width 4)))))
+#+end_src
+
+*** Kotlin
+
+#+begin_src emacs-lisp :tangle init.el
+(setup kotlin-mode)
+#+end_src
+
+*** SCSS
+
+#+begin_src emacs-lisp :tangle init.el
+(setup scss-mode
+  (:opt css-indent-offset 2))
+#+end_src
+
+*** Scala
+
+**** scala-mode
+
+#+begin_src emacs-lisp :tangle init.el
+(setup scala-mode)
+#+end_src
+
+**** sbt-mode
+
+#+begin_src emacs-lisp :tangle init.el
+(setup sbt-mode
+  (:opt sbt:program-options '("-Dsbt.supershell=false"))
+  ;; WORKAROUND: https://github.com/ensime/emacs-sbt-mode/issues/31
+  ;; allows using SPACE when in the minibuffer
+  (substitute-key-definition
+   'minibuffer-complete-word
+   'self-insert-command
+   minibuffer-local-completion-map))
+#+end_src
+
+*** Golang
+
+#+begin_src emacs-lisp :tangle init.el
+(setup go-mode
+  (:with-mode go-mode
+    (:hook (lambda () (add-hook 'before-save-hook 'gofmt nil t))))
+  (:opt gofmt-command "gofmt"))
+#+end_src
+
+*** TypeScript
+
+#+begin_src emacs-lisp :tangle init.el
+(setup typescript-ts-mode
+  (:file-match "\\.ts\\'")
+  (:opt typescript-indent-level 2
+        typescript-tsx-indent-offset 2))
+
+(setup coverlay)
+
+(setup css-in-js-mode)
+
+(setup origami)
+
+(setup tsx-mode
+  (:load-after coverlay css-in-js-mode origami)
+  (:file-match "\\.[jt]s[x]?\\'"))
+#+end_src
+
+*** Coq
+
+#+begin_src emacs-lisp :tangle init.el
+(setup proof-general
+  (setq coq-prettify-symbols '(("forall" . "∀")
+                               ;; ("->"     . "→")
+                               ("exists" . "∃")
+                               ;; ("=>"     . "⇒")
+                               ("False"  . "⊥")
+                               ("True"   . "⊤")
+                               ("~"      . "¬")
+                               ("~~"     . "¬¬")
+                               ("~~~"    . "¬¬¬")))
+  (:with-mode coq-mode
+    (:hook (lambda ()
+             (setq prettify-symbols-alist coq-prettify-symbols)
+             (prettify-symbols-mode 1))))
+  (:with-mode coq-goals-mode
+    (:hook (lambda ()
+             (setq prettify-symbols-alist coq-prettify-symbols)
+             (prettify-symbols-mode 1)))))
+#+end_src
+
+*** Astro
+
+#+begin_src emacs-lisp :tangle init.el
+(setup web-mode
+  (define-derived-mode astro-mode web-mode "astro")
+  (setq auto-mode-alist
+        (append '((".*\\.astro\\'" . astro-mode))
+                auto-mode-alist)))
+#+end_src
+
+** System
+
+*** Window
+
+#+begin_src emacs-lisp :tangle init.el
+(setup simple
+  (:only-if is-darwin-window)
+  (add-hook 'window-setup-hook
+            (lambda ()
+              (set-frame-parameter nil 'fullscreen 'fullboth))))
+#+end_src
+
+*** Path
+
+
+#+begin_src emacs-lisp :tangle init.el
+(setup exec-path-from-shell
+  (:opt exec-path-from-shell-arguments (quote ("-l")))
+  (:require exec-path-from-shell)
+  (setenv "PATH" (concat (getenv "PATH") ":~/.volta/bin"))
+  (dolist (var '("SSH_AUTH_SOCK" "SSH_AGENT_PID" "GPG_AGENT_INFO" "LANG" "LC_CTYPE" "NIX_SSL_CERT_FILE" "NIX_PATH" "LSP_USE_PLISTS"))
+    (add-to-list 'exec-path-from-shell-variables var))
+
+  (exec-path-from-shell-initialize))
 #+end_src
 
 ** Finalization

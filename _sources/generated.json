@@ -103,6 +103,27 @@
         },
         "version": "501548c3d51f926c687e8cd838c5865ec45d03cc"
     },
+    "emacs-css-in-js-mode": {
+        "cargoLocks": null,
+        "date": "2024-06-13",
+        "extract": null,
+        "name": "emacs-css-in-js-mode",
+        "passthru": null,
+        "pinned": false,
+        "src": {
+            "deepClone": false,
+            "fetchSubmodules": false,
+            "leaveDotGit": false,
+            "name": null,
+            "owner": "orzechowskid",
+            "repo": "tree-sitter-css-in-js",
+            "rev": "42c61e232eadd05027c118497a04cd4acbe5d802",
+            "sha256": "sha256-9xyWD/zPGL4QOH/FffmGIHbOzJME8gPUfd7uQc2MTpg=",
+            "sparseCheckout": [],
+            "type": "github"
+        },
+        "version": "42c61e232eadd05027c118497a04cd4acbe5d802"
+    },
     "emacs-devil": {
         "cargoLocks": null,
         "date": "2024-01-29",
@@ -123,6 +144,26 @@
             "type": "github"
         },
         "version": "c2dc9fc2886471daff654e12b46a144a4d1361ae"
+    },
+    "emacs-flymake-popon": {
+        "cargoLocks": null,
+        "date": "2023-02-08",
+        "extract": null,
+        "name": "emacs-flymake-popon",
+        "passthru": null,
+        "pinned": false,
+        "src": {
+            "deepClone": false,
+            "fetchSubmodules": false,
+            "leaveDotGit": false,
+            "name": null,
+            "rev": "99ea813346f3edef7220d8f4faeed2ec69af6060",
+            "sha256": "sha256-YUyCP3WIjOAvaTP6d2G68mqwGwWdRqhoFMaJWai1WFI=",
+            "sparseCheckout": [],
+            "type": "git",
+            "url": "https://codeberg.org/akib/emacs-flymake-popon"
+        },
+        "version": "99ea813346f3edef7220d8f4faeed2ec69af6060"
     },
     "emacs-magit": {
         "cargoLocks": null,
@@ -332,6 +373,27 @@
             "url": "https://git.sr.ht/~pkal/setup"
         },
         "version": "992e7b49f0dbbd6979598902e67079fa9607febf"
+    },
+    "emacs-tsx-mode": {
+        "cargoLocks": null,
+        "date": "2024-09-25",
+        "extract": null,
+        "name": "emacs-tsx-mode",
+        "passthru": null,
+        "pinned": false,
+        "src": {
+            "deepClone": false,
+            "fetchSubmodules": false,
+            "leaveDotGit": false,
+            "name": null,
+            "owner": "orzechowskid",
+            "repo": "tsx-mode.el",
+            "rev": "fad8ca8161edacd274f0d48d09c50a9146941814",
+            "sha256": "sha256-xlXucnSzQrnSUaE6IXhgebPoDIVW0/IEINOFN+BlcxY=",
+            "sparseCheckout": [],
+            "type": "github"
+        },
+        "version": "fad8ca8161edacd274f0d48d09c50a9146941814"
     },
     "emacs-undohist": {
         "cargoLocks": null,

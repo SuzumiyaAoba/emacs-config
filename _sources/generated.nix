@@ -63,6 +63,18 @@
     };
     date = "2023-08-10";
   };
+  emacs-css-in-js-mode = {
+    pname = "emacs-css-in-js-mode";
+    version = "42c61e232eadd05027c118497a04cd4acbe5d802";
+    src = fetchFromGitHub {
+      owner = "orzechowskid";
+      repo = "tree-sitter-css-in-js";
+      rev = "42c61e232eadd05027c118497a04cd4acbe5d802";
+      fetchSubmodules = false;
+      sha256 = "sha256-9xyWD/zPGL4QOH/FffmGIHbOzJME8gPUfd7uQc2MTpg=";
+    };
+    date = "2024-06-13";
+  };
   emacs-devil = {
     pname = "emacs-devil";
     version = "c2dc9fc2886471daff654e12b46a144a4d1361ae";
@@ -74,6 +86,20 @@
       sha256 = "sha256-GMpVFZs2vugh5hAJkRVKw698pBkuGY+g/tWs3lPfR/A=";
     };
     date = "2024-01-29";
+  };
+  emacs-flymake-popon = {
+    pname = "emacs-flymake-popon";
+    version = "99ea813346f3edef7220d8f4faeed2ec69af6060";
+    src = fetchgit {
+      url = "https://codeberg.org/akib/emacs-flymake-popon";
+      rev = "99ea813346f3edef7220d8f4faeed2ec69af6060";
+      fetchSubmodules = false;
+      deepClone = false;
+      leaveDotGit = false;
+      sparseCheckout = [ ];
+      sha256 = "sha256-YUyCP3WIjOAvaTP6d2G68mqwGwWdRqhoFMaJWai1WFI=";
+    };
+    date = "2023-02-08";
   };
   emacs-magit = {
     pname = "emacs-magit";
@@ -196,6 +222,18 @@
       sha256 = "sha256-cIIPrzQvQjBekM5YJcWUYDIp1xV/YBEKm5txdASl4qY=";
     };
     date = "2024-12-24";
+  };
+  emacs-tsx-mode = {
+    pname = "emacs-tsx-mode";
+    version = "fad8ca8161edacd274f0d48d09c50a9146941814";
+    src = fetchFromGitHub {
+      owner = "orzechowskid";
+      repo = "tsx-mode.el";
+      rev = "fad8ca8161edacd274f0d48d09c50a9146941814";
+      fetchSubmodules = false;
+      sha256 = "sha256-xlXucnSzQrnSUaE6IXhgebPoDIVW0/IEINOFN+BlcxY=";
+    };
+    date = "2024-09-25";
   };
   emacs-undohist = {
     pname = "emacs-undohist";

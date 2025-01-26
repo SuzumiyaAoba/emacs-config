@@ -15,10 +15,11 @@ epkgs: with epkgs; [
   corfu
   corfu-prescient
   corfu-terminal
+  css-in-js-mode
   dap-mode
   ddskk
   ddskk-posframe
-  # devil
+  devil
   dimmer
   dockerfile-mode
   editorconfig
@@ -78,6 +79,7 @@ epkgs: with epkgs; [
   treemacs-projectile
   treemacs-tab-bar
   treesit-auto
+  tsx-mode
   coverlay
   undohist
   valign

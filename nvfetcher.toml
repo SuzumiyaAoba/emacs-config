@@ -23,10 +23,25 @@ src.git = "https://codeberg.org/akib/emacs-corfu-terminal"
 src.branch = "master"
 fetch.git = "https://codeberg.org/akib/emacs-corfu-terminal"
 
+[emacs-css-in-js-mode]
+src.git = "https://github.com/orzechowskid/tree-sitter-css-in-js"
+src.branch = "main"
+fetch.github = "orzechowskid/tree-sitter-css-in-js"
+
+[emacs-tsx-mode]
+src.git = "https://github.com/orzechowskid/tsx-mode.el"
+src.branch = "main"
+fetch.github = "orzechowskid/tsx-mode.el"
+
 [emacs-devil]
 src.git = "https://github.com/susam/devil"
 src.branch = "main"
 fetch.github = "susam/devil"
+
+[emacs-flymake-popon]
+src.git = "https://codeberg.org/akib/emacs-flymake-popon"
+src.branch = "master"
+fetch.git = "https://codeberg.org/akib/emacs-flymake-popon"
 
 [emacs-magit]
 src.git = "https://github.com/magit/magit"
