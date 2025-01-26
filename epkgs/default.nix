@@ -14,6 +14,7 @@ epkgs
   modus-themes = import ./packages/modus-themes.nix { inherit epkgs sources; };
   nerd-icons-dired = import ./packages/nerd-icons-dired.nix { inherit epkgs sources; };
   nix-mode = import ./packages/nix-mode.nix { inherit epkgs sources; };
+  org-modern-indent = import ./packages/org-modern-indent.nix { inherit epkgs sources; };
   projectile = import ./packages/projectile.nix { inherit epkgs sources; };
   ripgrep = import ./packages/ripgrep.nix { inherit epkgs sources; };
   setup = import ./packages/setup.nix { inherit epkgs sources; };

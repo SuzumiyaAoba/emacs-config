@@ -561,7 +561,46 @@ The expansion is a string indicating the package has been disabled."
 )
 #+end_src
 
+**** org-modern
+
 #+begin_src emacs-lisp :tangle init.el
+(setup org-modern
+  (:with-mode org-mode
+    (:hook org-modern-mode))
+  (:opt ;; org-modern-hide-stars 'leading
+        org-modern-table nil
+        org-modern-hide-stars nil
+        org-modern-timestamp '(" %Y年%m月%d日(%a) " . " %H時%M分 ")
+        org-modern-star 'replace
+        org-modern-replace-stars
+        (list #("󰎥" 0 1 (face (:family "Symbols Nerd Font Mono" :height 1.0) font-lock-face (:family "Symbols Nerd Font Mono" :height 1.0) display (raise 0.0) rear-nonsticky t))
+              #("󰎨" 0 1 (face (:family "Symbols Nerd Font Mono" :height 1.0) font-lock-face (:family "Symbols Nerd Font Mono" :height 1.0) display (raise 0.0) rear-nonsticky t))
+              #("󰎫" 0 1 (face (:family "Symbols Nerd Font Mono" :height 1.0) font-lock-face (:family "Symbols Nerd Font Mono" :height 1.0) display (raise 0.0) rear-nonsticky t))
+              #("󰎲" 0 1 (face (:family "Symbols Nerd Font Mono" :height 1.0) font-lock-face (:family "Symbols Nerd Font Mono" :height 1.0) display (raise 0.0) rear-nonsticky t))
+              #("󰎯" 0 1 (face (:family "Symbols Nerd Font Mono" :height 1.0) font-lock-face (:family "Symbols Nerd Font Mono" :height 1.0) display (raise 0.0) rear-nonsticky t))
+              #("󰎴" 0 1 (face (:family "Symbols Nerd Font Mono" :height 1.0) font-lock-face (:family "Symbols Nerd Font Mono" :height 1.0) display (raise 0.0) rear-nonsticky t))
+              #("󰎷" 0 1 (face (:family "Symbols Nerd Font Mono" :height 1.0) font-lock-face (:family "Symbols Nerd Font Mono" :height 1.0) display (raise 0.0) rear-nonsticky t))
+              ))
+  (let ((comment-color (face-attribute 'font-lock-comment-face :foreground)))
+    (custom-theme-set-faces
+     'user
+     `(org-quote ((t (:inherit org-block :slant italic :foreground ,comment-color))))))
+
+  (:when-loaded
+    (set-face-attribute 'org-table nil :inherit 'fixed-pitch))
+
+  (setq org-ditaa-jar-path "~/.nix-profile/lib/ditaa.jar")
+  (org-babel-do-load-languages
+   'org-babel-load-languages
+   '((ditaa . t))))
+#+end_src
+
+**** org-modern-indent
+
+#+begin_src emacs-lisp :tangle init.el
+(setup org-modern-indent
+  (:with-mode org-mode
+    (:hook org-modern-indent-mode)))
 #+end_src
 
 ** Finalization

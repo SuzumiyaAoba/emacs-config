@@ -250,6 +250,27 @@
         },
         "version": "411051c3257d60f0492cf88065193bb443b6ca0d"
     },
+    "emacs-org-modern-indent": {
+        "cargoLocks": null,
+        "date": "2024-12-16",
+        "extract": null,
+        "name": "emacs-org-modern-indent",
+        "passthru": null,
+        "pinned": false,
+        "src": {
+            "deepClone": false,
+            "fetchSubmodules": false,
+            "leaveDotGit": false,
+            "name": null,
+            "owner": "jdtsmith",
+            "repo": "org-modern-indent",
+            "rev": "52b46c6ecd63e627ab5bfb83c580b51f68a23774",
+            "sha256": "sha256-9aaaPGCvt51FknRKB5zT8AdHjhH/sQMc1IyQS3KnJsU=",
+            "sparseCheckout": [],
+            "type": "github"
+        },
+        "version": "52b46c6ecd63e627ab5bfb83c580b51f68a23774"
+    },
     "emacs-projectile": {
         "cargoLocks": null,
         "date": "2025-01-24",

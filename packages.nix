@@ -57,7 +57,7 @@ epkgs: with epkgs; [
   orderless
   org
   org-modern
-  # org-modern-indent
+  org-modern-indent
   origami
   prescient
   projectile

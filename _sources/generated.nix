@@ -147,6 +147,18 @@
     };
     date = "2025-01-01";
   };
+  emacs-org-modern-indent = {
+    pname = "emacs-org-modern-indent";
+    version = "52b46c6ecd63e627ab5bfb83c580b51f68a23774";
+    src = fetchFromGitHub {
+      owner = "jdtsmith";
+      repo = "org-modern-indent";
+      rev = "52b46c6ecd63e627ab5bfb83c580b51f68a23774";
+      fetchSubmodules = false;
+      sha256 = "sha256-9aaaPGCvt51FknRKB5zT8AdHjhH/sQMc1IyQS3KnJsU=";
+    };
+    date = "2024-12-16";
+  };
   emacs-projectile = {
     pname = "emacs-projectile";
     version = "36763dde3bc70d3e43ff2f8e61c783a8ff0f8532";

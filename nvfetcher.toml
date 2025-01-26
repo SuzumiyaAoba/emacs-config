@@ -58,6 +58,11 @@ src.git = "https://github.com/oantolin/orderless"
 src.branch = "master"
 fetch.github = "oantolin/orderless"
 
+[emacs-org-modern-indent]
+src.git = "https://github.com/jdtsmith/org-modern-indent"
+src.branch = "main"
+fetch.github = "jdtsmith/org-modern-indent"
+
 [emacs-projectile]
 src.git = "https://github.com/bbatsov/projectile"
 src.branch = "master"
