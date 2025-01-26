@@ -306,6 +306,13 @@ see: https://github.com/meatcar/emacs.d?tab=readme-ov-file#fast-scroll
   (minions-mode))
 #+end_src
 
+*** svg-tab-mode
+
+#+begin_src emacs-lisp :tagnle init.el
+(setup svg-tag-mode
+  (global-svg-tag-mode))
+#+end_src
+
 ** Languages & Encoding
 
 #+begin_src emacs-lisp :tangle init.el
