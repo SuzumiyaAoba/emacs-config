@@ -451,6 +451,16 @@ The expansion is a string indicating the package has been disabled."
   (marginalia-mode t))
 #+end_src
 
+*** nerd-icons-completion
+
+#+begin_src emacs-lisp :tangle init.el
+(setup nerd-icons-completion
+  (:load-after marginalia)
+  (:when-loaded
+    (add-hook 'marginalia-mode-hook #'nerd-icons-completion-marginalia-setup)
+    (nerd-icons-completion-mode)))
+#+end_src
+
 ** IME
 
 #+begin_src emacs-lisp :tangle init.el
