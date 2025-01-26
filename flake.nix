@@ -20,7 +20,13 @@
       system:
       let
         overlays = [ emacs-overlay.overlay ];
-        pkgs = import nixpkgs { inherit system overlays; };
+        pkgs = import nixpkgs {
+          inherit system overlays;
+
+          config = {
+            allowUnfree = true;
+          };
+        };
         initDirectory = "$HOME/.local/share/emacs/SuzumiyaAoba";
 
         # Emacsパッケージを設定
