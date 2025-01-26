@@ -480,12 +480,101 @@ The expansion is a string indicating the package has been disabled."
   (add-hook 'find-file-hook #'my/enable-skk-latin-mode))
 #+end_src
 
+** Highlight
+
+*** highlight-symbol
+
+#+begin_src emacs-lisp :tangle init.el
+(setup highlight-symbol
+  (:with-mode prog-mode
+    (:hook highlight-symbol-mode)))
+#+end_src
+
+*** volatile-highlights
+
+#+begin_src emacs-lisp :tangle init.el
+(setup volatile-highlights
+  (:when-loaded
+    (set-face-attribute
+     'vhl/default-face nil :foreground "#FF3333" :background "#FFCDCD")
+
+    (vhl/define-extension 'undo-tree 'undo-tree-yank 'undo-tree-mode)
+    (vhl/install-extension 'undo-tree))
+
+  (volatile-highlights-mode t))
+#+end_src
+
+*** dimmer
+
+#+begin_src emacs-lisp :tangle init.el
+(setup dimmer
+  (:opt dimmer-fraction 0.05
+        dimmer-adjustment-mode :background
+        dimmer-use-colorspace :rgb
+        dimmer-watch-frame-focus-events nil
+        dimmer-exclusion-regexp-list '(".*Minibuf.*"
+                                       ".*which-key.*"
+                                       ".*NeoTree.*"
+                                       ".*Messages.*"
+                                       ".*Async.*"
+                                       ".*Warnings.*"
+                                       ".*LV.*"
+                                       ".*Ilist.*"))
+  (:require dimmer)
+
+  ;; corfu に対応する。
+  ;; https://github.com/gonewest818/dimmer.el/issues/62
+  (defun advise-dimmer-config-change-handler ()
+    "Advise to only force process if no predicate is truthy."
+    (let ((ignore (cl-some (lambda (f) (and (fboundp f) (funcall f)))
+                           dimmer-prevent-dimming-predicates)))
+      (unless ignore
+        (when (fboundp 'dimmer-process-all)
+          (dimmer-process-all t)))))
+
+  (defun corfu-frame-p ()
+    "Check if the buffer is a corfu frame buffer."
+    (string-match-p "\\` \\*corfu" (buffer-name)))
+
+  (defun dimmer-configure-corfu ()
+    "Convenience settings for corfu users."
+    (add-to-list
+     'dimmer-prevent-dimming-predicates
+     #'corfu-frame-p))
+
+  (advice-add
+   'dimmer-config-change-handler
+   :override 'advise-dimmer-config-change-handler)
+
+  ;; https://github.com/gonewest818/dimmer.el/issues/49#issuecomment-804500887
+  (defun dimmer-lsp-ui-doc-p ()
+    (string-prefix-p " *lsp-ui-doc-" (buffer-name)))
+  (add-to-list 'dimmer-prevent-dimming-predicates #'dimmer-lsp-ui-doc-p)
+
+  (defun advices/dimmer-config-change-handler ()
+    (dimmer--dbg-buffers 1 "dimmer-config-change-handler")
+    (let ((ignore (cl-some (lambda (f) (and (fboundp f) (funcall f)))
+                         dimmer-prevent-dimming-predicates)))
+      (dimmer-process-all (not ignore))))
+  (advice-add 'dimmer-config-change-handler :override #'advices/dimmer-config-change-handler)
+
+  (dimmer-configure-corfu)
+
+  (dimmer-configure-which-key)
+  (dimmer-configure-magit)
+  (dimmer-configure-org)
+  (dimmer-configure-posframe)
+
+  (dimmer-mode t))
+#+end_src
+
 ** Project
 
 *** projectile
 
 #+begin_src emacs-lisp :tangle init.el
 (setup projectile
+  (:opt projectile-generic-dommand "fd . -0 --type f --color=never")
   (:with-map projectile-mode-map
     (:bind
       "C-c p" projectile-command-map))
