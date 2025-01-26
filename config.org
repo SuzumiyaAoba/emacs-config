@@ -492,6 +492,51 @@ The expansion is a string indicating the package has been disabled."
   (projectile-mode +1))
 #+end_src
 
+*** treemacs
+
+#+begin_src emacs-lisp :tangle init.el
+(setup treemacs
+  (:global "C-\\" treemacs)
+  (:opt treemacs-user-mode-line-format 'none)
+  (:when-loaded
+    (treemacs-fringe-indicator-mode t)
+    (treemacs-filewatch-mode t)
+    (treemacs-git-commit-diff-mode t)
+    (treemacs-git-mode 'deferred)))
+#+end_src
+
+**** treemacs-nerd-icons
+
+#+begin_src emacs-lisp :tangle init.el
+(setup treemacs-nerd-icons
+  (:load-after treemacs)
+  (:require treemacs-nerd-icons)
+  (:when-loaded (treemacs-load-theme "nerd-icons")))
+#+end_src
+
+**** treemacs-projectile
+
+#+begin_src emacs-lisp :tangle init.el
+(setup treemacs-projectile
+  (:load-after treemacs projectile)
+  (treemacs-project-follow-mode t))
+#+end_src
+
+**** treemacs-magit
+
+#+begin_src emacs-lisp :tangle init.el
+(setup treemacs-magit
+  (:load-after treemacs))
+#+end_src
+
+**** treemacs-tab-bar
+
+#+begin_src emacs-lisp :tangle init.el
+(setup treemacs-tab-bar
+  (:load-after treemacs)
+  (:opt treemacs-set-scope-type 'Tabs))
+#+end_src
+
 ** Git
 
 *** magit
