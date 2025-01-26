@@ -444,6 +444,13 @@ The expansion is a string indicating the package has been disabled."
                                                       "Completion of multiple components, in any order."))))
 #+end_src
 
+*** marginalia
+
+#+begin_src emacs-lisp :tangle init.el
+(setup marginalia
+  (marginalia-mode t))
+#+end_src
+
 ** IME
 
 #+begin_src emacs-lisp :tangle init.el
