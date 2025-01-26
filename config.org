@@ -29,8 +29,8 @@
 ** Fonts
 
 #+begin_src emacs-lisp :tangle early-init.el
-(set-face-attribute 'default nil :family "Cascadia Next JP" :height 140)
-(set-face-attribute 'default nil :family "Cascadia Code NF" :height 140)
+(set-face-attribute 'default nil :family "Cascadia Next JP" :height 160)
+(set-face-attribute 'default nil :family "Cascadia Code NF" :height 160)
 #+end_src
 
 * init.el
@@ -542,6 +542,14 @@ The expansion is a string indicating the package has been disabled."
 *** magit
 
 #+begin_src emacs-lisp :tangle init.el
+#+end_src
+
+*** fill-column-indicator
+
+#+begin_src emacs-lisp :tangle init.el
+(setup fill-column-indicator
+  (:with-mode git-commit-mode
+    (:hook fci-mode)))
 #+end_src
 
 ** Documents
