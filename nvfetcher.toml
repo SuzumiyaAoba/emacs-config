@@ -13,6 +13,11 @@ src.git = "https://github.com/tomoya/consult-ghq"
 src.branch = "main"
 fetch.github = "tomoya/consult-ghq"
 
+[emacs-copilot]
+src.git = "https://github.com/copilot-emacs/copilot.el"
+src.branch = "main"
+fetch.github = "copilot-emacs/copilot.el"
+
 [emacs-corfu]
 src.git = "https://github.com/minad/corfu"
 src.branch = "main"
