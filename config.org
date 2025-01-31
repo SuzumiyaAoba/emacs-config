@@ -1354,6 +1354,12 @@ see: https://github.com/meatcar/emacs.d?tab=readme-ov-file#fast-scroll
                 auto-mode-alist)))
 #+end_src
 
+*** nginx-mode
+
+#+begin_src emacs-lisp :tangle init.el
+(setup nginx-mode)
+#+end_src
+
 ** AI
 
 *** copilot

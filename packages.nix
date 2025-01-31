@@ -54,6 +54,7 @@ epkgs: with epkgs; [
   nerd-icons-corfu
   nerd-icons-completion
   nerd-icons-dired
+  nginx-mode
   nix-mode
   orderless
   org
