@@ -279,7 +279,12 @@ see: https://github.com/meatcar/emacs.d?tab=readme-ov-file#fast-scroll
           (string green-warmer)
           ;; (keyword cyan-cooler)
           ))
-  (load-theme 'modus-vivendi-tritanopia t))
+
+  (load-theme 'modus-operandi-tinted t)
+  ;; (load-theme 'modus-vivendi-tritanopia t)
+  ;; (load-theme 'modus-operandi-deuteranopia t)
+  ;; (load-theme 'modus-operandi-tritanopia t)
+  )
 #+end_src
 
 *** Modeline
