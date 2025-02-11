@@ -23,6 +23,9 @@ epkgs: with epkgs; [
   dimmer
   dockerfile-mode
   editorconfig
+  eglot
+  eglot-booster
+  eldoc-box
   ellama
   embark
   embark-consult

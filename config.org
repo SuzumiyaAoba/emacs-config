@@ -807,7 +807,8 @@ see: https://github.com/meatcar/emacs.d?tab=readme-ov-file#fast-scroll
 *** dimmer
 
 #+begin_src emacs-lisp :tangle init.el
-(setup dimmer
+(-setup dimmer
+  :disabled
   (:opt dimmer-fraction 0.05
         dimmer-adjustment-mode :background
         dimmer-use-colorspace :rgb
@@ -819,7 +820,8 @@ see: https://github.com/meatcar/emacs.d?tab=readme-ov-file#fast-scroll
                                        ".*Async.*"
                                        ".*Warnings.*"
                                        ".*LV.*"
-                                       ".*Ilist.*"))
+                                       ".*Ilist.*"
+))
   (:require dimmer)
 
   ;; corfu に対応する。
@@ -1126,7 +1128,9 @@ see: https://github.com/meatcar/emacs.d?tab=readme-ov-file#fast-scroll
 (setup eldoc
   (:opt eldoc-echo-area-use-multiline-p nil)
   (:global
-   "C-c q" toggle-eldoc-doc-buffer)
+   ;; "C-c q" toggle-eldoc-doc-buffer
+   "C-c q" eldoc-box-help-at-point
+   )
   (defun get-buffer-by-regex (regex)
     (car (seq-filter (lambda (buf)
                        (string-match-p regex (buffer-name buf)))
@@ -1160,6 +1164,14 @@ see: https://github.com/meatcar/emacs.d?tab=readme-ov-file#fast-scroll
 #+end_src
 
 ** Programming
+
+*** eglot
+
+#+begin_src emacs-lisp :tangle init.el
+(setup eglot-booster
+  (:load-after eglot)
+  (eglot-booster-mode))
+#+end_src
 
 *** Tree Sitter
 

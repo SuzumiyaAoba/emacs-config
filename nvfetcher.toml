@@ -33,10 +33,10 @@ src.git = "https://github.com/orzechowskid/tree-sitter-css-in-js"
 src.branch = "main"
 fetch.github = "orzechowskid/tree-sitter-css-in-js"
 
-[emacs-tsx-mode]
-src.git = "https://github.com/orzechowskid/tsx-mode.el"
+[emacs-eglot-booster]
+src.git = "https://github.com/jdtsmith/eglot-booster"
 src.branch = "main"
-fetch.github = "orzechowskid/tsx-mode.el"
+fetch.github = "jdtsmith/eglot-booster"
 
 [emacs-devil]
 src.git = "https://github.com/susam/devil"
@@ -97,6 +97,11 @@ fetch.github = "dajva/rg.el"
 src.git = "https://git.sr.ht/~pkal/setup"
 src.branch = "master"
 fetch.git = "https://git.sr.ht/~pkal/setup"
+
+[emacs-tsx-mode]
+src.git = "https://github.com/orzechowskid/tsx-mode.el"
+src.branch = "main"
+fetch.github = "orzechowskid/tsx-mode.el"
 
 [emacs-undohist]
 src.git = "https://github.com/emacsorphanage/undohist"

@@ -8,8 +8,8 @@ let
   corfu = import ./packages/corfu.nix { inherit epkgs sources; };
   corfu-terminal = import ./packages/corfu-terminal.nix { inherit epkgs sources; };
   css-in-js-mode = import ./packages/css-in-js-mode.nix { inherit epkgs sources; };
+  eglot-booster = import ./packages/eglot-booster.nix { inherit epkgs sources; };
   flymake-popon = import ./packages/flymake-popon.nix { inherit epkgs sources; };
-  magit = import ./packages/magit.nix { inherit epkgs pkgs sources; };
   modus-themes = import ./packages/modus-themes.nix { inherit epkgs sources; };
   nerd-icons-dired = import ./packages/nerd-icons-dired.nix { inherit epkgs sources; };
   nix-mode = import ./packages/nix-mode.nix { inherit epkgs sources; };
@@ -30,8 +30,8 @@ epkgs
     corfu
     corfu-terminal
     css-in-js-mode
+    eglot-booster
     flymake-popon
-    magit
     modus-themes
     nerd-icons-dired
     nix-mode
