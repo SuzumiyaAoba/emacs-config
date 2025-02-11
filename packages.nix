@@ -9,6 +9,7 @@ epkgs: with epkgs; [
   cargo-mode
   centaur-tabs
   consult
+  consult-eglot
   consult-ghq
   consult-projectile
   copilot
@@ -26,6 +27,8 @@ epkgs: with epkgs; [
   eglot
   eglot-booster
   eldoc-box
+  eglot-signature-eldoc-talkative
+  eglot-x
   ellama
   embark
   embark-consult

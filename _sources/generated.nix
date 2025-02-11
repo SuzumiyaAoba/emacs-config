@@ -111,6 +111,18 @@
     };
     date = "2024-10-29";
   };
+  emacs-eglot-x = {
+    pname = "emacs-eglot-x";
+    version = "82c315c052e5a08c5307df4a4624049ee0e219e8";
+    src = fetchFromGitHub {
+      owner = "nemethf";
+      repo = "eglot-x";
+      rev = "82c315c052e5a08c5307df4a4624049ee0e219e8";
+      fetchSubmodules = false;
+      sha256 = "sha256-ceyUan/hyguChyhITSYgc5lXhoeLaDM+if3bLbqSMoo=";
+    };
+    date = "2025-01-22";
+  };
   emacs-flymake-popon = {
     pname = "emacs-flymake-popon";
     version = "99ea813346f3edef7220d8f4faeed2ec69af6060";
@@ -127,15 +139,15 @@
   };
   emacs-magit = {
     pname = "emacs-magit";
-    version = "ae5f8b0b03773d00f2fd8034af106428b31cb8a4";
+    version = "7116d0572765ab4ca79084e16536fa54f5cffdfd";
     src = fetchFromGitHub {
       owner = "magit";
       repo = "magit";
-      rev = "ae5f8b0b03773d00f2fd8034af106428b31cb8a4";
+      rev = "7116d0572765ab4ca79084e16536fa54f5cffdfd";
       fetchSubmodules = false;
-      sha256 = "sha256-BSpxpG2G+zwU65qAA8Ac8p+nUkSuYpMs68IsuLYrrRI=";
+      sha256 = "sha256-Dghs4cXWiNwituYurMlrsb1zcOPuTBUkAlk4ddSwUbY=";
     };
-    date = "2025-02-10";
+    date = "2025-02-11";
   };
   emacs-modus-themes = {
     pname = "emacs-modus-themes";

@@ -1129,7 +1129,7 @@ see: https://github.com/meatcar/emacs.d?tab=readme-ov-file#fast-scroll
   (:opt eldoc-echo-area-use-multiline-p nil)
   (:global
    ;; "C-c q" toggle-eldoc-doc-buffer
-   "C-c q" eldoc-box-help-at-point
+   "C-c q" eldoc-box-hover-at-point-mode
    )
   (defun get-buffer-by-regex (regex)
     (car (seq-filter (lambda (buf)
@@ -1171,6 +1171,24 @@ see: https://github.com/meatcar/emacs.d?tab=readme-ov-file#fast-scroll
 (setup eglot-booster
   (:load-after eglot)
   (eglot-booster-mode))
+
+(setup eglot-signature-eldoc-talkative
+  (:load-after eglot)
+  (require 'eglot-signature-eldoc-talkative)
+  (advice-add #'eglot-signature-eldoc-function
+              :override #'eglot-signature-eldoc-talkative))
+
+(setup eglot-x
+  (:load-after eglot)
+  (:with-map eglot-mode-map
+    (:bind "s-." eglot-x-find-refs))
+  (require 'eglot-x)
+  (eglot-x-setup))
+
+(setup consult-eglot
+  (:load-after eglot)
+  (:with-map eglot-mode-map
+    (:bind "C-c s" consult-eglot-symbols)))
 #+end_src
 
 *** Tree Sitter

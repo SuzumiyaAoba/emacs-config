@@ -38,6 +38,11 @@ src.git = "https://github.com/jdtsmith/eglot-booster"
 src.branch = "main"
 fetch.github = "jdtsmith/eglot-booster"
 
+[emacs-eglot-x]
+src.git = "https://github.com/nemethf/eglot-x"
+src.branch = "master"
+fetch.github = "nemethf/eglot-x"
+
 [emacs-devil]
 src.git = "https://github.com/susam/devil"
 src.branch = "main"

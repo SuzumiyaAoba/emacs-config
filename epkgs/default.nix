@@ -9,6 +9,7 @@ let
   corfu-terminal = import ./packages/corfu-terminal.nix { inherit epkgs sources; };
   css-in-js-mode = import ./packages/css-in-js-mode.nix { inherit epkgs sources; };
   eglot-booster = import ./packages/eglot-booster.nix { inherit epkgs sources; };
+  eglot-x = import ./packages/eglot-x.nix { inherit epkgs sources; };
   flymake-popon = import ./packages/flymake-popon.nix { inherit epkgs sources; };
   modus-themes = import ./packages/modus-themes.nix { inherit epkgs sources; };
   nerd-icons-dired = import ./packages/nerd-icons-dired.nix { inherit epkgs sources; };
@@ -31,6 +32,7 @@ epkgs
     corfu-terminal
     css-in-js-mode
     eglot-booster
+    eglot-x
     flymake-popon
     modus-themes
     nerd-icons-dired
