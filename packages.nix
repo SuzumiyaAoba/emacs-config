@@ -94,5 +94,6 @@ epkgs: with epkgs; [
   vertico-prescient
   volatile-highlights
   vundo
+  web-mode
   yaml-mode
 ]
