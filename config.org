@@ -1406,6 +1406,17 @@ see: https://github.com/meatcar/emacs.d?tab=readme-ov-file#fast-scroll
     (:bind "TAB" copilot-accept-completion)))
 #+end_src
 
+*** ellama
+
+#+begin_src emacs-lisp :tangle init.el
+(setup ellama
+  (:opt ellama-language "Japanese"
+        ellama-naming-scheme 'ellama-generate-name-by-llm
+        ellama-provider (make-llm-ollama
+                         :chat-model "deepseek-r1:70b"
+                         :embedding-model "deepseek-r1:70b")))
+#+end_src
+
 ** System
 
 *** Window

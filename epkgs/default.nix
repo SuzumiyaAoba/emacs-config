@@ -18,6 +18,7 @@ let
   projectile = import ./packages/projectile.nix { inherit epkgs sources; };
   ripgrep = import ./packages/ripgrep.nix { inherit epkgs sources; };
   setup = import ./packages/setup.nix { inherit epkgs sources; };
+  scss-mode = import ./packages/scss-mode.nix { inherit epkgs sources; };
   tsx-mode = import ./packages/tsx-mode.nix { inherit epkgs sources css-in-js-mode; };
   undohist = import ./packages/undohist.nix { inherit epkgs sources; };
   # vertico = import ./packages/vertico.nix { inherit epkgs sources; };
@@ -41,6 +42,7 @@ epkgs
     projectile
     ripgrep
     setup
+    scss-mode
     tsx-mode
     undohist
     # vertico

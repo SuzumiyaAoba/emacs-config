@@ -103,6 +103,11 @@ src.git = "https://git.sr.ht/~pkal/setup"
 src.branch = "master"
 fetch.git = "https://git.sr.ht/~pkal/setup"
 
+[emacs-scss-mode]
+src.git = "https://github.com/takeokunn/scss-mode"
+src.branch = "takeokunn-patch-1"
+fetch.github = "takeokunn/scss-mode"
+
 [emacs-tsx-mode]
 src.git = "https://github.com/orzechowskid/tsx-mode.el"
 src.branch = "main"
