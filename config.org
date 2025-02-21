@@ -1341,7 +1341,7 @@ see: https://github.com/meatcar/emacs.d?tab=readme-ov-file#fast-scroll
 
 #+begin_src emacs-lisp :tangle init.el
 (setup typescript-ts-mode
-  (:file-match "\\.ts\\'")
+  (:file-match "\\.m?ts\\'")
   (:opt typescript-indent-level 2
         typescript-tsx-indent-offset 2))
 
