@@ -86,6 +86,7 @@ epkgs: with epkgs; [
   treemacs-projectile
   treemacs-tab-bar
   treesit-auto
+  treesit-fold
   tsx-mode
   coverlay
   undohist
