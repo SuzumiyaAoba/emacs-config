@@ -29,8 +29,8 @@
 ** Fonts
 
 #+begin_src emacs-lisp :tangle early-init.el
-(set-face-attribute 'default nil :family "Cascadia Next JP" :height 160)
-(set-face-attribute 'default nil :family "Cascadia Code NF" :height 160)
+(set-face-attribute 'default nil :family "Cascadia Next JP" :height 145)
+(set-face-attribute 'default nil :family "Cascadia Code NF" :height 145)
 #+end_src
 
 * init.el
