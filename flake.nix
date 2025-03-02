@@ -83,10 +83,15 @@
             exec ${emacsPackage}/bin/emacsclient --alternate-editor ${emacsPackage}/bin/emacs "$@"
           fi
         '';
+
+        clientScript = pkgs.writeShellScript "emacsclient" ''
+          exec ${emacsPackage}/bin/emacsclient
+        '';
       in
       {
         packages.default = wrappedEmacs;
         packages.emacseditor = editorScript;
+        packages.emacsclient = clientScript;
 
         allowUnfree = true;
 
