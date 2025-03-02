@@ -84,7 +84,7 @@
           fi
         '';
 
-        clientScript = pkgs.writeShellScript "emacsclient" ''
+        clientScript = pkgs.writeShellScriptBin "emacsclient" ''
           exec ${emacsPackage}/bin/emacsclient
         '';
       in
