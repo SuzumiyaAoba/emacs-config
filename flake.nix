@@ -75,9 +75,18 @@
             --init-directory="${initDirectory}" \
             "$@"
         '';
+
+        editorScript = pkgs.writeShellScriptBin "emacseditor" ''
+          if [ -z "$1" ]; then
+            exec ${emacsPackage}/bin/emacsclient --create-frame --alternate-editor ${emacsPackage}/bin/emacs
+          else
+            exec ${emacsPackage}/bin/emacsclient --alternate-editor ${emacsPackage}/bin/emacs "$@"
+          fi
+        '';
       in
       {
         packages.default = wrappedEmacs;
+        packages.emacsclient = editorScript;
 
         allowUnfree = true;
 
@@ -90,13 +99,6 @@
             ''
           );
         };
-
-        apps.emacsclient = flake-utils.lib.mkApp {
-          drv = pkgs.emacs;
-          exePath = "/bin/emacsclient";
-        };
-
-        apps.default = self.apps.${system}.emacsclient;
       }
     );
 }
