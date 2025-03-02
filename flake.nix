@@ -10,6 +10,7 @@
 
   outputs =
     {
+      self,
       nixpkgs,
       flake-utils,
       emacs-overlay,
@@ -89,6 +90,13 @@
             ''
           );
         };
+
+        apps.emacsclient = flake-utils.lib.mkApp {
+          drv = pkgs.emacs;
+          exePath = "/bin/emacsclient";
+        };
+
+        apps.default = self.apps.${system}.emacsclient;
       }
     );
 }
