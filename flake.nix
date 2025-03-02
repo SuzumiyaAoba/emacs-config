@@ -86,7 +86,7 @@
       in
       {
         packages.default = wrappedEmacs;
-        packages.emacsclient = editorScript;
+        packages.emacseditor = editorScript;
 
         allowUnfree = true;
 
