@@ -2,5 +2,5 @@
 epkgs.melpaBuild {
   pname = "undohist";
   src = sources.emacs-undohist.src;
-  version = "0.3.0";
+  version = "20240925.754";
 }

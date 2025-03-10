@@ -22,7 +22,7 @@
     },
     "emacs-consult": {
         "cargoLocks": null,
-        "date": "2025-02-16",
+        "date": "2025-03-07",
         "extract": null,
         "name": "emacs-consult",
         "passthru": null,
@@ -34,12 +34,12 @@
             "name": null,
             "owner": "minad",
             "repo": "consult",
-            "rev": "ce38dd037769ccba93e7b854ab9b0cc0eced84ee",
-            "sha256": "sha256-MNLDnGRCqJuBljmREbA2EX5FfM1ayJQn2yPYOGvN670=",
+            "rev": "8ea14ed54647c29dfa48af03c6466b4fe0119756",
+            "sha256": "sha256-tk4QAave6twjNFeJSBouGAQlNXD09coqgCt1pAAw3RQ=",
             "sparseCheckout": [],
             "type": "github"
         },
-        "version": "ce38dd037769ccba93e7b854ab9b0cc0eced84ee"
+        "version": "8ea14ed54647c29dfa48af03c6466b4fe0119756"
     },
     "emacs-consult-ghq": {
         "cargoLocks": null,
@@ -64,7 +64,7 @@
     },
     "emacs-copilot": {
         "cargoLocks": null,
-        "date": "2025-02-19",
+        "date": "2025-02-23",
         "extract": null,
         "name": "emacs-copilot",
         "passthru": null,
@@ -76,12 +76,12 @@
             "name": null,
             "owner": "copilot-emacs",
             "repo": "copilot.el",
-            "rev": "8a0068afcfb98af7f172d04f6f8cc932c1a22fe8",
-            "sha256": "sha256-7UIu/qVFI27lpwkX13k5CvuJbP9oted3KrT0vN/dJ1E=",
+            "rev": "7d105d708a23d16cdfd5240500be8bb02f95a46e",
+            "sha256": "sha256-ATIyNAnd1pU82xdGH7+z9zkOcDVJhYhh65QDQ73NiL0=",
             "sparseCheckout": [],
             "type": "github"
         },
-        "version": "8a0068afcfb98af7f172d04f6f8cc932c1a22fe8"
+        "version": "7d105d708a23d16cdfd5240500be8bb02f95a46e"
     },
     "emacs-corfu": {
         "cargoLocks": null,
@@ -230,7 +230,7 @@
     },
     "emacs-magit": {
         "cargoLocks": null,
-        "date": "2025-02-21",
+        "date": "2025-03-07",
         "extract": null,
         "name": "emacs-magit",
         "passthru": null,
@@ -242,12 +242,12 @@
             "name": null,
             "owner": "magit",
             "repo": "magit",
-            "rev": "9914feb4d5a2feab091076be554d80781594869d",
-            "sha256": "sha256-rRl99zzHZkimEs/MAVVNt1sR+hvavAuhNcGgDVq42bs=",
+            "rev": "80cae1a26f13a4d48a19cfe8612a561348423f35",
+            "sha256": "sha256-qftmAtyFn5lm3od49Ph1063ukh8JlMZtqPiOljpiD7I=",
             "sparseCheckout": [],
             "type": "github"
         },
-        "version": "9914feb4d5a2feab091076be554d80781594869d"
+        "version": "80cae1a26f13a4d48a19cfe8612a561348423f35"
     },
     "emacs-modus-themes": {
         "cargoLocks": null,
@@ -356,7 +356,7 @@
     },
     "emacs-org-modern-indent": {
         "cargoLocks": null,
-        "date": "2024-12-16",
+        "date": "2025-02-25",
         "extract": null,
         "name": "emacs-org-modern-indent",
         "passthru": null,
@@ -368,16 +368,16 @@
             "name": null,
             "owner": "jdtsmith",
             "repo": "org-modern-indent",
-            "rev": "52b46c6ecd63e627ab5bfb83c580b51f68a23774",
-            "sha256": "sha256-9aaaPGCvt51FknRKB5zT8AdHjhH/sQMc1IyQS3KnJsU=",
+            "rev": "2b3ee1f8cb8be859970ffaee62f12e635f161cd3",
+            "sha256": "sha256-Fd6PhvgqUaxc6VIOVPd/eXryNdj5g3xGbLLuZomJsxg=",
             "sparseCheckout": [],
             "type": "github"
         },
-        "version": "52b46c6ecd63e627ab5bfb83c580b51f68a23774"
+        "version": "2b3ee1f8cb8be859970ffaee62f12e635f161cd3"
     },
     "emacs-projectile": {
         "cargoLocks": null,
-        "date": "2025-02-15",
+        "date": "2025-03-02",
         "extract": null,
         "name": "emacs-projectile",
         "passthru": null,
@@ -389,12 +389,12 @@
             "name": null,
             "owner": "bbatsov",
             "repo": "projectile",
-            "rev": "30c55d19b9488dcddc9195c9acb7f625d472d96d",
-            "sha256": "sha256-Ad9QPd621iHhWMAgRW9E6xuJCW4H9F2MF3HvQWZfiP8=",
+            "rev": "64dee1f2de64c42fabacc5db678d7f66a6d3728d",
+            "sha256": "sha256-eRsnBaThCvicmmlKFKdgq97McQTQH+L0wzu92LKv/z8=",
             "sparseCheckout": [],
             "type": "github"
         },
-        "version": "30c55d19b9488dcddc9195c9acb7f625d472d96d"
+        "version": "64dee1f2de64c42fabacc5db678d7f66a6d3728d"
     },
     "emacs-rg": {
         "cargoLocks": null,
@@ -481,7 +481,7 @@
     },
     "emacs-undohist": {
         "cargoLocks": null,
-        "date": "2025-02-12",
+        "date": "2025-02-24",
         "extract": null,
         "name": "emacs-undohist",
         "passthru": null,
@@ -493,16 +493,16 @@
             "name": null,
             "owner": "emacsorphanage",
             "repo": "undohist",
-            "rev": "37ac1acc8b6a99bd47573eb1fac92d85163187d2",
-            "sha256": "sha256-LDrNH6+yRgvuFCdANMzgpaI1uR65NXRIp6kmGmVDrCg=",
+            "rev": "72b69af2dbed63782bb030fc82e2ab4b8bfb6ade",
+            "sha256": "sha256-AD/JI4s7zSFv/CWQPAapSIqSRGCIDQSWJqU/k6JPEY8=",
             "sparseCheckout": [],
             "type": "github"
         },
-        "version": "37ac1acc8b6a99bd47573eb1fac92d85163187d2"
+        "version": "72b69af2dbed63782bb030fc82e2ab4b8bfb6ade"
     },
     "emacs-vertico": {
         "cargoLocks": null,
-        "date": "2025-02-18",
+        "date": "2025-03-09",
         "extract": null,
         "name": "emacs-vertico",
         "passthru": null,
@@ -512,13 +512,13 @@
             "fetchSubmodules": false,
             "leaveDotGit": false,
             "name": null,
-            "rev": "ac82acf177a0dfc97deac8626a8a98c06bffc96c",
-            "sha256": "sha256-cBbKmCFluV67ufUE5C+Q0UkqeiP99nlnizdIGdCWD8Y=",
+            "rev": "a6bd815be301a11be24ad944a9b3e853fcb1ed00",
+            "sha256": "sha256-WYJ6/NOKbBXlu05iJNdL8xJ7qAPoayB+nYI5mTCGnOA=",
             "sparseCheckout": [],
             "type": "git",
             "url": "https://github.com/minad/vertico"
         },
-        "version": "ac82acf177a0dfc97deac8626a8a98c06bffc96c"
+        "version": "a6bd815be301a11be24ad944a9b3e853fcb1ed00"
     },
     "emacs-vundo": {
         "cargoLocks": null,

@@ -2,7 +2,7 @@
 epkgs.melpaBuild {
   pname = "vertico";
   src = sources.emacs-vertico.src;
-  version = "20250117.1814";
+  version = "20250309.1959";
   packageRequires = with epkgs; [
   ];
 }
