@@ -75,6 +75,7 @@ epkgs: with epkgs; [
   rainbow-mode
   ripgrep
   rust-mode
+  s
   sbt-mode
   scala-mode
   scss-mode
