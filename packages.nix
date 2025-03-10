@@ -67,6 +67,7 @@ epkgs: with epkgs; [
   org-modern
   org-modern-indent
   origami
+  posframe
   prescient
   projectile
   proof-general
