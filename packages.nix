@@ -42,6 +42,7 @@ epkgs: with epkgs; [
   git-modes
   git-timemachine
   go-mode
+  gptel
   groovy-mode
   highlight-defined
   highlight-quoted
