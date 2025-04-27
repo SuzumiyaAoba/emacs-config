@@ -1,5 +1,6 @@
 { sources, epkgs, css-in-js-mode }:
 epkgs.melpaBuild {
+  # https://github.com/orzechowskid/tsx-mode.el
   pname = "tsx-mode";
   src = sources.emacs-tsx-mode.src;
   version = "3.1.0";
