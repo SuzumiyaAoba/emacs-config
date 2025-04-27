@@ -48,16 +48,19 @@ epkgs: with epkgs; [
   highlight-quoted
   highlight-symbol
   hydra
+  hydra-posframe
   keycast
   kotlin-mode
   ligature
   magit
+  major-mode-hydra
   marginalia
   markdown-mode
   minions
   mlscroll
   modus-themes
   moody
+  multiple-cursors
   nerd-icons-corfu
   nerd-icons-completion
   nerd-icons-dired

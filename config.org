@@ -490,6 +490,14 @@ see: https://github.com/meatcar/emacs.d?tab=readme-ov-file#fast-scroll
 (setup hydra)
 #+end_src
 
+**** hydra-posframe
+
+#+begin_src emacs-lisp :tangle init.el
+(setup hydra-posframe
+  (:opt hydra-posframe-poshandler 'posframe-poshandler-window-bottom-center)
+  (add-hook 'after-init-hook 'hydra-posframe-mode))
+#+end_src
+
 ** Parens
 
 *** electric-pair
@@ -617,10 +625,11 @@ see: https://github.com/meatcar/emacs.d?tab=readme-ov-file#fast-scroll
    "M-g o" consult-outline
    "M-g i" consult-imenu
 
-   "M-s s" consult-line-at
-   "M-s d" consult-find
+   "M-s @" consult-line-at
+   "M-s s" consult-line
+   "M-s f" consult-find
    "M-s r" consult-ripgrep
-   "M-s u" consult-focus-lines)
+   "M-s F" consult-focus-lines)
   (:when-loaded
     (consult-customize
      consult-buffer
@@ -778,6 +787,28 @@ see: https://github.com/meatcar/emacs.d?tab=readme-ov-file#fast-scroll
 (setup avy
   (:global "C-:" 'avy-goto-char
            "C-'" 'avy-goto-char-2))
+#+end_src
+
+** Curosr
+
+*** multiple-cursors
+
+#+begin_src emacs-lisp :tangle init.el
+(setup multiple-cursors
+  (:load-after hydra)
+  (:global "C-*" multiple-cursors/body)
+
+  (defvar multiple-cursors--title "Multiple cursors")
+  (pretty-hydra-define multiple-cursors (:foreign-keys warn :title multiple-cursors--title :quit-key "q")
+    ("Mark"
+     (("n" mc/mark-next-like-this "next")
+      ("N" mc/unmark-next-like-this "unmark next")
+      ("p" mc/mark-previous-like-this "previous")
+      ("P" mc/unmark-previous-like-this "unmark previous")
+      ("e" mc/mark-more-like-this-extended "extend"))
+     "Many"
+     (("a" mc/mark-all-in-region "all in region" :exit t)
+      ("*" mc/mark-all-like-this "all" :exit t)))))
 #+end_src
 
 ** Highlight

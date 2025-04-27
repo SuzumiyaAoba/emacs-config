@@ -22,7 +22,7 @@
     },
     "emacs-consult": {
         "cargoLocks": null,
-        "date": "2025-03-07",
+        "date": "2025-03-22",
         "extract": null,
         "name": "emacs-consult",
         "passthru": null,
@@ -34,12 +34,12 @@
             "name": null,
             "owner": "minad",
             "repo": "consult",
-            "rev": "8ea14ed54647c29dfa48af03c6466b4fe0119756",
-            "sha256": "sha256-tk4QAave6twjNFeJSBouGAQlNXD09coqgCt1pAAw3RQ=",
+            "rev": "4d00c807eaa8cafcfeee016342d0d6021dea1ed1",
+            "sha256": "sha256-ZuNMb+plbGkMLD6Kvmy0bk748D0aR3qUEiBfJ5bhyJo=",
             "sparseCheckout": [],
             "type": "github"
         },
-        "version": "8ea14ed54647c29dfa48af03c6466b4fe0119756"
+        "version": "4d00c807eaa8cafcfeee016342d0d6021dea1ed1"
     },
     "emacs-consult-ghq": {
         "cargoLocks": null,
@@ -126,7 +126,7 @@
     },
     "emacs-css-in-js-mode": {
         "cargoLocks": null,
-        "date": "2024-06-13",
+        "date": "2025-03-16",
         "extract": null,
         "name": "emacs-css-in-js-mode",
         "passthru": null,
@@ -138,12 +138,12 @@
             "name": null,
             "owner": "orzechowskid",
             "repo": "tree-sitter-css-in-js",
-            "rev": "42c61e232eadd05027c118497a04cd4acbe5d802",
-            "sha256": "sha256-9xyWD/zPGL4QOH/FffmGIHbOzJME8gPUfd7uQc2MTpg=",
+            "rev": "bcbacde99123f65978580dcf8f1aa51107e546c3",
+            "sha256": "sha256-Ye68aAdxjjvlzMCaTEcuinEC2iEzWJEJ2yK/uRWSV+I=",
             "sparseCheckout": [],
             "type": "github"
         },
-        "version": "42c61e232eadd05027c118497a04cd4acbe5d802"
+        "version": "bcbacde99123f65978580dcf8f1aa51107e546c3"
     },
     "emacs-devil": {
         "cargoLocks": null,
@@ -228,9 +228,30 @@
         },
         "version": "99ea813346f3edef7220d8f4faeed2ec69af6060"
     },
+    "emacs-hydra-posframe": {
+        "cargoLocks": null,
+        "date": "2023-07-17",
+        "extract": null,
+        "name": "emacs-hydra-posframe",
+        "passthru": null,
+        "pinned": false,
+        "src": {
+            "deepClone": false,
+            "fetchSubmodules": false,
+            "leaveDotGit": false,
+            "name": null,
+            "owner": "Ladicle",
+            "repo": "hydra-posframe",
+            "rev": "142a04dd588af6c725e331863c3ca7bd5dda13ec",
+            "sha256": "sha256-9nVBnpaWZIYNDvS2WWBED0HsIRIv4AR4as6wEe463tI=",
+            "sparseCheckout": [],
+            "type": "github"
+        },
+        "version": "142a04dd588af6c725e331863c3ca7bd5dda13ec"
+    },
     "emacs-magit": {
         "cargoLocks": null,
-        "date": "2025-03-07",
+        "date": "2025-03-22",
         "extract": null,
         "name": "emacs-magit",
         "passthru": null,
@@ -242,12 +263,12 @@
             "name": null,
             "owner": "magit",
             "repo": "magit",
-            "rev": "80cae1a26f13a4d48a19cfe8612a561348423f35",
-            "sha256": "sha256-qftmAtyFn5lm3od49Ph1063ukh8JlMZtqPiOljpiD7I=",
+            "rev": "d092661c6142ecd32e98caf4349881b30bfe6836",
+            "sha256": "sha256-nyp8ktAGQuCSwwl4ZbrpUe7F6lJo6MBAPForf8au1dU=",
             "sparseCheckout": [],
             "type": "github"
         },
-        "version": "80cae1a26f13a4d48a19cfe8612a561348423f35"
+        "version": "d092661c6142ecd32e98caf4349881b30bfe6836"
     },
     "emacs-modus-themes": {
         "cargoLocks": null,
@@ -335,7 +356,7 @@
     },
     "emacs-orderless": {
         "cargoLocks": null,
-        "date": "2025-02-02",
+        "date": "2025-03-16",
         "extract": null,
         "name": "emacs-orderless",
         "passthru": null,
@@ -347,12 +368,12 @@
             "name": null,
             "owner": "oantolin",
             "repo": "orderless",
-            "rev": "c7cb04499d94ee1c17affb29b1cfcd2a45116c97",
-            "sha256": "sha256-LR1CTeId2jiVrcodxcHaG9uYg3engKtOrEvd6k5wGLw=",
+            "rev": "254f2412489bbbf62700f9d3d5f18e537841dcc3",
+            "sha256": "sha256-iGpDDteSXzaWC++RTX4lhLVs1OlbWU4gAMYKMaYLSdE=",
             "sparseCheckout": [],
             "type": "github"
         },
-        "version": "c7cb04499d94ee1c17affb29b1cfcd2a45116c97"
+        "version": "254f2412489bbbf62700f9d3d5f18e537841dcc3"
     },
     "emacs-org-modern-indent": {
         "cargoLocks": null,
@@ -377,7 +398,7 @@
     },
     "emacs-projectile": {
         "cargoLocks": null,
-        "date": "2025-03-02",
+        "date": "2025-03-12",
         "extract": null,
         "name": "emacs-projectile",
         "passthru": null,
@@ -389,12 +410,12 @@
             "name": null,
             "owner": "bbatsov",
             "repo": "projectile",
-            "rev": "64dee1f2de64c42fabacc5db678d7f66a6d3728d",
-            "sha256": "sha256-eRsnBaThCvicmmlKFKdgq97McQTQH+L0wzu92LKv/z8=",
+            "rev": "55db082cdf7b849335ccf24b7ba5aa2607d6fe93",
+            "sha256": "sha256-pLMPagxPKfRA0AscfbExF3v+FEFxj2xwKpzKDSb4E8A=",
             "sparseCheckout": [],
             "type": "github"
         },
-        "version": "64dee1f2de64c42fabacc5db678d7f66a6d3728d"
+        "version": "55db082cdf7b849335ccf24b7ba5aa2607d6fe93"
     },
     "emacs-rg": {
         "cargoLocks": null,
@@ -460,7 +481,7 @@
     },
     "emacs-tsx-mode": {
         "cargoLocks": null,
-        "date": "2025-01-26",
+        "date": "2025-03-16",
         "extract": null,
         "name": "emacs-tsx-mode",
         "passthru": null,
@@ -472,12 +493,12 @@
             "name": null,
             "owner": "orzechowskid",
             "repo": "tsx-mode.el",
-            "rev": "2dd6168b3919652a851fb92c3f17c3b161d7b60b",
-            "sha256": "sha256-jX1jfCJGqrw7uZ3HCug8+zvU6zxxZ6hTKVzSRS5v4C4=",
+            "rev": "d6d49a936187fff688d54ba776ac43fc13cf029e",
+            "sha256": "sha256-aFSuqtx1hrO6dMyWJnQslCABXLMagYYrv5koi1ddyZQ=",
             "sparseCheckout": [],
             "type": "github"
         },
-        "version": "2dd6168b3919652a851fb92c3f17c3b161d7b60b"
+        "version": "d6d49a936187fff688d54ba776ac43fc13cf029e"
     },
     "emacs-undohist": {
         "cargoLocks": null,
@@ -502,7 +523,7 @@
     },
     "emacs-vertico": {
         "cargoLocks": null,
-        "date": "2025-03-09",
+        "date": "2025-03-18",
         "extract": null,
         "name": "emacs-vertico",
         "passthru": null,
@@ -512,17 +533,17 @@
             "fetchSubmodules": false,
             "leaveDotGit": false,
             "name": null,
-            "rev": "a6bd815be301a11be24ad944a9b3e853fcb1ed00",
-            "sha256": "sha256-WYJ6/NOKbBXlu05iJNdL8xJ7qAPoayB+nYI5mTCGnOA=",
+            "rev": "c3b788b6bea10e3493ebc05a96bbde294824cff6",
+            "sha256": "sha256-KhvnMInZvzwIMup7wBBUsQqDzt7k7oMVckcVmw29ZXw=",
             "sparseCheckout": [],
             "type": "git",
             "url": "https://github.com/minad/vertico"
         },
-        "version": "a6bd815be301a11be24ad944a9b3e853fcb1ed00"
+        "version": "c3b788b6bea10e3493ebc05a96bbde294824cff6"
     },
     "emacs-vundo": {
         "cargoLocks": null,
-        "date": "2025-01-14",
+        "date": "2025-03-14",
         "extract": null,
         "name": "emacs-vundo",
         "passthru": null,
@@ -534,11 +555,11 @@
             "name": null,
             "owner": "casouri",
             "repo": "vundo",
-            "rev": "288892ee93214ddcaf65fdd9f3134c1bd10100ee",
-            "sha256": "sha256-dJZqPOWq9IK/il2RjAKYy0rSQyKpW4TShkBh7ytwrLg=",
+            "rev": "b89f719824fe5da0f6a7590fad3ece798fd59909",
+            "sha256": "sha256-a8qqIxxtNex6dqgmFECFUQCOhx0hX7f3EZGcMR23ngw=",
             "sparseCheckout": [],
             "type": "github"
         },
-        "version": "288892ee93214ddcaf65fdd9f3134c1bd10100ee"
+        "version": "b89f719824fe5da0f6a7590fad3ece798fd59909"
     }
 }

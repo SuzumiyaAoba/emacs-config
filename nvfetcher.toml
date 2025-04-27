@@ -53,6 +53,11 @@ src.git = "https://codeberg.org/akib/emacs-flymake-popon"
 src.branch = "master"
 fetch.git = "https://codeberg.org/akib/emacs-flymake-popon"
 
+[emacs-hydra-posframe]
+src.git = "https://github.com/Ladicle/hydra-posframe"
+src.branch = "master"
+fetch.github = "Ladicle/hydra-posframe"
+
 [emacs-magit]
 src.git = "https://github.com/magit/magit"
 src.branch = "main"

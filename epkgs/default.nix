@@ -11,6 +11,7 @@ let
   eglot-booster = import ./packages/eglot-booster.nix { inherit epkgs sources; };
   eglot-x = import ./packages/eglot-x.nix { inherit epkgs sources; };
   flymake-popon = import ./packages/flymake-popon.nix { inherit epkgs sources; };
+  hydra-posframe = import ./packages/hydra-posframe.nix { inherit epkgs sources; };
   modus-themes = import ./packages/modus-themes.nix { inherit epkgs sources; };
   nerd-icons-dired = import ./packages/nerd-icons-dired.nix { inherit epkgs sources; };
   nix-mode = import ./packages/nix-mode.nix { inherit epkgs sources; };
@@ -35,6 +36,7 @@ epkgs
     eglot-booster
     eglot-x
     flymake-popon
+    hydra-posframe
     modus-themes
     nerd-icons-dired
     nix-mode
