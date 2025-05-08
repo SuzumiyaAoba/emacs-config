@@ -1,6 +1,7 @@
 { }:
 epkgs: with epkgs; [
   ace-window
+  aidermacs
   anzu
   apheleia
   avy
@@ -70,6 +71,7 @@ epkgs: with epkgs; [
   org
   org-modern
   org-modern-indent
+  org-roam
   origami
   posframe
   prescient
