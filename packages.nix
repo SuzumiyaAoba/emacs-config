@@ -72,6 +72,7 @@ epkgs: with epkgs; [
   org-modern
   org-modern-indent
   org-roam
+  org-roam-ui
   origami
   posframe
   prescient
