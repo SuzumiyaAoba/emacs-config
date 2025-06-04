@@ -1461,10 +1461,10 @@ see: https://github.com/meatcar/emacs.d?tab=readme-ov-file#fast-scroll
 *** copilot
 
 #+begin_src emacs-lisp :tangle init.el
-(setup copilot
-  (:with-map copilot-completion-map
-    (:bind "<tab>" copilot-accept-completion)
-    (:bind "TAB" copilot-accept-completion)))
+;; (setup copilot
+;;   (:with-map copilot-completion-map
+;;     (:bind "<tab>" copilot-accept-completion)
+;;     (:bind "TAB" copilot-accept-completion)))
 #+end_src
 
 *** ellama

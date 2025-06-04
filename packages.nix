@@ -13,7 +13,7 @@ epkgs: with epkgs; [
   consult-eglot
   consult-ghq
   consult-projectile
-  copilot
+  # copilot
   corfu
   corfu-prescient
   corfu-terminal
