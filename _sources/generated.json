@@ -22,7 +22,7 @@
     },
     "emacs-consult": {
         "cargoLocks": null,
-        "date": "2025-06-03",
+        "date": "2025-06-05",
         "extract": null,
         "name": "emacs-consult",
         "passthru": null,
@@ -34,12 +34,12 @@
             "name": null,
             "owner": "minad",
             "repo": "consult",
-            "rev": "8a683607c1e346fb0c5fcacf2248b11cc55f5141",
-            "sha256": "sha256-OuyPjP87Es++xZB2hKWbXVlY/mpPsxcvzqL+CZprXDQ=",
+            "rev": "b6fd7feda74267a53f9f1cf1bd122e519a308132",
+            "sha256": "sha256-sCMnj0xDMJWF+YrozvDEhb+lhv65tRko9qoFiWIxPPU=",
             "sparseCheckout": [],
             "type": "github"
         },
-        "version": "8a683607c1e346fb0c5fcacf2248b11cc55f5141"
+        "version": "b6fd7feda74267a53f9f1cf1bd122e519a308132"
     },
     "emacs-consult-ghq": {
         "cargoLocks": null,

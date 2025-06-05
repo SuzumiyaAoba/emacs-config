@@ -15,15 +15,15 @@
   };
   emacs-consult = {
     pname = "emacs-consult";
-    version = "8a683607c1e346fb0c5fcacf2248b11cc55f5141";
+    version = "b6fd7feda74267a53f9f1cf1bd122e519a308132";
     src = fetchFromGitHub {
       owner = "minad";
       repo = "consult";
-      rev = "8a683607c1e346fb0c5fcacf2248b11cc55f5141";
+      rev = "b6fd7feda74267a53f9f1cf1bd122e519a308132";
       fetchSubmodules = false;
-      sha256 = "sha256-OuyPjP87Es++xZB2hKWbXVlY/mpPsxcvzqL+CZprXDQ=";
+      sha256 = "sha256-sCMnj0xDMJWF+YrozvDEhb+lhv65tRko9qoFiWIxPPU=";
     };
-    date = "2025-06-03";
+    date = "2025-06-05";
   };
   emacs-consult-ghq = {
     pname = "emacs-consult-ghq";
