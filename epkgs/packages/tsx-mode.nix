@@ -3,7 +3,7 @@ epkgs.melpaBuild {
   # https://github.com/orzechowskid/tsx-mode.el
   pname = "tsx-mode";
   src = sources.emacs-tsx-mode.src;
-  version = "20250316.0";
+  version = "20250616.0";
   packageRequires = with epkgs; [
     coverlay
     css-in-js-mode
