@@ -115,7 +115,7 @@ fetch.github = "takeokunn/scss-mode"
 
 [emacs-tsx-mode]
 src.git = "https://github.com/orzechowskid/tsx-mode.el"
-src.branch = "main"
+src.branch = "emacs30"
 fetch.github = "orzechowskid/tsx-mode.el"
 
 [emacs-undohist]

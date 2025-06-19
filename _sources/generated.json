@@ -398,7 +398,7 @@
     },
     "emacs-projectile": {
         "cargoLocks": null,
-        "date": "2025-06-12",
+        "date": "2025-06-18",
         "extract": null,
         "name": "emacs-projectile",
         "passthru": null,
@@ -410,12 +410,12 @@
             "name": null,
             "owner": "bbatsov",
             "repo": "projectile",
-            "rev": "0da59734fbc23fc26222a7d03f6671b3116b0b77",
-            "sha256": "sha256-90E9yW0PMG35fkbGE+x4ffxGfln0VYwn73kHR18YwzY=",
+            "rev": "58e33ef298a843984aa7b590233c81c8560d14cd",
+            "sha256": "sha256-ONO0+3WXtCfvFBjSyQMko9uRQic/tzoF9E03cvHHGfw=",
             "sparseCheckout": [],
             "type": "github"
         },
-        "version": "0da59734fbc23fc26222a7d03f6671b3116b0b77"
+        "version": "58e33ef298a843984aa7b590233c81c8560d14cd"
     },
     "emacs-rg": {
         "cargoLocks": null,
@@ -481,7 +481,7 @@
     },
     "emacs-tsx-mode": {
         "cargoLocks": null,
-        "date": "2025-06-16",
+        "date": "2025-06-19",
         "extract": null,
         "name": "emacs-tsx-mode",
         "passthru": null,
@@ -493,12 +493,12 @@
             "name": null,
             "owner": "orzechowskid",
             "repo": "tsx-mode.el",
-            "rev": "b80ad34a3d66db29baac6c62627b9b08535e9835",
-            "sha256": "sha256-1PmBu3f31aHs1D80ijkvA4tQp2TtAh3BSh562tums5k=",
+            "rev": "b32e4093e843344eb64f3d8dbcb3837339840dcf",
+            "sha256": "sha256-WUoN7AD3KKQ684OU+/8ApOvdS3YmjpY3OsKqfXGDa+k=",
             "sparseCheckout": [],
             "type": "github"
         },
-        "version": "b80ad34a3d66db29baac6c62627b9b08535e9835"
+        "version": "b32e4093e843344eb64f3d8dbcb3837339840dcf"
     },
     "emacs-undohist": {
         "cargoLocks": null,
@@ -543,7 +543,7 @@
     },
     "emacs-vundo": {
         "cargoLocks": null,
-        "date": "2025-04-17",
+        "date": "2025-06-17",
         "extract": null,
         "name": "emacs-vundo",
         "passthru": null,
@@ -555,11 +555,11 @@
             "name": null,
             "owner": "casouri",
             "repo": "vundo",
-            "rev": "d09448aa537a63e35a4bc6b38ceb2c168e891342",
-            "sha256": "sha256-j8ECciVJHm7k7l6Vpkqoz0pzrXQrp3DLT3aEoIOrrRs=",
+            "rev": "30f85b4ae1f2a7189d44bb738b49559928d046cb",
+            "sha256": "sha256-ngVWSIjQeX1TBpIo4vz+9IMeBKyA8BJuPWMt4/o4Xqg=",
             "sparseCheckout": [],
             "type": "github"
         },
-        "version": "d09448aa537a63e35a4bc6b38ceb2c168e891342"
+        "version": "30f85b4ae1f2a7189d44bb738b49559928d046cb"
     }
 }

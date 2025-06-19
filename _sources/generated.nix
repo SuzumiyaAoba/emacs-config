@@ -235,15 +235,15 @@
   };
   emacs-projectile = {
     pname = "emacs-projectile";
-    version = "0da59734fbc23fc26222a7d03f6671b3116b0b77";
+    version = "58e33ef298a843984aa7b590233c81c8560d14cd";
     src = fetchFromGitHub {
       owner = "bbatsov";
       repo = "projectile";
-      rev = "0da59734fbc23fc26222a7d03f6671b3116b0b77";
+      rev = "58e33ef298a843984aa7b590233c81c8560d14cd";
       fetchSubmodules = false;
-      sha256 = "sha256-90E9yW0PMG35fkbGE+x4ffxGfln0VYwn73kHR18YwzY=";
+      sha256 = "sha256-ONO0+3WXtCfvFBjSyQMko9uRQic/tzoF9E03cvHHGfw=";
     };
-    date = "2025-06-12";
+    date = "2025-06-18";
   };
   emacs-rg = {
     pname = "emacs-rg";
@@ -285,15 +285,15 @@
   };
   emacs-tsx-mode = {
     pname = "emacs-tsx-mode";
-    version = "b80ad34a3d66db29baac6c62627b9b08535e9835";
+    version = "b32e4093e843344eb64f3d8dbcb3837339840dcf";
     src = fetchFromGitHub {
       owner = "orzechowskid";
       repo = "tsx-mode.el";
-      rev = "b80ad34a3d66db29baac6c62627b9b08535e9835";
+      rev = "b32e4093e843344eb64f3d8dbcb3837339840dcf";
       fetchSubmodules = false;
-      sha256 = "sha256-1PmBu3f31aHs1D80ijkvA4tQp2TtAh3BSh562tums5k=";
+      sha256 = "sha256-WUoN7AD3KKQ684OU+/8ApOvdS3YmjpY3OsKqfXGDa+k=";
     };
-    date = "2025-06-16";
+    date = "2025-06-19";
   };
   emacs-undohist = {
     pname = "emacs-undohist";
@@ -323,14 +323,14 @@
   };
   emacs-vundo = {
     pname = "emacs-vundo";
-    version = "d09448aa537a63e35a4bc6b38ceb2c168e891342";
+    version = "30f85b4ae1f2a7189d44bb738b49559928d046cb";
     src = fetchFromGitHub {
       owner = "casouri";
       repo = "vundo";
-      rev = "d09448aa537a63e35a4bc6b38ceb2c168e891342";
+      rev = "30f85b4ae1f2a7189d44bb738b49559928d046cb";
       fetchSubmodules = false;
-      sha256 = "sha256-j8ECciVJHm7k7l6Vpkqoz0pzrXQrp3DLT3aEoIOrrRs=";
+      sha256 = "sha256-ngVWSIjQeX1TBpIo4vz+9IMeBKyA8BJuPWMt4/o4Xqg=";
     };
-    date = "2025-04-17";
+    date = "2025-06-17";
   };
 }
