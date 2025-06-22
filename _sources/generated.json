@@ -64,7 +64,7 @@
     },
     "emacs-copilot": {
         "cargoLocks": null,
-        "date": "2025-05-06",
+        "date": "2025-06-22",
         "extract": null,
         "name": "emacs-copilot",
         "passthru": null,
@@ -76,12 +76,12 @@
             "name": null,
             "owner": "copilot-emacs",
             "repo": "copilot.el",
-            "rev": "fe3f51b636dea1c9ac55a0d5dc5d7df02dcbaa48",
-            "sha256": "sha256-reoIFMjx2Go/EPAxD+OQFxge/amqguZS+jteh0b9xgA=",
+            "rev": "acea1487a5d47dce1fc75dc06abe18c7fd119f6e",
+            "sha256": "sha256-oMOVku7u8P+u3MFljixgcJCl7OOp8y2OKjwAlTlysF0=",
             "sparseCheckout": [],
             "type": "github"
         },
-        "version": "fe3f51b636dea1c9ac55a0d5dc5d7df02dcbaa48"
+        "version": "acea1487a5d47dce1fc75dc06abe18c7fd119f6e"
     },
     "emacs-corfu": {
         "cargoLocks": null,
@@ -251,7 +251,7 @@
     },
     "emacs-magit": {
         "cargoLocks": null,
-        "date": "2025-06-16",
+        "date": "2025-06-22",
         "extract": null,
         "name": "emacs-magit",
         "passthru": null,
@@ -263,12 +263,12 @@
             "name": null,
             "owner": "magit",
             "repo": "magit",
-            "rev": "7050005c261faf0904f43d8762cb20f8ec70daca",
-            "sha256": "sha256-v8PeASjdARYLdzOaifcN8A0NOu3j1VLVGIaRCTr1374=",
+            "rev": "a4f73fb2fb55f7644a80b4442379ef43840ec5e9",
+            "sha256": "sha256-5Wo44ais7712GulRzgsbRQEudoO0omw1Yi9op87/1KE=",
             "sparseCheckout": [],
             "type": "github"
         },
-        "version": "7050005c261faf0904f43d8762cb20f8ec70daca"
+        "version": "a4f73fb2fb55f7644a80b4442379ef43840ec5e9"
     },
     "emacs-modus-themes": {
         "cargoLocks": null,
@@ -481,7 +481,7 @@
     },
     "emacs-tsx-mode": {
         "cargoLocks": null,
-        "date": "2025-06-19",
+        "date": "2025-06-21",
         "extract": null,
         "name": "emacs-tsx-mode",
         "passthru": null,
@@ -493,12 +493,12 @@
             "name": null,
             "owner": "orzechowskid",
             "repo": "tsx-mode.el",
-            "rev": "b32e4093e843344eb64f3d8dbcb3837339840dcf",
-            "sha256": "sha256-WUoN7AD3KKQ684OU+/8ApOvdS3YmjpY3OsKqfXGDa+k=",
+            "rev": "2bf07b96e0a3f32ae54c90d457be73edb6186186",
+            "sha256": "sha256-uFbBVf5epPQ9cDI9MnMo3bERem1ZiTsUpjcpwJOfsmM=",
             "sparseCheckout": [],
             "type": "github"
         },
-        "version": "b32e4093e843344eb64f3d8dbcb3837339840dcf"
+        "version": "2bf07b96e0a3f32ae54c90d457be73edb6186186"
     },
     "emacs-undohist": {
         "cargoLocks": null,

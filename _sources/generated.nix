@@ -39,15 +39,15 @@
   };
   emacs-copilot = {
     pname = "emacs-copilot";
-    version = "fe3f51b636dea1c9ac55a0d5dc5d7df02dcbaa48";
+    version = "acea1487a5d47dce1fc75dc06abe18c7fd119f6e";
     src = fetchFromGitHub {
       owner = "copilot-emacs";
       repo = "copilot.el";
-      rev = "fe3f51b636dea1c9ac55a0d5dc5d7df02dcbaa48";
+      rev = "acea1487a5d47dce1fc75dc06abe18c7fd119f6e";
       fetchSubmodules = false;
-      sha256 = "sha256-reoIFMjx2Go/EPAxD+OQFxge/amqguZS+jteh0b9xgA=";
+      sha256 = "sha256-oMOVku7u8P+u3MFljixgcJCl7OOp8y2OKjwAlTlysF0=";
     };
-    date = "2025-05-06";
+    date = "2025-06-22";
   };
   emacs-corfu = {
     pname = "emacs-corfu";
@@ -151,15 +151,15 @@
   };
   emacs-magit = {
     pname = "emacs-magit";
-    version = "7050005c261faf0904f43d8762cb20f8ec70daca";
+    version = "a4f73fb2fb55f7644a80b4442379ef43840ec5e9";
     src = fetchFromGitHub {
       owner = "magit";
       repo = "magit";
-      rev = "7050005c261faf0904f43d8762cb20f8ec70daca";
+      rev = "a4f73fb2fb55f7644a80b4442379ef43840ec5e9";
       fetchSubmodules = false;
-      sha256 = "sha256-v8PeASjdARYLdzOaifcN8A0NOu3j1VLVGIaRCTr1374=";
+      sha256 = "sha256-5Wo44ais7712GulRzgsbRQEudoO0omw1Yi9op87/1KE=";
     };
-    date = "2025-06-16";
+    date = "2025-06-22";
   };
   emacs-modus-themes = {
     pname = "emacs-modus-themes";
@@ -285,15 +285,15 @@
   };
   emacs-tsx-mode = {
     pname = "emacs-tsx-mode";
-    version = "b32e4093e843344eb64f3d8dbcb3837339840dcf";
+    version = "2bf07b96e0a3f32ae54c90d457be73edb6186186";
     src = fetchFromGitHub {
       owner = "orzechowskid";
       repo = "tsx-mode.el";
-      rev = "b32e4093e843344eb64f3d8dbcb3837339840dcf";
+      rev = "2bf07b96e0a3f32ae54c90d457be73edb6186186";
       fetchSubmodules = false;
-      sha256 = "sha256-WUoN7AD3KKQ684OU+/8ApOvdS3YmjpY3OsKqfXGDa+k=";
+      sha256 = "sha256-uFbBVf5epPQ9cDI9MnMo3bERem1ZiTsUpjcpwJOfsmM=";
     };
-    date = "2025-06-19";
+    date = "2025-06-21";
   };
   emacs-undohist = {
     pname = "emacs-undohist";
