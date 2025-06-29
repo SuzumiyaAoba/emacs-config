@@ -3,7 +3,7 @@ epkgs.melpaBuild {
   # https://github.com/NixOS/nix-mode
   pname = "nix-mode";
   src = sources.emacs-nix-mode.src;
-  version = "20230421.2036";
+  version = "20230421.0";
   packageRequires = with epkgs; [
     magit-section
     transient

@@ -22,7 +22,7 @@
     },
     "emacs-consult": {
         "cargoLocks": null,
-        "date": "2025-06-17",
+        "date": "2025-06-28",
         "extract": null,
         "name": "emacs-consult",
         "passthru": null,
@@ -34,12 +34,12 @@
             "name": null,
             "owner": "minad",
             "repo": "consult",
-            "rev": "b1b7abf5811b568d93d2f131804d890a9e2c3334",
-            "sha256": "sha256-+DXH5CV6zFZ3Den+JzWd9qv2R8qsIcI9Wo4yHBKJgIQ=",
+            "rev": "4314c45d84d9e00d45d2b611562d8fe2e4ddcf48",
+            "sha256": "sha256-vL7+LxzYjvVaMWGvanhvZEyruoTzAaBXTu0QxVpwdqM=",
             "sparseCheckout": [],
             "type": "github"
         },
-        "version": "b1b7abf5811b568d93d2f131804d890a9e2c3334"
+        "version": "4314c45d84d9e00d45d2b611562d8fe2e4ddcf48"
     },
     "emacs-consult-ghq": {
         "cargoLocks": null,
@@ -189,7 +189,7 @@
     },
     "emacs-eglot-x": {
         "cargoLocks": null,
-        "date": "2025-04-19",
+        "date": "2025-06-26",
         "extract": null,
         "name": "emacs-eglot-x",
         "passthru": null,
@@ -201,12 +201,12 @@
             "name": null,
             "owner": "nemethf",
             "repo": "eglot-x",
-            "rev": "ca565df30d8e207c00471a3723d7bd5803497a95",
-            "sha256": "sha256-pJSBG84G+uRWEeoyHrsajNxIsfqlcwQM7rCsxBsn3Jc=",
+            "rev": "8e872efd3d0b7779bde5b1e1d75c8e646a1f729f",
+            "sha256": "sha256-a2qkitikqGZBXI4aVdn8c7P4HFwep9RPWkOVBbgQV2g=",
             "sparseCheckout": [],
             "type": "github"
         },
-        "version": "ca565df30d8e207c00471a3723d7bd5803497a95"
+        "version": "8e872efd3d0b7779bde5b1e1d75c8e646a1f729f"
     },
     "emacs-flymake-popon": {
         "cargoLocks": null,
@@ -251,7 +251,7 @@
     },
     "emacs-magit": {
         "cargoLocks": null,
-        "date": "2025-06-22",
+        "date": "2025-06-28",
         "extract": null,
         "name": "emacs-magit",
         "passthru": null,
@@ -263,16 +263,16 @@
             "name": null,
             "owner": "magit",
             "repo": "magit",
-            "rev": "a4f73fb2fb55f7644a80b4442379ef43840ec5e9",
-            "sha256": "sha256-5Wo44ais7712GulRzgsbRQEudoO0omw1Yi9op87/1KE=",
+            "rev": "725efbd24964819cce3f09ab1aec0eb318a326eb",
+            "sha256": "sha256-tme1Beg8bDlHW0txb6f1b1Phjag8nhzaVazpGD6WCH8=",
             "sparseCheckout": [],
             "type": "github"
         },
-        "version": "a4f73fb2fb55f7644a80b4442379ef43840ec5e9"
+        "version": "725efbd24964819cce3f09ab1aec0eb318a326eb"
     },
     "emacs-modus-themes": {
         "cargoLocks": null,
-        "date": "2025-06-17",
+        "date": "2025-06-23",
         "extract": null,
         "name": "emacs-modus-themes",
         "passthru": null,
@@ -284,12 +284,12 @@
             "name": null,
             "owner": "protesilaos",
             "repo": "modus-themes",
-            "rev": "fd5800c3954ecd56daaea0e02101d62fa82cbdc9",
-            "sha256": "sha256-HQBOXLmjc/kQJtZv3/G1/SOPW+4Zq8qlADloCvfbMMY=",
+            "rev": "3550360e88b33b3a8f5f271a1d05afa27ffe54aa",
+            "sha256": "sha256-Hkj9MT5Gf47igpWPIct8T1Z/3MeBT2vxv9xa/UmwuHY=",
             "sparseCheckout": [],
             "type": "github"
         },
-        "version": "fd5800c3954ecd56daaea0e02101d62fa82cbdc9"
+        "version": "3550360e88b33b3a8f5f271a1d05afa27ffe54aa"
     },
     "emacs-moody": {
         "cargoLocks": null,
@@ -419,7 +419,7 @@
     },
     "emacs-rg": {
         "cargoLocks": null,
-        "date": "2025-01-02",
+        "date": "2025-06-25",
         "extract": null,
         "name": "emacs-rg",
         "passthru": null,
@@ -431,12 +431,12 @@
             "name": null,
             "owner": "dajva",
             "repo": "rg.el",
-            "rev": "94813ba3a7ccf3af68beb23a2c39154a99e8c9ec",
-            "sha256": "sha256-IEG/wg9Rpp81xWQRcPXqcdohE/aDdHwcmf+2aOUEHqw=",
+            "rev": "7611852b5517212a4f0fdab9cd9ecb0cf3995f08",
+            "sha256": "sha256-38a4/ckKLYpWQ3PBiAKQX5YcGa/Q+vaBaDIzqQDjmG8=",
             "sparseCheckout": [],
             "type": "github"
         },
-        "version": "94813ba3a7ccf3af68beb23a2c39154a99e8c9ec"
+        "version": "7611852b5517212a4f0fdab9cd9ecb0cf3995f08"
     },
     "emacs-scss-mode": {
         "cargoLocks": null,
@@ -481,7 +481,7 @@
     },
     "emacs-tsx-mode": {
         "cargoLocks": null,
-        "date": "2025-06-21",
+        "date": "2025-06-23",
         "extract": null,
         "name": "emacs-tsx-mode",
         "passthru": null,
@@ -493,12 +493,12 @@
             "name": null,
             "owner": "orzechowskid",
             "repo": "tsx-mode.el",
-            "rev": "2bf07b96e0a3f32ae54c90d457be73edb6186186",
-            "sha256": "sha256-uFbBVf5epPQ9cDI9MnMo3bERem1ZiTsUpjcpwJOfsmM=",
+            "rev": "52cf9e2c818182983de70e9bf8971b9befeb72f9",
+            "sha256": "sha256-1OOuSwMyVuXz5Viq9C6lv3uNZOBFYUWb4prdenBWr08=",
             "sparseCheckout": [],
             "type": "github"
         },
-        "version": "2bf07b96e0a3f32ae54c90d457be73edb6186186"
+        "version": "52cf9e2c818182983de70e9bf8971b9befeb72f9"
     },
     "emacs-undohist": {
         "cargoLocks": null,
@@ -523,7 +523,7 @@
     },
     "emacs-vertico": {
         "cargoLocks": null,
-        "date": "2025-06-17",
+        "date": "2025-06-27",
         "extract": null,
         "name": "emacs-vertico",
         "passthru": null,
@@ -533,13 +533,13 @@
             "fetchSubmodules": false,
             "leaveDotGit": false,
             "name": null,
-            "rev": "3c5ef81af7216ecebd9aba3a9f5b6e4d108d3c4b",
-            "sha256": "sha256-CYa2cGQneLBAMMLlUzxF2QGBSsQ0R2oYK6MOqagzaBg=",
+            "rev": "fcab88ad878e16356c392c99a64f172e7541dd65",
+            "sha256": "sha256-Psxywo9xH+Rk3S7h2Xlircauxb0VFuFoBxpvNbp9NiE=",
             "sparseCheckout": [],
             "type": "git",
             "url": "https://github.com/minad/vertico"
         },
-        "version": "3c5ef81af7216ecebd9aba3a9f5b6e4d108d3c4b"
+        "version": "fcab88ad878e16356c392c99a64f172e7541dd65"
     },
     "emacs-vundo": {
         "cargoLocks": null,
