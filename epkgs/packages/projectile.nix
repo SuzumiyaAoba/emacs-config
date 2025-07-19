@@ -3,5 +3,5 @@ epkgs.melpaBuild {
   # https://github.com/bbatsov/projectile
   pname = "projectile";
   src = sources.emacs-projectile.src;
-  version = "20250618.0";
+  version = "20250716.0";
 }
