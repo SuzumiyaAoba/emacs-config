@@ -1,9 +1,7 @@
 { sources, epkgs }:
 epkgs.melpaBuild {
-  # https://github.com/minad/vertico
   pname = "vertico";
   src = sources.emacs-vertico.src;
-  version = "20250702.0";
-  packageRequires = with epkgs; [
-  ];
+  version = "d8dc49a3520ab908c2b0f62a4a8ae32ca23f2726";
+  packageRequires = with epkgs; [ ];
 }

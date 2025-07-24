@@ -1,7 +1,7 @@
 { sources, epkgs }:
 epkgs.melpaBuild {
-  # https://github.com/antonj/scss-mode
   pname = "scss-mode";
   src = sources.emacs-scss-mode.src;
-  version = "20241228.0";
+  version = "e8f8a4d64e46f05a833fce2b684d6cb02bd6a94d";
+  packageRequires = with epkgs; [ ];
 }

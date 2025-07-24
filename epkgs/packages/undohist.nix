@@ -1,7 +1,7 @@
 { sources, epkgs }:
 epkgs.melpaBuild {
-  # https://github.com/emacsorphanage/undohist
   pname = "undohist";
   src = sources.emacs-undohist.src;
-  version = "20250422.0";
+  version = "307c0fbaab630595c0fc1f112cf7ac5a0c4c4a26";
+  packageRequires = with epkgs; [ ];
 }
