@@ -1,7 +1,7 @@
 { sources, epkgs }:
 epkgs.melpaBuild {
-  # https://github.com/tomoya/consult-ghq
   pname = "consult-ghq";
   src = sources.emacs-consult-ghq.src;
-  version = "20231111.0";
+  version = "65a99980fb313d473376542cb87464a8a44ff25e";
+  packageRequires = with epkgs; [ ];
 }

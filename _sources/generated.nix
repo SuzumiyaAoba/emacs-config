@@ -151,15 +151,15 @@
   };
   emacs-magit = {
     pname = "emacs-magit";
-    version = "a1258ac487e0e77b28660effe56a5ae92a673709";
+    version = "9e6791796facd87d6d46abca2628e802edf01ec4";
     src = fetchFromGitHub {
       owner = "magit";
       repo = "magit";
-      rev = "a1258ac487e0e77b28660effe56a5ae92a673709";
+      rev = "9e6791796facd87d6d46abca2628e802edf01ec4";
       fetchSubmodules = false;
-      sha256 = "sha256-7z2KK0aQKHRJy+yDl/OMIlSpoLwORN/QR3ms3CdUtJ0=";
+      sha256 = "sha256-ev8UBQaurIe50bhlOKYawEIhuc6Y9teY3zK1/b8KMqQ=";
     };
-    date = "2025-07-19";
+    date = "2025-07-24";
   };
   emacs-modus-themes = {
     pname = "emacs-modus-themes";
@@ -187,15 +187,15 @@
   };
   emacs-nerd-icons-dired = {
     pname = "emacs-nerd-icons-dired";
-    version = "69b5d3176b7bb08ac1f477cf7c5a491b9b0b5b54";
+    version = "a7c97534e79c8e7f436249b8b4c5cfa2daf0afe4";
     src = fetchFromGitHub {
       owner = "rainstormstudio";
       repo = "nerd-icons-dired";
-      rev = "69b5d3176b7bb08ac1f477cf7c5a491b9b0b5b54";
+      rev = "a7c97534e79c8e7f436249b8b4c5cfa2daf0afe4";
       fetchSubmodules = false;
-      sha256 = "sha256-gv2VUvv6lOffVw9rMF/R52eY+BiJZ3hztC5BUkX33+A=";
+      sha256 = "sha256-9Hypps0IDMwzY2L9Pepiv4I4ubpgTsH/rwxs5EN8Ceo=";
     };
-    date = "2025-05-06";
+    date = "2025-07-23";
   };
   emacs-nix-mode = {
     pname = "emacs-nix-mode";

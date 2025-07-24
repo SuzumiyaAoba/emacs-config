@@ -1,7 +1,7 @@
 { sources, epkgs }:
 epkgs.melpaBuild {
-  # https://github.com/jdtsmith/org-modern-indent
   pname = "org-modern-indent";
   src = sources.emacs-org-modern-indent.src;
-  version = "20250412.0";
+  version = "9973bd3b91e4733a3edd1fca232208c837c05473";
+  packageRequires = with epkgs; [ ];
 }
