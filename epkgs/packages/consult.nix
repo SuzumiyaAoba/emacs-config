@@ -1,7 +1,7 @@
 { sources, epkgs }:
 epkgs.melpaBuild {
+  # https://github.com/minad/consult
   pname = "consult";
   src = sources.emacs-consult.src;
-  version = "d32cccdcb5559b503306291fa9f52df19594d687";
-  packageRequires = with epkgs; [ ];
+  version = "20250702.0";
 }

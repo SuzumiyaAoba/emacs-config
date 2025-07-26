@@ -1,7 +1,7 @@
 { sources, epkgs }:
 epkgs.melpaBuild {
+  # https://github.com/orzechowskid/tree-sitter-css-in-js
   pname = "css-in-js-mode";
   src = sources.emacs-css-in-js-mode.src;
-  version = "bcbacde99123f65978580dcf8f1aa51107e546c3";
-  packageRequires = with epkgs; [ ];
+  version = "20250316.0";
 }

@@ -1,7 +1,7 @@
 { sources, epkgs }:
 epkgs.melpaBuild {
+  # https://github.com/tarsius/moody
   pname = "moody";
   src = sources.emacs-moody.src;
-  version = "404400af5415a35b5639dd1bfbc192751e85d737";
-  packageRequires = with epkgs; [ ];
+  version = "20250701.0";
 }

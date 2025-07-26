@@ -1,7 +1,7 @@
 { sources, epkgs }:
 epkgs.melpaBuild {
+  # https://github.com/susam/devil
   pname = "devil";
   src = sources.emacs-devil.src;
-  version = "c2dc9fc2886471daff654e12b46a144a4d1361ae";
-  packageRequires = with epkgs; [ ];
+  version = "20240129.0";
 }
