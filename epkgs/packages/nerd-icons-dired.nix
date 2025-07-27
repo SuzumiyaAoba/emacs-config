@@ -4,4 +4,7 @@ epkgs.melpaBuild {
   pname = "nerd-icons-dired";
   src = sources.emacs-nerd-icons-dired.src;
   version = "20250723.0";
+    packageRequires = with epkgs; [
+    nerd-icons
+  ];
 }

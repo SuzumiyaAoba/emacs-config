@@ -49,7 +49,7 @@ epkgs: with epkgs; [
   highlight-quoted
   highlight-symbol
   hydra
-  # hydra-posframe
+  hydra-posframe
   keycast
   kotlin-mode
   ligature

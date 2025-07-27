@@ -4,5 +4,8 @@ epkgs.melpaBuild {
   pname = "corfu-terminal";
   src = sources.emacs-corfu-terminal.src;
   version = "20230810.0";
-  packageRequires = with epkgs; [ ];
+  packageRequires = with epkgs; [
+    corfu
+    popon
+  ];
 }

@@ -4,4 +4,9 @@ epkgs.melpaBuild {
   pname = "nix-mode";
   src = sources.emacs-nix-mode.src;
   version = "20230421.0";
+  packageRequires = with epkgs; [
+    magit
+    company
+    mmm-mode
+  ];
 }

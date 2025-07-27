@@ -4,5 +4,8 @@ epkgs.melpaBuild {
   pname = "flymake-popon";
   src = sources.emacs-flymake-popon.src;
   version = "20230208.0";
-  packageRequires = with epkgs; [ ];
+  packageRequires = with epkgs; [
+    popon
+    posframe
+  ];
 }
