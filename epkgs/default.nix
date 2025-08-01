@@ -21,7 +21,7 @@ let
   scss-mode = import ./packages/scss-mode.nix { inherit epkgs sources; };
   tsx-mode = import ./packages/tsx-mode.nix { inherit epkgs sources css-in-js-mode; };
   undohist = import ./packages/undohist.nix { inherit epkgs sources; };
-  vertico = import ./packages/vertico.nix { inherit epkgs sources; };
+  # vertico = import ./packages/vertico.nix { inherit epkgs sources; };
   vundo = import ./packages/vundo.nix { inherit epkgs sources; };
 in
 epkgs
@@ -45,7 +45,7 @@ epkgs
     scss-mode
     tsx-mode
     undohist
-    vertico
+    # vertico
     vundo
   ;
 }
