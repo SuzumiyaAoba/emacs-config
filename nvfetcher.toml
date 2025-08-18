@@ -104,9 +104,9 @@ src.branch = "master"
 fetch.github = "dajva/rg.el"
 
 [emacs-setup]
-src.git = "https://git.sr.ht/~pkal/setup"
+src.git = "https://codeberg.org/~pkal/setup.el"
 src.branch = "master"
-fetch.git = "https://git.sr.ht/~pkal/setup"
+fetch.git = "https://codeberg.org/~pkal/setup.el"
 
 [emacs-scss-mode]
 src.git = "https://github.com/takeokunn/scss-mode"
