@@ -15,15 +15,15 @@
   };
   emacs-consult = {
     pname = "emacs-consult";
-    version = "48920075058421dde0592c7702ed84e9fa2ffb5d";
+    version = "c8bbb3f1e2fbbdcca773498e2db168c0929c3434";
     src = fetchFromGitHub {
       owner = "minad";
       repo = "consult";
-      rev = "48920075058421dde0592c7702ed84e9fa2ffb5d";
+      rev = "c8bbb3f1e2fbbdcca773498e2db168c0929c3434";
       fetchSubmodules = false;
-      sha256 = "sha256-XXiR6pRFmlrLqbC0l8o7XuoDso7nBdqE4ICmQyTbaOc=";
+      sha256 = "sha256-Ff2x0k28ihHfsYukbMUlCBZflNkBtEbGipx9R3HEw8Y=";
     };
-    date = "2025-08-15";
+    date = "2025-08-21";
   };
   emacs-consult-ghq = {
     pname = "emacs-consult-ghq";
@@ -151,15 +151,15 @@
   };
   emacs-magit = {
     pname = "emacs-magit";
-    version = "78334faa219e937855cd4bf7d9c2ab44d51b2dfa";
+    version = "5ece16e4f11ad206755f4dec3214d631fd8f6b98";
     src = fetchFromGitHub {
       owner = "magit";
       repo = "magit";
-      rev = "78334faa219e937855cd4bf7d9c2ab44d51b2dfa";
+      rev = "5ece16e4f11ad206755f4dec3214d631fd8f6b98";
       fetchSubmodules = false;
-      sha256 = "sha256-mGtDdIbtzz/Ut60Y4qbq3uH6UAFRcsBuNMf4OI6h9XQ=";
+      sha256 = "sha256-unVncrvhN+KZhv22Ouzvi6hdoh7m8IzfutbDe4ZZwGQ=";
     };
-    date = "2025-08-17";
+    date = "2025-08-23";
   };
   emacs-modus-themes = {
     pname = "emacs-modus-themes";
@@ -257,6 +257,18 @@
     };
     date = "2025-06-25";
   };
+  emacs-roam-md = {
+    pname = "emacs-roam-md";
+    version = "1113a568138c1e1084a3cd41a04a9cff2ff14a72";
+    src = fetchFromGitHub {
+      owner = "nobiot";
+      repo = "md-roam";
+      rev = "1113a568138c1e1084a3cd41a04a9cff2ff14a72";
+      fetchSubmodules = false;
+      sha256 = "sha256-YxkL6vqabh2qkmgH2zUNFhUoQBQ07sjj9bFdFrWGlf0=";
+    };
+    date = "2025-04-19";
+  };
   emacs-scss-mode = {
     pname = "emacs-scss-mode";
     version = "e8f8a4d64e46f05a833fce2b684d6cb02bd6a94d";
@@ -285,15 +297,15 @@
   };
   emacs-tsx-mode = {
     pname = "emacs-tsx-mode";
-    version = "a73358a2ffcaf651a889d351a824eb3fb4c48905";
+    version = "f6ea5b95d1f3b28141e1bcb0f3a11c665bae256e";
     src = fetchFromGitHub {
       owner = "orzechowskid";
       repo = "tsx-mode.el";
-      rev = "a73358a2ffcaf651a889d351a824eb3fb4c48905";
+      rev = "f6ea5b95d1f3b28141e1bcb0f3a11c665bae256e";
       fetchSubmodules = false;
-      sha256 = "sha256-0sEWrKi/2iI30SJcc0vw+rBVF10ZNPeAy/QrUvvdn38=";
+      sha256 = "sha256-YtTF93JTf89F3OFV4TRTYcbddJcQEQe4Q34Rkh0jaGg=";
     };
-    date = "2025-08-09";
+    date = "2025-08-21";
   };
   emacs-undohist = {
     pname = "emacs-undohist";
