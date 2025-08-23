@@ -3,5 +3,5 @@ epkgs.melpaBuild {
   # https://github.com/oantolin/orderless
   pname = "orderless";
   src = sources.emacs-orderless.src;
-  version = "20250705.0";
+  version = "20250728.0";
 }
