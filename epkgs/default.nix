@@ -17,6 +17,7 @@ let
   nix-mode = import ./packages/nix-mode.nix { inherit epkgs sources; };
   org-modern-indent = import ./packages/org-modern-indent.nix { inherit epkgs sources; };
   projectile = import ./packages/projectile.nix { inherit epkgs sources; };
+  roam-md = import ./packages/roam-md.nix { inherit epkgs sources; };
   setup = import ./packages/setup.nix { inherit epkgs sources; };
   scss-mode = import ./packages/scss-mode.nix { inherit epkgs sources; };
   tsx-mode = import ./packages/tsx-mode.nix { inherit epkgs sources css-in-js-mode; };
@@ -41,6 +42,7 @@ epkgs
     nix-mode
     org-modern-indent
     projectile
+    roam-md
     setup
     scss-mode
     tsx-mode

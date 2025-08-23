@@ -1158,7 +1158,16 @@ see: https://github.com/meatcar/emacs.d?tab=readme-ov-file#fast-scroll
       "i" org-roam-node-insert
       "c" org-roam-capture
       "j" org-roam-dailies-capture-today))
-  (:opt org-roam-directory (file-truename "~/.org-roam"))
+  (:opt org-roam-directory (file-truename "~/org-roam")))
+#+end_src
+
+**** roam-md
+
+#+begin_src emacs-lisp :tangle init.el
+(setup roam-md
+  (:opt org-roam-file-extensions '("org" "md"))
+
+  (md-roam-mode 1)
 
   (org-roam-db-autosync-mode))
 #+end_src
