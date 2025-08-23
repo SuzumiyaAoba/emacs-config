@@ -103,7 +103,7 @@ src.git = "https://github.com/dajva/rg.el"
 src.branch = "master"
 fetch.github = "dajva/rg.el"
 
-[emacs-roam-md]
+[emacs-md-roam]
 src.git = "https://github.com/nobiot/md-roam"
 src.branch = "main"
 fetch.github = "nobiot/md-roam"

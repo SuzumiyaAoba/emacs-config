@@ -270,6 +270,27 @@
         },
         "version": "5ece16e4f11ad206755f4dec3214d631fd8f6b98"
     },
+    "emacs-md-roam": {
+        "cargoLocks": null,
+        "date": "2025-04-19",
+        "extract": null,
+        "name": "emacs-md-roam",
+        "passthru": null,
+        "pinned": false,
+        "src": {
+            "deepClone": false,
+            "fetchSubmodules": false,
+            "leaveDotGit": false,
+            "name": null,
+            "owner": "nobiot",
+            "repo": "md-roam",
+            "rev": "1113a568138c1e1084a3cd41a04a9cff2ff14a72",
+            "sha256": "sha256-YxkL6vqabh2qkmgH2zUNFhUoQBQ07sjj9bFdFrWGlf0=",
+            "sparseCheckout": [],
+            "type": "github"
+        },
+        "version": "1113a568138c1e1084a3cd41a04a9cff2ff14a72"
+    },
     "emacs-modus-themes": {
         "cargoLocks": null,
         "date": "2025-07-18",
@@ -437,27 +458,6 @@
             "type": "github"
         },
         "version": "7611852b5517212a4f0fdab9cd9ecb0cf3995f08"
-    },
-    "emacs-roam-md": {
-        "cargoLocks": null,
-        "date": "2025-04-19",
-        "extract": null,
-        "name": "emacs-roam-md",
-        "passthru": null,
-        "pinned": false,
-        "src": {
-            "deepClone": false,
-            "fetchSubmodules": false,
-            "leaveDotGit": false,
-            "name": null,
-            "owner": "nobiot",
-            "repo": "md-roam",
-            "rev": "1113a568138c1e1084a3cd41a04a9cff2ff14a72",
-            "sha256": "sha256-YxkL6vqabh2qkmgH2zUNFhUoQBQ07sjj9bFdFrWGlf0=",
-            "sparseCheckout": [],
-            "type": "github"
-        },
-        "version": "1113a568138c1e1084a3cd41a04a9cff2ff14a72"
     },
     "emacs-scss-mode": {
         "cargoLocks": null,

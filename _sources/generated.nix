@@ -161,6 +161,18 @@
     };
     date = "2025-08-23";
   };
+  emacs-md-roam = {
+    pname = "emacs-md-roam";
+    version = "1113a568138c1e1084a3cd41a04a9cff2ff14a72";
+    src = fetchFromGitHub {
+      owner = "nobiot";
+      repo = "md-roam";
+      rev = "1113a568138c1e1084a3cd41a04a9cff2ff14a72";
+      fetchSubmodules = false;
+      sha256 = "sha256-YxkL6vqabh2qkmgH2zUNFhUoQBQ07sjj9bFdFrWGlf0=";
+    };
+    date = "2025-04-19";
+  };
   emacs-modus-themes = {
     pname = "emacs-modus-themes";
     version = "f4e67c80c94fcae23f87517902a10eccc8ad99d6";
@@ -256,18 +268,6 @@
       sha256 = "sha256-38a4/ckKLYpWQ3PBiAKQX5YcGa/Q+vaBaDIzqQDjmG8=";
     };
     date = "2025-06-25";
-  };
-  emacs-roam-md = {
-    pname = "emacs-roam-md";
-    version = "1113a568138c1e1084a3cd41a04a9cff2ff14a72";
-    src = fetchFromGitHub {
-      owner = "nobiot";
-      repo = "md-roam";
-      rev = "1113a568138c1e1084a3cd41a04a9cff2ff14a72";
-      fetchSubmodules = false;
-      sha256 = "sha256-YxkL6vqabh2qkmgH2zUNFhUoQBQ07sjj9bFdFrWGlf0=";
-    };
-    date = "2025-04-19";
   };
   emacs-scss-mode = {
     pname = "emacs-scss-mode";

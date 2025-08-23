@@ -4,7 +4,7 @@ epkgs.melpaBuild {
   src = sources.emacs-md-roam.src;
   version = "20250419.1521";
   packageRequires = with epkgs; [
-    org-raom
+    org-roam
     markdown-mode
   ];
 }

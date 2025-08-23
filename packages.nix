@@ -57,6 +57,7 @@ epkgs: with epkgs; [
   major-mode-hydra
   marginalia
   markdown-mode
+  md-roam
   minions
   mlscroll
   modus-themes

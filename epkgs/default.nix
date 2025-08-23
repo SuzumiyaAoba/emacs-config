@@ -12,12 +12,12 @@ let
   eglot-x = import ./packages/eglot-x.nix { inherit epkgs sources; };
   flymake-popon = import ./packages/flymake-popon.nix { inherit epkgs sources; };
   hydra-posframe = import ./packages/hydra-posframe.nix { inherit epkgs sources; };
+  md-roam = import ./packages/md-roam.nix { inherit epkgs sources; };
   modus-themes = import ./packages/modus-themes.nix { inherit epkgs sources; };
   nerd-icons-dired = import ./packages/nerd-icons-dired.nix { inherit epkgs sources; };
   nix-mode = import ./packages/nix-mode.nix { inherit epkgs sources; };
   org-modern-indent = import ./packages/org-modern-indent.nix { inherit epkgs sources; };
   projectile = import ./packages/projectile.nix { inherit epkgs sources; };
-  roam-md = import ./packages/roam-md.nix { inherit epkgs sources; };
   setup = import ./packages/setup.nix { inherit epkgs sources; };
   scss-mode = import ./packages/scss-mode.nix { inherit epkgs sources; };
   tsx-mode = import ./packages/tsx-mode.nix { inherit epkgs sources css-in-js-mode; };
@@ -38,11 +38,11 @@ epkgs
     flymake-popon
     hydra-posframe
     modus-themes
+    md-roam
     nerd-icons-dired
     nix-mode
     org-modern-indent
     projectile
-    roam-md
     setup
     scss-mode
     tsx-mode
