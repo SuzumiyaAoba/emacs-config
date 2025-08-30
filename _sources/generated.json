@@ -22,7 +22,7 @@
     },
     "emacs-consult": {
         "cargoLocks": null,
-        "date": "2025-08-21",
+        "date": "2025-08-29",
         "extract": null,
         "name": "emacs-consult",
         "passthru": null,
@@ -34,12 +34,12 @@
             "name": null,
             "owner": "minad",
             "repo": "consult",
-            "rev": "c8bbb3f1e2fbbdcca773498e2db168c0929c3434",
-            "sha256": "sha256-Ff2x0k28ihHfsYukbMUlCBZflNkBtEbGipx9R3HEw8Y=",
+            "rev": "51c5d3dcaac644db9b196d29fc624023288b24c5",
+            "sha256": "sha256-jaczfw2kkDe/8GzTRAozZf0/dMPl7lyCe9iVUc3qnMM=",
             "sparseCheckout": [],
             "type": "github"
         },
-        "version": "c8bbb3f1e2fbbdcca773498e2db168c0929c3434"
+        "version": "51c5d3dcaac644db9b196d29fc624023288b24c5"
     },
     "emacs-consult-ghq": {
         "cargoLocks": null,
@@ -251,7 +251,7 @@
     },
     "emacs-magit": {
         "cargoLocks": null,
-        "date": "2025-08-23",
+        "date": "2025-08-30",
         "extract": null,
         "name": "emacs-magit",
         "passthru": null,
@@ -263,12 +263,12 @@
             "name": null,
             "owner": "magit",
             "repo": "magit",
-            "rev": "5ece16e4f11ad206755f4dec3214d631fd8f6b98",
-            "sha256": "sha256-unVncrvhN+KZhv22Ouzvi6hdoh7m8IzfutbDe4ZZwGQ=",
+            "rev": "5d0cff48ec823d3de6fa453646b5766fc4083a74",
+            "sha256": "sha256-S0kMcQyxzcBOeyHXt6yxRCwh9AJTAV5dAS1c8ivWUiM=",
             "sparseCheckout": [],
             "type": "github"
         },
-        "version": "5ece16e4f11ad206755f4dec3214d631fd8f6b98"
+        "version": "5d0cff48ec823d3de6fa453646b5766fc4083a74"
     },
     "emacs-md-roam": {
         "cargoLocks": null,
@@ -335,7 +335,7 @@
     },
     "emacs-nerd-icons-dired": {
         "cargoLocks": null,
-        "date": "2025-07-27",
+        "date": "2025-08-27",
         "extract": null,
         "name": "emacs-nerd-icons-dired",
         "passthru": null,
@@ -347,12 +347,12 @@
             "name": null,
             "owner": "rainstormstudio",
             "repo": "nerd-icons-dired",
-            "rev": "5df0dd57022d0b3f565e05c5d9b3a8a723236676",
-            "sha256": "sha256-RVT1xxjOyXN21X/rXvx2KNVEUYqKAjYFWmgFT5MM5P4=",
+            "rev": "adf9a2bb5f3f13be7a676923639337f3fcc5d8c3",
+            "sha256": "sha256-N388FDrm/zsT4frBv1rl8XE+Pflv90XmLHM96SivPXQ=",
             "sparseCheckout": [],
             "type": "github"
         },
-        "version": "5df0dd57022d0b3f565e05c5d9b3a8a723236676"
+        "version": "adf9a2bb5f3f13be7a676923639337f3fcc5d8c3"
     },
     "emacs-nix-mode": {
         "cargoLocks": null,
@@ -482,7 +482,7 @@
     },
     "emacs-setup": {
         "cargoLocks": null,
-        "date": "2024-12-24",
+        "date": "2025-08-29",
         "extract": null,
         "name": "emacs-setup",
         "passthru": null,
@@ -492,13 +492,13 @@
             "fetchSubmodules": false,
             "leaveDotGit": false,
             "name": null,
-            "rev": "992e7b49f0dbbd6979598902e67079fa9607febf",
-            "sha256": "sha256-cIIPrzQvQjBekM5YJcWUYDIp1xV/YBEKm5txdASl4qY=",
+            "rev": "0cf74c50d90c00450f8a3425c1b84b3bccd99f84",
+            "sha256": "sha256-i8jJGv8nJ3f/vuZEyB1Fkn7ujIboWZCY9j1oTgVUvyc=",
             "sparseCheckout": [],
             "type": "git",
             "url": "https://codeberg.org/pkal/setup.el"
         },
-        "version": "992e7b49f0dbbd6979598902e67079fa9607febf"
+        "version": "0cf74c50d90c00450f8a3425c1b84b3bccd99f84"
     },
     "emacs-tsx-mode": {
         "cargoLocks": null,
@@ -544,7 +544,7 @@
     },
     "emacs-vertico": {
         "cargoLocks": null,
-        "date": "2025-08-06",
+        "date": "2025-08-27",
         "extract": null,
         "name": "emacs-vertico",
         "passthru": null,
@@ -554,13 +554,13 @@
             "fetchSubmodules": false,
             "leaveDotGit": false,
             "name": null,
-            "rev": "c479ee6d2d31478a5dd8235157c8308098585b80",
-            "sha256": "sha256-LiO62Ls14QCcug7IpBOqdcMQ7/Ah321D/7F4rF6ID6I=",
+            "rev": "718f8584d09082451c29066c3c370bdaff02fcab",
+            "sha256": "sha256-kR9kSyW2XkSZl/sMvk07UywuRQ9AkwZyMOMxWNihVUE=",
             "sparseCheckout": [],
             "type": "git",
             "url": "https://github.com/minad/vertico"
         },
-        "version": "c479ee6d2d31478a5dd8235157c8308098585b80"
+        "version": "718f8584d09082451c29066c3c370bdaff02fcab"
     },
     "emacs-vundo": {
         "cargoLocks": null,

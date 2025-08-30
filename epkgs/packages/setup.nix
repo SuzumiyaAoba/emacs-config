@@ -3,5 +3,5 @@ epkgs.melpaBuild {
   # https://git.sr.ht/~pkal/setup
   pname = "setup";
   src = sources.emacs-setup.src;
-  version = "20241224.0";
+  version = "20250829.0";
 }
