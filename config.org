@@ -364,7 +364,7 @@ see: https://github.com/meatcar/emacs.d?tab=readme-ov-file#fast-scroll
 
 #+begin_src emacs-lisp :tangle init.el
 (setup ace-window
-  (:global "M-o" ace-window)
+  (keymap-global-set "M-o" 'ace-window)
   (:opt aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l)))
 #+end_src
 
@@ -415,7 +415,7 @@ see: https://github.com/meatcar/emacs.d?tab=readme-ov-file#fast-scroll
 
 #+begin_src emacs-lisp :tangle init.el
 (setup vundo
-  (:global "C-x u" vundo))
+  (keymap-global-set "C-x u" 'vundo))
 #+end_src
 
 *** undohist
@@ -431,8 +431,8 @@ see: https://github.com/meatcar/emacs.d?tab=readme-ov-file#fast-scroll
 
 #+begin_src emacs-lisp :tangle init.el
 (setup anzu
-  (:global [remap query-replace] anzu-query-replace
-           [remap query-replace-regexp] anzu-query-replace-regex)
+  (keymap-global-set "M-%" 'anzu-query-replace)
+  (keymap-global-set "C-M-%" 'anzu-query-replace-regex)
   (:opt anzu-replace-threshold 1000
         anzu-search-threshold 1000)
   (:with-mode emacs-startup
@@ -616,20 +616,19 @@ see: https://github.com/meatcar/emacs.d?tab=readme-ov-file#fast-scroll
         consult-preview-key 'any
         xref-show-xrefs-function #'consult-xref
         xref-show-definitions-function #'consult-xref)
-  (:global
-   "C-x b" consult-buffer
+  (keymap-global-set "C-x b" 'consult-buffer)
 
-   "M-y" consult-yank-pop
+  (keymap-global-set "M-y" 'consult-yank-pop)
 
-   "M-g f" consult-flymake
-   "M-g o" consult-outline
-   "M-g i" consult-imenu
+  (keymap-global-set "M-g f" 'consult-flymake)
+  (keymap-global-set "M-g o" 'consult-outline)
+  (keymap-global-set "M-g i" 'consult-imenu)
 
-   "M-s @" consult-line-at
-   "M-s s" consult-line
-   "M-s f" consult-find
-   "M-s r" consult-ripgrep
-   "M-s F" consult-focus-lines)
+  (keymap-global-set "M-s @" 'consult-line-at)
+  (keymap-global-set "M-s s" 'consult-line)
+  (keymap-global-set "M-s f" 'consult-find)
+  (keymap-global-set "M-s r" 'consult-ripgrep)
+  (keymap-global-set "M-s F" 'consult-focus-lines)
   (:when-loaded
     (consult-customize
      consult-buffer
@@ -649,8 +648,7 @@ see: https://github.com/meatcar/emacs.d?tab=readme-ov-file#fast-scroll
 
 #+begin_src emacs-lisp :tangle init.el
 (setup consult-ghq
-  (:global
-   "C-c C-g" consult-ghq-switch-project))
+  (keymap-global-set "C-c C-g" 'consult-ghq-switch-project))
 #+end_src
 
 **** consult-projectile
@@ -726,8 +724,7 @@ see: https://github.com/meatcar/emacs.d?tab=readme-ov-file#fast-scroll
 
 #+begin_src emacs-lisp :tangle init.el
 (setup embark
-  (:global
-   "C-." embark-act)
+  (keymap-global-set "C-." 'embark-act)
   ;; (:opt embark-indicators
   ;;       '(embark-highlight-indicator
   ;;         embark-isearch-highlight-indicator
@@ -755,8 +752,7 @@ see: https://github.com/meatcar/emacs.d?tab=readme-ov-file#fast-scroll
 
 #+begin_src emacs-lisp :tangle init.el
 (setup ddskk
-  (:global
-   "C-x j" skk-mode)
+  (keymap-global-set "C-x j" 'skk-mode)
   (:opt skk-preload t
         default-input-method "japanese-skk"
         skk-byte-compile-init-file t
@@ -785,8 +781,8 @@ see: https://github.com/meatcar/emacs.d?tab=readme-ov-file#fast-scroll
 
 #+begin_src emacs-lisp :tangle init.el
 (setup avy
-  (:global "C-:" 'avy-goto-char
-           "C-'" 'avy-goto-char-2))
+  (keymap-global-set "C-:" 'avy-goto-char)
+  (keymap-global-set "C-'" 'avy-goto-char-2))
 #+end_src
 
 ** Curosr
@@ -796,7 +792,7 @@ see: https://github.com/meatcar/emacs.d?tab=readme-ov-file#fast-scroll
 #+begin_src emacs-lisp :tangle init.el
 (setup multiple-cursors
   (:load-after hydra)
-  (:global "C-*" multiple-cursors/body)
+  (keymap-global-set "C-*" 'multiple-cursors/body)
 
   (defvar multiple-cursors--title "Multiple cursors")
   (pretty-hydra-define multiple-cursors (:foreign-keys warn :title multiple-cursors--title :quit-key "q")
@@ -918,7 +914,7 @@ see: https://github.com/meatcar/emacs.d?tab=readme-ov-file#fast-scroll
 
 #+begin_src emacs-lisp :tangle init.el
 (setup treemacs
-  (:global "C-\\" treemacs)
+  (keymap-global-set "C-\\" 'treemacs)
   (:opt treemacs-user-mode-line-format 'none)
   (:when-loaded
     (treemacs-fringe-indicator-mode t)
@@ -1149,7 +1145,7 @@ see: https://github.com/meatcar/emacs.d?tab=readme-ov-file#fast-scroll
 #+begin_src emacs-lisp :tangle init.el
 (setup org-roam
   (define-prefix-command 'org-roam-prefix-map)
-  (:global "C-c n" org-roam-prefix-map)
+  (keymap-global-set "C-c n" 'org-roam-prefix-map)
   (:with-map org-roam-prefix-map
      (:bind
       "l" org-roam-buffer-toggle
@@ -1198,10 +1194,8 @@ see: https://github.com/meatcar/emacs.d?tab=readme-ov-file#fast-scroll
 #+begin_src emacs-lisp :tangle init.el
 (setup eldoc
   (:opt eldoc-echo-area-use-multiline-p nil)
-  (:global
-   ;; "C-c q" toggle-eldoc-doc-buffer
-   "C-c q" eldoc-box-hover-at-point-mode
-   )
+  ;; (keymap-global-set "C-c q" 'toggle-eldoc-doc-buffer)
+  (keymap-global-set "C-c q" 'eldoc-box-hover-at-point-mode)
   (defun get-buffer-by-regex (regex)
     (car (seq-filter (lambda (buf)
                        (string-match-p regex (buffer-name buf)))
