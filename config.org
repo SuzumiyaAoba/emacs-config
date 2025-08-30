@@ -1188,7 +1188,7 @@ see: https://github.com/meatcar/emacs.d?tab=readme-ov-file#fast-scroll
 
 #+begin_src emacs-lisp :tangle init.el
 (setup markdown-mode
-  (:file-match "\\.mdx\\'")
+  (:match-file "\\.mdx\\'")
   (:opt markdown-fontify-code-blocks-natively t))
 #+end_src
 
@@ -1412,7 +1412,7 @@ see: https://github.com/meatcar/emacs.d?tab=readme-ov-file#fast-scroll
 
 #+begin_src emacs-lisp :tangle init.el
 (setup typescript-ts-mode
-  (:file-match "\\.m?ts\\'")
+  (:match-file "\\.m?ts\\'")
   (:opt typescript-indent-level 2
         typescript-tsx-indent-offset 2))
 
@@ -1424,7 +1424,7 @@ see: https://github.com/meatcar/emacs.d?tab=readme-ov-file#fast-scroll
 
 (setup tsx-mode
   (:load-after coverlay css-in-js-mode origami)
-  (:file-match "\\.[jt]s[x]?\\'"))
+  (:match-file "\\.[jt]s[x]?\\'"))
 #+end_src
 
 *** Coq
