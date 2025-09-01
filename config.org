@@ -1154,16 +1154,26 @@ see: https://github.com/meatcar/emacs.d?tab=readme-ov-file#fast-scroll
       "i" org-roam-node-insert
       "c" org-roam-capture
       "j" org-roam-dailies-capture-today))
+
+  (with-eval-after-load 'org-roam-node
+    (cl-defmethod org-roam-node-my-id ((node org-roam-node))
+      "タイムスタンプとUUIDを組み合わせたファイル名を生成する。"
+      ;; この関数は node 引数を取りますが、今回は使用しません。
+      (let* ((node-id (format "%08x-%04x-4%03x-%04x-%012x"
+                              (random (expt 16 8))
+                              (random (expt 16 4))
+                              (random (expt 16 3))
+                              (+ #x8000 (random #x4000)) ; UUID v4 の variant
+                              (random (expt 16 12))))
+             (timestamp (format-time-string "%Y%m%d%H%M%S")))
+        (concat timestamp "-" node-id))))
+
   (:opt org-roam-directory (file-truename "~/org-roam")
-        org-roam-node-slug-function (lambda (title)
-                                      (let* ((node-id (format "%08X-%04X-4%03X-%04X-%012X"
-                                                              (random (expt 16 8))
-                                                              (random (expt 16 4))
-                                                              (random (expt 16 3))
-                                                              (+ 32768 (random 32768)) ; Ensure first bit is set
-                                                              (random (expt 16 12))))
-                                             (timestamp (format-time-string "%Y%m%d%H%M%S")))
-                                        (concat timestamp "-" node-id)))))
+        org-roam-capture-templates
+        '(("d" "default" plain "%?"
+           :target (file+head "${my-id}.org"
+                              "#+title: ${title}\n")
+           :unnarrowed t))))
 #+end_src
 
 **** md-roam
