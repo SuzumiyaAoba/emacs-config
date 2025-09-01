@@ -1157,13 +1157,13 @@ see: https://github.com/meatcar/emacs.d?tab=readme-ov-file#fast-scroll
   (:opt org-roam-directory (file-truename "~/org-roam")
         org-roam-node-slug-function (lambda (title)
                                       (let* ((node-id (format "%08X-%04X-4%03X-%04X-%012X"
-                                                             (random (expt 16 8))
-                                                             (random (expt 16 4))
-                                                             (random (expt 16 3))
-                                                             (+ 32768 (random 32768)) ; Ensure first bit is set
-                                                             (random (expt 16 12))))
+                                                              (random (expt 16 8))
+                                                              (random (expt 16 4))
+                                                              (random (expt 16 3))
+                                                              (+ 32768 (random 32768)) ; Ensure first bit is set
+                                                              (random (expt 16 12))))
                                              (timestamp (format-time-string "%Y%m%d%H%M%S")))
-                                        (concat timestamp "-" node-id))))))
+                                        (concat timestamp "-" node-id)))))
 #+end_src
 
 **** md-roam
