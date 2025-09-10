@@ -450,10 +450,13 @@ see: https://github.com/meatcar/emacs.d?tab=readme-ov-file#fast-scroll
 
 #+begin_src emacs-lisp :tangle init.el
 (setup dired
-  (:opt dired-dwim-target t
-        dired-do-revert-buffer t
+  (:hook dired-hide-details-mode)
+  (:opt dired-do-revert-buffer t
         dired-recursive-copies 'always
-        dired-isearch-filenames t)
+        dired-isearch-filenames t
+        ;; https://qiita.com/wakamenod/items/6609b812a99e99f24cf4
+        dired-dwim-target (lambda () (if current-prefix-arg (dired-dwim-target-next) nil))
+        )
 
   (require 'dired-x))
 #+end_src
