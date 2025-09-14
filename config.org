@@ -1043,7 +1043,7 @@ see: https://github.com/meatcar/emacs.d?tab=readme-ov-file#fast-scroll
    org-display-custom-times t
    org-image-actual-width nil
 
-   org-todo-keywords '((sequence "TODO(t)" "FOCUS(f)" "WAIT(w)" "WIP(p)" "REMIND(r)" "SOMEDAY(s)" "UNREAD(u)" "|" "DONE(d)" "READ"))
+   org-todo-keywords '((sequence "TODO(t)" "DOING(i)" "WAIT(w)" "WIP(p)" "REMIND(r)" "SOMEDAY(s)" "UNREAD(u)" "|" "DONE(d)" "READ" "CANCELED(c@)"))
    org-enforce-todo-dependencies t
    org-hierarchical-todo-statistics nil
 
