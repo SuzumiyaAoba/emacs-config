@@ -1070,7 +1070,7 @@ see: https://github.com/meatcar/emacs.d?tab=readme-ov-file#fast-scroll
                           " ┄┄┄┄┄ " "┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄")
    org-agenda-current-time-string "⭠ now ─────────────────────────────────────────────────"
 
-  ;; see: https://misohena.jp/blog/2021-08-29-colorize-saturday-and-japanese-holidays-in-org-agenda.html
+   ;; see: https://misohena.jp/blog/2021-08-29-colorize-saturday-and-japanese-holidays-in-org-agenda.html
    org-agenda-day-face-function (lambda (date)
                                   (let ((face (cond
                                                ;; 土曜日
@@ -1098,6 +1098,8 @@ see: https://github.com/meatcar/emacs.d?tab=readme-ov-file#fast-scroll
      (message "Executing jshell snippets")
      (org-babel-eval "jshell -q" (concat body "\n/exit")))
    (add-to-list 'org-src-lang-modes '("jshell" . "java")))
+  (:with-mode org-mode
+    (:hook (lambda () (setq truncate-lines nil))))
 )
 #+end_src
 
