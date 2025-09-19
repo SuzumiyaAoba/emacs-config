@@ -97,6 +97,7 @@ epkgs: with epkgs; [
   treemacs-tab-bar
   treesit-auto
   treesit-fold
+  treesit-grammars
   tsx-mode
   coverlay
   undohist
