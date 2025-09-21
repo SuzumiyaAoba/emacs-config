@@ -7,6 +7,7 @@ epkgs: with epkgs; [
   avy
   blamer
   cape
+  catppuccin-theme
   cargo-mode
   centaur-tabs
   consult

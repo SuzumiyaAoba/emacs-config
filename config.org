@@ -264,27 +264,35 @@ see: https://github.com/meatcar/emacs.d?tab=readme-ov-file#fast-scroll
 *** Theme
 
 #+begin_src emacs-lisp :tangle init.el
-(setup modus-themes
-  (:opt modus-themes-italic-constructs t
-        modus-themes-bold-constructs t
-        modus-themes-region '(bg-only no-extend)
-        modus-themes-mixed-fonts t
-        modus-themes-subtle-line-numbers t
-        modus-themes-org-blocks 'gray-background
-        modus-themes-common-palette-overrides
-	'(
-          (comment yellow-cooler)
-          ;; (comment yellow-warmer)
-          ;; (string green-cooler)
-          (string green-warmer)
-          ;; (keyword cyan-cooler)
-          ))
+;; (setup modus-themes
+;;   (:opt modus-themes-italic-constructs t
+;;         modus-themes-bold-constructs t
+;;         modus-themes-region '(bg-only no-extend)
+;;         modus-themes-mixed-fonts t
+;;         modus-themes-subtle-line-numbers t
+;;         modus-themes-org-blocks 'gray-background
+;;         modus-themes-common-palette-overrides
+;; 	'(
+;;           (comment yellow-cooler)
+;;           ;; (comment yellow-warmer)
+;;           ;; (string green-cooler)
+;;           (string green-warmer)
+;;           ;; (keyword cyan-cooler)
+;;           ))
 
-  (load-theme 'modus-operandi-tinted t)
-  ;; (load-theme 'modus-vivendi-tritanopia t)
-  ;; (load-theme 'modus-operandi-deuteranopia t)
-  ;; (load-theme 'modus-operandi-tritanopia t)
-  )
+;;   (load-theme 'modus-operandi-tinted t)
+;;   ;; (load-theme 'modus-vivendi-tritanopia t)
+;;   ;; (load-theme 'modus-operandi-deuteranopia t)
+;;   ;; (load-theme 'modus-operandi-tritanopia t)
+;;   )
+#+end_src
+
+#+begin_src emacs-lisp :tangle init.el
+(setup catppuccin-theme
+  (:opt catppuccin-flavor 'macchiato)
+
+  (load-theme 'catppuccin :no-confirm)
+  (catppuccin-reload))
 #+end_src
 
 *** Modeline
