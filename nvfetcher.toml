@@ -58,6 +58,11 @@ src.git = "https://github.com/Ladicle/hydra-posframe"
 src.branch = "master"
 fetch.github = "Ladicle/hydra-posframe"
 
+[emacs-lean4-mode]
+src.git = "https://github.com/leanprover-community/lean4-mode"
+src.branch = "master"
+fetch.github = "leanprover-community/lean4-mode"
+
 [emacs-magit]
 src.git = "https://github.com/magit/magit"
 src.branch = "main"

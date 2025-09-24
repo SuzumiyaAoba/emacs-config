@@ -15,15 +15,15 @@
   };
   emacs-consult = {
     pname = "emacs-consult";
-    version = "51c5d3dcaac644db9b196d29fc624023288b24c5";
+    version = "d16c25f00f4b1e68667dd95d444a5f3260eb8193";
     src = fetchFromGitHub {
       owner = "minad";
       repo = "consult";
-      rev = "51c5d3dcaac644db9b196d29fc624023288b24c5";
+      rev = "d16c25f00f4b1e68667dd95d444a5f3260eb8193";
       fetchSubmodules = false;
-      sha256 = "sha256-jaczfw2kkDe/8GzTRAozZf0/dMPl7lyCe9iVUc3qnMM=";
+      sha256 = "sha256-zQQ8hdgdtQWOFdy82SnigPGkp0wSsKdXkbXqhK3PL3o=";
     };
-    date = "2025-08-29";
+    date = "2025-09-20";
   };
   emacs-consult-ghq = {
     pname = "emacs-consult-ghq";
@@ -39,27 +39,27 @@
   };
   emacs-copilot = {
     pname = "emacs-copilot";
-    version = "4f51b3c21c42756d09ee17011201ea7d6e18ff69";
+    version = "6a2ad80489b8a0d021df95293eb7ac370aea140b";
     src = fetchFromGitHub {
       owner = "copilot-emacs";
       repo = "copilot.el";
-      rev = "4f51b3c21c42756d09ee17011201ea7d6e18ff69";
+      rev = "6a2ad80489b8a0d021df95293eb7ac370aea140b";
       fetchSubmodules = false;
-      sha256 = "sha256-5nB+skW0yjKvLUkDcwFJGSsCcRPZnJ44KoiTJno2iRM=";
+      sha256 = "sha256-aiVRefuH4jpAtTgMMDa7jI0Yy08J4+fV59f8nd7vT7g=";
     };
-    date = "2025-06-30";
+    date = "2025-09-16";
   };
   emacs-corfu = {
     pname = "emacs-corfu";
-    version = "6b1ceef882e9809083e660c10d669d132746b975";
+    version = "d6cc682c15b594f2bc9f55196a382a5fda7a7fc6";
     src = fetchFromGitHub {
       owner = "minad";
       repo = "corfu";
-      rev = "6b1ceef882e9809083e660c10d669d132746b975";
+      rev = "d6cc682c15b594f2bc9f55196a382a5fda7a7fc6";
       fetchSubmodules = false;
-      sha256 = "sha256-mJ0r1cc0RHcJFL16AbyaSl+WnOmIRlb1F/EEVD65fHE=";
+      sha256 = "sha256-3yB6hGLOlom0q0DoJN9VW8fimyi+eztabMlDO2TslOY=";
     };
-    date = "2025-08-05";
+    date = "2025-09-23";
   };
   emacs-corfu-terminal = {
     pname = "emacs-corfu-terminal";
@@ -149,17 +149,29 @@
     };
     date = "2023-07-17";
   };
+  emacs-lean4-mode = {
+    pname = "emacs-lean4-mode";
+    version = "1388f9d1429e38a39ab913c6daae55f6ce799479";
+    src = fetchFromGitHub {
+      owner = "leanprover-community";
+      repo = "lean4-mode";
+      rev = "1388f9d1429e38a39ab913c6daae55f6ce799479";
+      fetchSubmodules = false;
+      sha256 = "sha256-6XFcyqSTx1CwNWqQvIc25cuQMwh3YXnbgr5cDiOCxBk=";
+    };
+    date = "2025-05-31";
+  };
   emacs-magit = {
     pname = "emacs-magit";
-    version = "5d0cff48ec823d3de6fa453646b5766fc4083a74";
+    version = "5fa06e2b54d69a832e443d5bc1d5899959eadf0d";
     src = fetchFromGitHub {
       owner = "magit";
       repo = "magit";
-      rev = "5d0cff48ec823d3de6fa453646b5766fc4083a74";
+      rev = "5fa06e2b54d69a832e443d5bc1d5899959eadf0d";
       fetchSubmodules = false;
-      sha256 = "sha256-S0kMcQyxzcBOeyHXt6yxRCwh9AJTAV5dAS1c8ivWUiM=";
+      sha256 = "sha256-K7w0Q0qCwLpk1RniPv87bwKokFeZgi8ot3ySQAoHffI=";
     };
-    date = "2025-08-30";
+    date = "2025-09-23";
   };
   emacs-md-roam = {
     pname = "emacs-md-roam";
@@ -175,27 +187,27 @@
   };
   emacs-modus-themes = {
     pname = "emacs-modus-themes";
-    version = "f4e67c80c94fcae23f87517902a10eccc8ad99d6";
+    version = "2c4e1dc7ce086125ddcbdbfc29f3d934e401575a";
     src = fetchFromGitHub {
       owner = "protesilaos";
       repo = "modus-themes";
-      rev = "f4e67c80c94fcae23f87517902a10eccc8ad99d6";
+      rev = "2c4e1dc7ce086125ddcbdbfc29f3d934e401575a";
       fetchSubmodules = false;
-      sha256 = "sha256-VcOTJUSr/ucyjhMi+Rd6qMaamfhwP00uLP3wnUNMaZo=";
+      sha256 = "sha256-kfAp1pNdWjSZG6Gkj6n1oPlnLbCaAwyrsD50mas46QQ=";
     };
-    date = "2025-07-18";
+    date = "2025-09-23";
   };
   emacs-moody = {
     pname = "emacs-moody";
-    version = "f20101353fb89db8266107b82d3d82d2eead8ed5";
+    version = "293036f57cc97aa7c085c8044d76fca481f0b54b";
     src = fetchFromGitHub {
       owner = "tarsius";
       repo = "moody";
-      rev = "f20101353fb89db8266107b82d3d82d2eead8ed5";
+      rev = "293036f57cc97aa7c085c8044d76fca481f0b54b";
       fetchSubmodules = false;
-      sha256 = "sha256-zmRFu/akWwck3RjNGeWubb69IGrJKuPtsULLV6KS4uc=";
+      sha256 = "sha256-LlPQkBIz3g2OU2/Hw9CWsp6cJrVoXrZ2jc/EjMOVzek=";
     };
-    date = "2025-08-15";
+    date = "2025-09-13";
   };
   emacs-nerd-icons-dired = {
     pname = "emacs-nerd-icons-dired";
@@ -223,15 +235,15 @@
   };
   emacs-orderless = {
     pname = "emacs-orderless";
-    version = "31812d9252c6cfa7eae8fa04cd40c8b2081e9936";
+    version = "9cf1c90e2501566ceba59f3220b4630995004efd";
     src = fetchFromGitHub {
       owner = "oantolin";
       repo = "orderless";
-      rev = "31812d9252c6cfa7eae8fa04cd40c8b2081e9936";
+      rev = "9cf1c90e2501566ceba59f3220b4630995004efd";
       fetchSubmodules = false;
-      sha256 = "sha256-+z17BBbg+7CTdkt1R7381+rVW9iYDQsOzU7vJKqi8zE=";
+      sha256 = "sha256-psI93/dgYbiowni0IIGJtfSIcsh9GidAZdRMgIMIoxE=";
     };
-    date = "2025-07-28";
+    date = "2025-09-22";
   };
   emacs-org-modern-indent = {
     pname = "emacs-org-modern-indent";
@@ -259,15 +271,15 @@
   };
   emacs-rg = {
     pname = "emacs-rg";
-    version = "7611852b5517212a4f0fdab9cd9ecb0cf3995f08";
+    version = "19d4b8a52b27cae2957e22400ce1e0f16b300160";
     src = fetchFromGitHub {
       owner = "dajva";
       repo = "rg.el";
-      rev = "7611852b5517212a4f0fdab9cd9ecb0cf3995f08";
+      rev = "19d4b8a52b27cae2957e22400ce1e0f16b300160";
       fetchSubmodules = false;
-      sha256 = "sha256-38a4/ckKLYpWQ3PBiAKQX5YcGa/Q+vaBaDIzqQDjmG8=";
+      sha256 = "sha256-142CFW24AiumVTEM5MkD2dCat8DpFvnMhIQf1B7ayIU=";
     };
-    date = "2025-06-25";
+    date = "2025-09-14";
   };
   emacs-scss-mode = {
     pname = "emacs-scss-mode";
@@ -321,17 +333,17 @@
   };
   emacs-vertico = {
     pname = "emacs-vertico";
-    version = "718f8584d09082451c29066c3c370bdaff02fcab";
+    version = "4a11453e9de3d92b566bf0aa032da96b5b2e6770";
     src = fetchgit {
       url = "https://github.com/minad/vertico";
-      rev = "718f8584d09082451c29066c3c370bdaff02fcab";
+      rev = "4a11453e9de3d92b566bf0aa032da96b5b2e6770";
       fetchSubmodules = false;
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-kR9kSyW2XkSZl/sMvk07UywuRQ9AkwZyMOMxWNihVUE=";
+      sha256 = "sha256-ZbEzNtKRWFpiqMe876wiI4/kmP6MHNAoGD7skvvvM4M=";
     };
-    date = "2025-08-27";
+    date = "2025-09-09";
   };
   emacs-vundo = {
     pname = "emacs-vundo";

@@ -1492,6 +1492,12 @@ see: https://github.com/meatcar/emacs.d?tab=readme-ov-file#fast-scroll
 (setup nginx-mode)
 #+end_src
 
+*** Lean4
+
+#+begin_src emacs-lisp :tangle init.el
+(setup lean4-mode)
+#+end_src
+
 ** AI
 
 *** copilot

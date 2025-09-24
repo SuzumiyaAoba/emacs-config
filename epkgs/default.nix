@@ -12,6 +12,7 @@ let
   eglot-x = import ./packages/eglot-x.nix { inherit epkgs sources; };
   flymake-popon = import ./packages/flymake-popon.nix { inherit epkgs sources; };
   hydra-posframe = import ./packages/hydra-posframe.nix { inherit epkgs sources; };
+  lean4-mode = import ./packages/lean4-mode.nix { inherit epkgs sources; };
   md-roam = import ./packages/md-roam.nix { inherit epkgs sources; };
   modus-themes = import ./packages/modus-themes.nix { inherit epkgs sources; };
   nerd-icons-dired = import ./packages/nerd-icons-dired.nix { inherit epkgs sources; };
@@ -20,7 +21,7 @@ let
   projectile = import ./packages/projectile.nix { inherit epkgs sources; };
   setup = import ./packages/setup.nix { inherit epkgs sources; };
   scss-mode = import ./packages/scss-mode.nix { inherit epkgs sources; };
-  tsx-mode = import ./packages/tsx-mode.nix { inherit epkgs sources css-in-js-mode; };
+  # tsx-mode = import ./packages/tsx-mode.nix { inherit epkgs sources css-in-js-mode; };  # 一時的に無効化
   undohist = import ./packages/undohist.nix { inherit epkgs sources; };
   # vertico = import ./packages/vertico.nix { inherit epkgs sources; };
   vundo = import ./packages/vundo.nix { inherit epkgs sources; };
@@ -37,6 +38,7 @@ epkgs
     eglot-x
     flymake-popon
     hydra-posframe
+    lean4-mode
     modus-themes
     md-roam
     nerd-icons-dired
@@ -45,7 +47,7 @@ epkgs
     projectile
     setup
     scss-mode
-    tsx-mode
+    # tsx-mode  # 一時的に無効化
     undohist
     # vertico
     vundo

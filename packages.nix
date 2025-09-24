@@ -53,6 +53,7 @@ epkgs: with epkgs; [
   hydra-posframe
   keycast
   kotlin-mode
+  lean4-mode  # epkgsのカスタムパッケージとして提供
   ligature
   magit
   major-mode-hydra
@@ -97,7 +98,7 @@ epkgs: with epkgs; [
   treemacs-projectile
   treemacs-tab-bar
   treesit-auto
-  treesit-fold
+  # treesit-fold  # 一時的に無効化（nixpkgsで利用できない）
   (treesit-grammars.with-grammars (
     p: with p; [
       tree-sitter-bash
@@ -126,8 +127,8 @@ epkgs: with epkgs; [
       tree-sitter-yaml
     ]
   ))
-  tsx-mode
-  coverlay
+  # tsx-mode  # 一時的に無効化（依存関係の問題）
+  # coverlay  # 一時的に無効化（nixpkgsで利用できない、covパッケージの代替？）
   undohist
   valign
   vertico

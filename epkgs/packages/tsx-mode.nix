@@ -7,4 +7,6 @@ epkgs.melpaBuild {
   packageRequires = with epkgs; [
     css-in-js-mode
   ];
+  # Note: Some optional dependencies (cov, treesit-fold, flymake-jsts, indent-bars) 
+  # are not available in nixpkgs and have been omitted
 }
