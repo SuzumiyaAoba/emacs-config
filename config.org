@@ -1224,7 +1224,7 @@ see: https://github.com/meatcar/emacs.d?tab=readme-ov-file#fast-scroll
 
 #+begin_src emacs-lisp :tangle init.el
 (setup markdown-mode
-  (:file-match "\\.mdx\\'")
+  (:file-match "\\.mdx?\\'")
   (:opt markdown-fontify-code-blocks-natively t))
 #+end_src
 

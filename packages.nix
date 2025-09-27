@@ -51,6 +51,7 @@ epkgs: with epkgs; [
   highlight-symbol
   hydra
   hydra-posframe
+  kdl-mode
   keycast
   kotlin-mode
   lean4-mode  # epkgsのカスタムパッケージとして提供
