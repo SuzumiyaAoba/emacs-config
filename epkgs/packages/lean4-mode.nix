@@ -3,7 +3,7 @@ epkgs.melpaBuild {
   # https://github.com/leanprover-community/lean4-mode
   pname = "lean4-mode";
   src = sources.emacs-lean4-mode.src;
-  version = "20250101.1";
+  version = "20250531.0";
   packageRequires = with epkgs; [
     dash
     flycheck

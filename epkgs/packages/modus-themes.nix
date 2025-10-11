@@ -3,5 +3,5 @@ epkgs.melpaBuild {
   # https://github.com/protesilaos/modus-themes
   pname = "modus-themes";
   src = sources.emacs-modus-themes.src;
-  version = "20250718.0";
+  version = "20250101.0";
 }
