@@ -3,5 +3,5 @@ epkgs.melpaBuild {
   # https://github.com/dajva/rg.el
   pname = "rg";
   src = sources.emacs-rg.src;
-  version = "20250101.0";
+  version = "20251022.0";
 }

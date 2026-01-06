@@ -3,5 +3,5 @@ epkgs.melpaBuild {
   # https://github.com/minad/corfu
   pname = "corfu";
   src = sources.emacs-corfu.src;
-  version = "20250923.0";
+  version = "20260106.0";
 }

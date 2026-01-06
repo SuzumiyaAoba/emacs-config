@@ -20,15 +20,15 @@
   };
   emacs-consult = {
     pname = "emacs-consult";
-    version = "f0c896d32624ee6ca0bd7e9b9b7638154fa366ae";
+    version = "4ca98db03dac33476d60657ba975639ee30f2e9e";
     src = fetchFromGitHub {
       owner = "minad";
       repo = "consult";
-      rev = "f0c896d32624ee6ca0bd7e9b9b7638154fa366ae";
+      rev = "4ca98db03dac33476d60657ba975639ee30f2e9e";
       fetchSubmodules = false;
-      sha256 = "sha256-S/BcOpCL5M4ldcDmiupwd6VQ2fxWjVbuhDlj8GN34i4=";
+      sha256 = "sha256-T7gE2Up4+Wej7ih+BdPO0h4de6FaXCQtzIZHY2KeB98=";
     };
-    date = "2025-10-08";
+    date = "2026-01-05";
   };
   emacs-consult-ghq = {
     pname = "emacs-consult-ghq";
@@ -44,27 +44,27 @@
   };
   emacs-copilot = {
     pname = "emacs-copilot";
-    version = "6a2ad80489b8a0d021df95293eb7ac370aea140b";
+    version = "7ee4758bb748beac7d29e62de5d2e752ebafb858";
     src = fetchFromGitHub {
       owner = "copilot-emacs";
       repo = "copilot.el";
-      rev = "6a2ad80489b8a0d021df95293eb7ac370aea140b";
+      rev = "7ee4758bb748beac7d29e62de5d2e752ebafb858";
       fetchSubmodules = false;
-      sha256 = "sha256-aiVRefuH4jpAtTgMMDa7jI0Yy08J4+fV59f8nd7vT7g=";
+      sha256 = "sha256-jzrf6k9yJEMR0H1hOkf1LY2p5ik++poMoAlrhrYPD2U=";
     };
-    date = "2025-09-16";
+    date = "2025-12-10";
   };
   emacs-corfu = {
     pname = "emacs-corfu";
-    version = "d6cc682c15b594f2bc9f55196a382a5fda7a7fc6";
+    version = "f3717e0db8fada4e2b571bd81d6195187149506e";
     src = fetchFromGitHub {
       owner = "minad";
       repo = "corfu";
-      rev = "d6cc682c15b594f2bc9f55196a382a5fda7a7fc6";
+      rev = "f3717e0db8fada4e2b571bd81d6195187149506e";
       fetchSubmodules = false;
-      sha256 = "sha256-3yB6hGLOlom0q0DoJN9VW8fimyi+eztabMlDO2TslOY=";
+      sha256 = "sha256-ktWXOoIVytFp2qk0VY5hvZFdABQjH0A9G2vB6PFwjfA=";
     };
-    date = "2025-09-23";
+    date = "2026-01-06";
   };
   emacs-corfu-terminal = {
     pname = "emacs-corfu-terminal";
@@ -118,15 +118,15 @@
   };
   emacs-eglot-x = {
     pname = "emacs-eglot-x";
-    version = "8e872efd3d0b7779bde5b1e1d75c8e646a1f729f";
+    version = "b92c44e6b34f8df0539d3c8ab5992c5a7eb815d5";
     src = fetchFromGitHub {
       owner = "nemethf";
       repo = "eglot-x";
-      rev = "8e872efd3d0b7779bde5b1e1d75c8e646a1f729f";
+      rev = "b92c44e6b34f8df0539d3c8ab5992c5a7eb815d5";
       fetchSubmodules = false;
-      sha256 = "sha256-a2qkitikqGZBXI4aVdn8c7P4HFwep9RPWkOVBbgQV2g=";
+      sha256 = "sha256-VvamDqZ3NowM6XfRlC2exsM6ssRBqWUw6ziKgqdphwM=";
     };
-    date = "2025-06-26";
+    date = "2025-12-19";
   };
   emacs-flymake-popon = {
     pname = "emacs-flymake-popon";
@@ -168,15 +168,15 @@
   };
   emacs-magit = {
     pname = "emacs-magit";
-    version = "b828afbb4b45641998fb6483a08effb1efb214e1";
+    version = "64a26e2fe589cd90aec9c2415ba6e0beee8d35b8";
     src = fetchFromGitHub {
       owner = "magit";
       repo = "magit";
-      rev = "b828afbb4b45641998fb6483a08effb1efb214e1";
+      rev = "64a26e2fe589cd90aec9c2415ba6e0beee8d35b8";
       fetchSubmodules = false;
-      sha256 = "sha256-T8Dnufpo3QRadZdT3jpg2yHcJ6Qrv3uKSQaKLX2jXVM=";
+      sha256 = "sha256-KwBW7TJCgwoBbEUCRDV4fEcCiBMj8h8l7C9gylT1xiU=";
     };
-    date = "2025-10-06";
+    date = "2026-01-06";
   };
   emacs-md-roam = {
     pname = "emacs-md-roam";
@@ -192,39 +192,39 @@
   };
   emacs-modus-themes = {
     pname = "emacs-modus-themes";
-    version = "a391efc0f8e9f3ab4c932b403948d4b3ed1af040";
+    version = "53fa9fd23d78a7ea97a60e562fc363b9b48653a6";
     src = fetchFromGitHub {
       owner = "protesilaos";
       repo = "modus-themes";
-      rev = "a391efc0f8e9f3ab4c932b403948d4b3ed1af040";
+      rev = "53fa9fd23d78a7ea97a60e562fc363b9b48653a6";
       fetchSubmodules = false;
-      sha256 = "sha256-JevRFTd5wrd93j5+6nPvftPFMP/3OQ6CEHuLkp/fjoE=";
+      sha256 = "sha256-3sxz8abo24fleWIA99YkJvi3mMwB4NBhv0kB6Fotb5k=";
     };
-    date = "2025-10-10";
+    date = "2026-01-03";
   };
   emacs-moody = {
     pname = "emacs-moody";
-    version = "293036f57cc97aa7c085c8044d76fca481f0b54b";
+    version = "82f65014dcdfc7178464c282b5c9ec5f7016c945";
     src = fetchFromGitHub {
       owner = "tarsius";
       repo = "moody";
-      rev = "293036f57cc97aa7c085c8044d76fca481f0b54b";
+      rev = "82f65014dcdfc7178464c282b5c9ec5f7016c945";
       fetchSubmodules = false;
-      sha256 = "sha256-LlPQkBIz3g2OU2/Hw9CWsp6cJrVoXrZ2jc/EjMOVzek=";
+      sha256 = "sha256-MqNlLbuPQnR3HM6WA4k4ZcSpFlEPxd+f/N4IDmAwUKs=";
     };
-    date = "2025-09-13";
+    date = "2026-01-01";
   };
   emacs-nerd-icons-dired = {
     pname = "emacs-nerd-icons-dired";
-    version = "adf9a2bb5f3f13be7a676923639337f3fcc5d8c3";
+    version = "3265d6c4b552eae457d50d423adb10494113d70b";
     src = fetchFromGitHub {
       owner = "rainstormstudio";
       repo = "nerd-icons-dired";
-      rev = "adf9a2bb5f3f13be7a676923639337f3fcc5d8c3";
+      rev = "3265d6c4b552eae457d50d423adb10494113d70b";
       fetchSubmodules = false;
-      sha256 = "sha256-N388FDrm/zsT4frBv1rl8XE+Pflv90XmLHM96SivPXQ=";
+      sha256 = "sha256-episNqWqqBTUpdEPMIWXWL5HCeItl9ckiORT11Phd84=";
     };
-    date = "2025-08-27";
+    date = "2025-11-06";
   };
   emacs-nix-mode = {
     pname = "emacs-nix-mode";
@@ -240,27 +240,27 @@
   };
   emacs-orderless = {
     pname = "emacs-orderless";
-    version = "9cf1c90e2501566ceba59f3220b4630995004efd";
+    version = "fb338f771f1693436da0472a8a4d230b28af14f3";
     src = fetchFromGitHub {
       owner = "oantolin";
       repo = "orderless";
-      rev = "9cf1c90e2501566ceba59f3220b4630995004efd";
+      rev = "fb338f771f1693436da0472a8a4d230b28af14f3";
       fetchSubmodules = false;
-      sha256 = "sha256-psI93/dgYbiowni0IIGJtfSIcsh9GidAZdRMgIMIoxE=";
+      sha256 = "sha256-UZ4Dk/B/5XU4HvUpREFtK9Ahwcx+sjzf8kyvcs6frvw=";
     };
-    date = "2025-09-22";
+    date = "2026-01-04";
   };
   emacs-org-modern-indent = {
     pname = "emacs-org-modern-indent";
-    version = "9973bd3b91e4733a3edd1fca232208c837c05473";
+    version = "ebf9a8e571db523dc6e4cd9ed80d0e0626983ae4";
     src = fetchFromGitHub {
       owner = "jdtsmith";
       repo = "org-modern-indent";
-      rev = "9973bd3b91e4733a3edd1fca232208c837c05473";
+      rev = "ebf9a8e571db523dc6e4cd9ed80d0e0626983ae4";
       fetchSubmodules = false;
-      sha256 = "sha256-st3338Jk9kZ5BLEPRJZhjqdncMpLoWNwp60ZwKEObyU=";
+      sha256 = "sha256-+q7KmbU8A+uR61BSa528vYbdFSj2WGsFWYW/5q7J9Kw=";
     };
-    date = "2025-04-12";
+    date = "2026-01-02";
   };
   emacs-projectile = {
     pname = "emacs-projectile";
@@ -276,15 +276,15 @@
   };
   emacs-rg = {
     pname = "emacs-rg";
-    version = "dcd65fd34b5fcd7c28fd83275129a2ebc7fa8f17";
+    version = "a614e7d7709c7bf5c5accff4003d351c3f28ee98";
     src = fetchFromGitHub {
       owner = "dajva";
       repo = "rg.el";
-      rev = "dcd65fd34b5fcd7c28fd83275129a2ebc7fa8f17";
+      rev = "a614e7d7709c7bf5c5accff4003d351c3f28ee98";
       fetchSubmodules = false;
-      sha256 = "sha256-NWdDjfDKFy15fyhQym8m2oPlPFy9kl2+B6xTJdSBaFo=";
+      sha256 = "sha256-SRbeTrZaJk4GCRWV2k5CHOIWZdx59LN+OgPdz6Z/7dA=";
     };
-    date = "2025-10-04";
+    date = "2025-10-22";
   };
   emacs-scss-mode = {
     pname = "emacs-scss-mode";
@@ -300,17 +300,17 @@
   };
   emacs-setup = {
     pname = "emacs-setup";
-    version = "0cf74c50d90c00450f8a3425c1b84b3bccd99f84";
+    version = "de9b86c6f29cf9888e911924ffc4ce47312320c3";
     src = fetchgit {
       url = "https://codeberg.org/pkal/setup.el";
-      rev = "0cf74c50d90c00450f8a3425c1b84b3bccd99f84";
+      rev = "de9b86c6f29cf9888e911924ffc4ce47312320c3";
       fetchSubmodules = false;
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-i8jJGv8nJ3f/vuZEyB1Fkn7ujIboWZCY9j1oTgVUvyc=";
+      sha256 = "sha256-lLeKsLFf1+Bjk6ETq+0Nncw6DPOVxE49cAexdLAr/5U=";
     };
-    date = "2025-08-29";
+    date = "2025-10-27";
   };
   emacs-tsx-mode = {
     pname = "emacs-tsx-mode";
@@ -326,40 +326,40 @@
   };
   emacs-undohist = {
     pname = "emacs-undohist";
-    version = "504a5ab032124e877683bd7eab867cf320294137";
+    version = "8ff68451ff65da9dcc035607f82a0bac5cf4a545";
     src = fetchFromGitHub {
       owner = "emacsorphanage";
       repo = "undohist";
-      rev = "504a5ab032124e877683bd7eab867cf320294137";
+      rev = "8ff68451ff65da9dcc035607f82a0bac5cf4a545";
       fetchSubmodules = false;
-      sha256 = "sha256-viBGz/2KTbhYuLa5etKjwpkJWLz+WWk9HqWWnVnNQ5I=";
+      sha256 = "sha256-E/e6bF8JPKyY2nAjsQ8U23NyGWl5aGwNSRdKp8+E2Kk=";
     };
-    date = "2025-08-12";
+    date = "2026-01-04";
   };
   emacs-vertico = {
     pname = "emacs-vertico";
-    version = "17c629087ea23466b10fd0dd4ecce53e17a810e3";
+    version = "a7365958439c86f5cabb9cd4bb93c0a4118eedc1";
     src = fetchgit {
       url = "https://github.com/minad/vertico";
-      rev = "17c629087ea23466b10fd0dd4ecce53e17a810e3";
+      rev = "a7365958439c86f5cabb9cd4bb93c0a4118eedc1";
       fetchSubmodules = false;
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-B7/V0py+9ZCqZScjps2/1LNtM1+PPTUH+DKnYasxm4M=";
+      sha256 = "sha256-r88DAI025KtnsBX1bBVRrH0tVvIRguTjf/DAVemcwgM=";
     };
-    date = "2025-10-10";
+    date = "2026-01-05";
   };
   emacs-vundo = {
     pname = "emacs-vundo";
-    version = "82536395c47376f1bc4308b3f9ac7eeb2508e215";
+    version = "e0af8c5845abf884a644215a9cac37f39c13cd5a";
     src = fetchFromGitHub {
       owner = "casouri";
       repo = "vundo";
-      rev = "82536395c47376f1bc4308b3f9ac7eeb2508e215";
+      rev = "e0af8c5845abf884a644215a9cac37f39c13cd5a";
       fetchSubmodules = false;
-      sha256 = "sha256-uqzzjdHIWQsXGOcFQXO+dh/RdVPSFpWLAgyKI4SUEHI=";
+      sha256 = "sha256-d6xUM1PtzT+hJNG7JTQ9Bm7jLChOONnt8lTu9WnirWk=";
     };
-    date = "2025-09-27";
+    date = "2025-12-18";
   };
 }
