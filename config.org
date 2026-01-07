@@ -1121,7 +1121,7 @@ see: https://github.com/meatcar/emacs.d?tab=readme-ov-file#fast-scroll
 
 #+begin_src emacs-lisp :tangle init.el
 (setup org-modern
-  (:only-if is-window)
+  ;; (:only-if is-window)
   (:with-mode org-mode
     (:hook org-modern-mode))
   (:opt ;; org-modern-hide-stars 'leading
