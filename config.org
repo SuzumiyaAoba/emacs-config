@@ -117,17 +117,16 @@ The expansion is a string indicating the package has been disabled."
 
 ** OS
 
-;; is-darwin
 #+begin_src emacs-lisp :tangle init.el
 (defconst is-darwin (string= system-type "darwin"))
 
+(defconst is-window window-system)
+
 ;; is-darwin-window
-(defconst is-darwin-window (and (string= system-type "darwin")
-                                window-system))
+(defconst is-darwin-window (and is-darwin is-window))
 
 ;; when-darwin-not-window-system
-(defconst is-darwin-not-window (and (string= system-type "darwin")
-                                    (not window-system)))
+(defconst is-darwin-not-window (and is-darwin is-window))
 #+end_src
 
 ** Performance tips
@@ -1123,6 +1122,7 @@ see: https://github.com/meatcar/emacs.d?tab=readme-ov-file#fast-scroll
 
 #+begin_src emacs-lisp :tangle init.el
 (setup org-modern
+  (:only-if is-window)
   (:with-mode org-mode
     (:hook org-modern-mode))
   (:opt ;; org-modern-hide-stars 'leading
@@ -1157,6 +1157,7 @@ see: https://github.com/meatcar/emacs.d?tab=readme-ov-file#fast-scroll
 
 #+begin_src emacs-lisp :tangle init.el
 (setup org-modern-indent
+  (:only-if is-window)
   (:with-mode org-mode
     (:hook org-modern-indent-mode)))
 #+end_src
