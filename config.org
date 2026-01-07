@@ -604,7 +604,6 @@ see: https://github.com/meatcar/emacs.d?tab=readme-ov-file#fast-scroll
            "C-s" vertico-next))
   (:opt vertico-count 12
         vertico-cycle t)
-  (:opt marginalia-mode t)
   (defvar +vertico-current-arrow t)
 
   (vertico-mode)
