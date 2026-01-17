@@ -90,6 +90,16 @@
 ;; init.el --- SuzumiyaAoba's init.el -*- lexical-binding: t; coding: utf-8 -*-
 #+end_src
 
+** Server (Emacs デーモン / emacsclient)
+
+Emacs デーモン起動時も通常起動時も server を有効化する。
+
+#+begin_src emacs-lisp :tangle init.el
+(require 'server)
+(unless (server-running-p)
+  (server-start))
+#+end_src
+
 ** Elpaca
 
 #+begin_src emacs-lisp :tangle init.el
