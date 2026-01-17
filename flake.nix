@@ -4,8 +4,6 @@
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     emacs-overlay.url = "github:nix-community/emacs-overlay";
-    nvfetcher.url = "github:berberman/nvfetcher";
-    nvfetcher.inputs.nixpkgs.follows = "nixpkgs";
   };
 
   outputs =
@@ -14,7 +12,6 @@
       nixpkgs,
       flake-utils,
       emacs-overlay,
-      nvfetcher,
       ...
     }:
     flake-utils.lib.eachDefaultSystem (
@@ -34,8 +31,6 @@
         emacsPackage = pkgs.emacsWithPackagesFromUsePackage {
           package = pkgs.emacs-unstable;
           config = ./config.org;
-          extraEmacsPackages = import ./packages.nix { };
-          override = epkgs: import ./epkgs { inherit pkgs epkgs; };
         };
 
         # 設定ファイルを tangle して .emacs.d を作成する derivation
@@ -95,15 +90,6 @@
 
         allowUnfree = true;
 
-        # nvfetcherのアップデートコマンドを追加
-        apps.update = {
-          type = "app";
-          program = toString (
-            pkgs.writeShellScript "update" ''
-              ${nvfetcher.packages.${system}.default}/bin/nvfetcher
-            ''
-          );
-        };
       }
     );
 }

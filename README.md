@@ -52,25 +52,19 @@ This configuration uses a sophisticated build system:
 ### Configuration Files
 - `config.org` - Main configuration in literate org-mode format
 - `flake.nix` - Nix flake definition with build instructions
-- `packages.nix` - Standard Emacs packages from MELPA/ELPA
-- `epkgs/default.nix` - Custom package overrides and builds
-- `nvfetcher.toml` - External package source definitions
 
 ### Package Management
 The configuration employs a hybrid package management approach:
 
-1. **Standard packages**: Installed via `packages.nix` from MELPA/ELPA
-2. **Custom packages**: Built from source using definitions in `epkgs/packages/`
-3. **External sources**: Managed by nvfetcher for version pinning
+1. **Standard packages**: Installed via Elpaca in `config.org`
 
 ### Build Process
-1. nvfetcher generates source metadata from `nvfetcher.toml`
 2. Nix builds Emacs with all packages using emacs-overlay
 3. Configuration files are tangled from `config.org` during build
 4. Final executable includes all packages and configuration
 
 ### Update Process
-- **Package sources**: Run `nix run .#update` to update custom packages defined in `nvfetcher.toml`
+2. **Custom packages**: Install via Elpaca recipes in `config.org`
 - **Flake inputs**: Run `nix flake update` to update nixpkgs, emacs-overlay, and other flake dependencies
 - **Lock file**: Both commands update `flake.lock` for reproducible builds
 

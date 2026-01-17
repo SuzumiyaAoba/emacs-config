@@ -90,6 +90,59 @@
 ;; init.el --- SuzumiyaAoba's init.el -*- lexical-binding: t; coding: utf-8 -*-
 #+end_src
 
+** Elpaca
+
+#+begin_src emacs-lisp :tangle init.el
+;; Elpaca installer (from official README)
+(defvar elpaca-installer-version 0.11)
+(defvar elpaca-directory (expand-file-name "elpaca/" user-emacs-directory))
+(defvar elpaca-builds-directory (expand-file-name "builds/" elpaca-directory))
+(defvar elpaca-repos-directory (expand-file-name "repos/" elpaca-directory))
+(defvar elpaca-order '(elpaca :repo "https://github.com/progfolio/elpaca.git"
+                              :ref nil :depth 1 :inherit ignore
+                              :files (:defaults "elpaca-test.el" (:exclude "extensions"))
+                              :build (:not elpaca--activate-package)))
+(let* ((repo (expand-file-name "elpaca/" elpaca-repos-directory))
+       (build (expand-file-name "elpaca/" elpaca-builds-directory))
+       (order (cdr elpaca-order))
+       (default-directory repo))
+  (add-to-list 'load-path (if (file-exists-p build) build repo))
+  (unless (file-exists-p repo)
+    (make-directory repo t)
+    (when (<= emacs-major-version 28) (require 'subr-x))
+    (condition-case-unless-debug err
+        (if-let* ((buffer (pop-to-buffer-same-window "*elpaca-bootstrap*"))
+                  ((zerop (apply #'call-process `("git" nil ,buffer t "clone"
+                                                  ,@(when-let* ((depth (plist-get order :depth)))
+                                                      (list (format "--depth=%d" depth) "--no-single-branch"))
+                                                  ,(plist-get order :repo) ,repo))))
+                  ((zerop (call-process "git" nil buffer t "checkout"
+                                        (or (plist-get order :ref) "--"))))
+                  (emacs (concat invocation-directory invocation-name))
+                  ((zerop (call-process emacs nil buffer nil "-Q" "-L" "." "--batch"
+                                        "--eval" "(byte-recompile-directory \".\" 0 'force)")))
+                  ((require 'elpaca))
+                  ((elpaca-generate-autoloads "elpaca" repo)))
+            (progn (message "%s" (buffer-string)) (kill-buffer buffer))
+          (error "%s" (with-current-buffer buffer (buffer-string))))
+      ((error) (warn "%s" err) (delete-directory repo 'recursive))))
+  (unless (require 'elpaca-autoloads nil t)
+    (require 'elpaca)
+    (elpaca-generate-autoloads "elpaca" repo)
+    (let ((load-source-file-function nil)) (load "./elpaca-autoloads"))))
+(add-hook 'after-init-hook #'elpaca-process-queues)
+(elpaca `(,@elpaca-order))
+
+(add-to-list 'elpaca-ignored-dependencies 'ccc)
+#+end_src
+
+** package.el
+
+#+begin_src emacs-lisp :tangle init.el
+(require 'package)
+(setopt package-enable-at-startup nil)
+#+end_src
+
 ** Backup
 
 #+begin_src emacs-lisp :tangle init.el
@@ -101,7 +154,49 @@
 ** Setup El
 
 #+begin_src emacs-lisp :tangle init.el
-(require 'setup)
+(elpaca setup
+  (require 'setup))
+
+(elpaca-wait)
+
+(fset 'setup--orig (symbol-function 'setup))
+
+(defun my/elpaca-recipe-available-p (name)
+  (condition-case nil
+      (when-let* ((recipe (elpaca-recipe name))
+                  (urlish (or (plist-get recipe :url)
+                              (plist-get recipe :repo)
+                              (plist-get recipe :host)
+                              (plist-get recipe :fetcher))))
+        urlish)
+    (error nil)))
+
+(defmacro setup (name &rest body)
+  "Wrap `setup' to auto-install packages with Elpaca."
+  (declare (indent defun))
+  (let ((elpaca-form nil)
+        (clean-body nil))
+    (dolist (form body)
+      (if (and (consp form) (eq (car form) :elpaca) (null elpaca-form))
+          (setq elpaca-form form)
+        (push form clean-body)))
+    (setq clean-body (nreverse clean-body))
+    (if (and (symbolp name) (not (keywordp name)))
+        (let* ((force-elpaca (and elpaca-form t))
+               (recipe (cdr elpaca-form))
+               (disable-elpaca (and elpaca-form (null (car recipe))))
+               (order (cond
+                       ((null elpaca-form) name)
+                       ((or (eq (car recipe) t) (null (car recipe))) name)
+                       ((symbolp (car recipe)) (if (cdr recipe)
+                                                   (cons (car recipe) (cdr recipe))
+                                                 (car recipe)))
+                       (t (car recipe)))))
+          `(if (and (not ,disable-elpaca)
+                    (or ,force-elpaca (my/elpaca-recipe-available-p ',name)))
+               (elpaca ,order (setup--orig ,name ,@clean-body))
+             (setup--orig ,name ,@clean-body)))
+      `(setup--orig ,name ,@clean-body))))
 
 (defmacro -setup (order &rest body)
   "Execute BODY in `setup' declaration after ORDER is finished.
@@ -116,7 +211,7 @@ The expansion is a string indicating the package has been disabled."
         (setq o (if (null (nth (1+ ensure) body)) nil order)
               body (append (cl-subseq body 0 ensure)
                            (cl-subseq body (+ ensure 2)))))
-      `(elpaca ,o (setup
+      `(elpaca ,o (setup--orig
                     ,(if-let (((memq (car-safe order) '(quote \`)))
                               (feature (flatten-tree order)))
                          (cadr feature)
@@ -544,11 +639,24 @@ see: https://github.com/meatcar/emacs.d?tab=readme-ov-file#fast-scroll
 (setup hydra)
 #+end_src
 
+*** pretty-hydra
+
+#+begin_src emacs-lisp :tangle init.el
+(setup pretty-hydra
+  (:elpaca (pretty-hydra
+            :host github
+            :repo "jerrypnz/major-mode-hydra.el"
+            :files ("pretty-hydra.el")))
+  (require 'pretty-hydra))
+#+end_src
+
 **** hydra-posframe
 
 #+begin_src emacs-lisp :tangle init.el
 (setup hydra-posframe
+  (:elpaca hydra-posframe :host github :repo "Ladicle/hydra-posframe")
   (:opt hydra-posframe-poshandler 'posframe-poshandler-window-bottom-center)
+  (require 'hydra-posframe)
   (add-hook 'after-init-hook 'hydra-posframe-mode))
 #+end_src
 
@@ -726,15 +834,16 @@ see: https://github.com/meatcar/emacs.d?tab=readme-ov-file#fast-scroll
 
 #+begin_src emacs-lisp :tangle init.el
 (setup orderless
-  (:opt completion-style '(orderless basic)
-    	completion-category-overrides '((file (styles basic partial-completion)))))
+  (:when-loaded
+    (add-to-list 'completion-styles-alist
+                 '(orderless orderless-try-completion orderless-all-completions
+                             "Completion of multiple components, in any order."))
+    (setopt completion-styles '(orderless basic)
+            completion-category-overrides '((file (styles basic partial-completion))))))
 
 (setup minibuffer
   (:when-loaded
-    (:opt completion-styles '(orderless)
-          completion-category-overrides '((file (styles basic partial-completion))))
-    (add-to-list 'completion-styles-alist '(orderless orderless-try-completion orderless-all-completions
-                                                      "Completion of multiple components, in any order."))))
+    (setopt completion-category-overrides '((file (styles basic partial-completion))))))
 #+end_src
 
 *** cape
@@ -804,7 +913,18 @@ see: https://github.com/meatcar/emacs.d?tab=readme-ov-file#fast-scroll
 ** IME
 
 #+begin_src emacs-lisp :tangle init.el
+(setup ccc
+  (:elpaca (ccc
+            :host github
+            :repo "skk-dev/ddskk"
+            :files ("ccc.el")
+            :version (lambda (_e) "1.43"))))
+
 (setup ddskk
+  (:elpaca ddskk
+           :host github
+           :repo "skk-dev/ddskk")
+  (:load-after ccc)
   (keymap-global-set "C-x j" 'skk-mode)
   (:opt skk-preload t
         default-input-method "japanese-skk"
@@ -844,7 +964,8 @@ see: https://github.com/meatcar/emacs.d?tab=readme-ov-file#fast-scroll
 
 #+begin_src emacs-lisp :tangle init.el
 (setup multiple-cursors
-  (:load-after hydra)
+  (:load-after hydra pretty-hydra)
+  (require 'pretty-hydra)
   (keymap-global-set "C-*" 'multiple-cursors/body)
 
   (defvar multiple-cursors--title "Multiple cursors")
@@ -997,7 +1118,7 @@ see: https://github.com/meatcar/emacs.d?tab=readme-ov-file#fast-scroll
 
 #+begin_src emacs-lisp :tangle init.el
 (setup treemacs-magit
-  (:load-after treemacs))
+  (:load-after treemacs magit))
 #+end_src
 
 **** treemacs-tab-bar
@@ -1013,6 +1134,12 @@ see: https://github.com/meatcar/emacs.d?tab=readme-ov-file#fast-scroll
 *** magit
 
 #+begin_src emacs-lisp :tangle init.el
+(setup transient
+  (:elpaca t))
+
+(setup magit
+  (:elpaca t)
+  (:load-after transient))
 #+end_src
 
 *** git-modes
@@ -1238,9 +1365,11 @@ see: https://github.com/meatcar/emacs.d?tab=readme-ov-file#fast-scroll
 
 #+begin_src emacs-lisp :tangle init.el
 (setup md-roam
+  (:elpaca md-roam :host github :repo "nobiot/md-roam")
   (:load-after org-roam)
   (:opt org-roam-file-extensions '("org" "md"))
 
+  (require 'md-roam)
   (md-roam-mode 1)
 
   (org-roam-db-autosync-mode))
@@ -1270,6 +1399,7 @@ see: https://github.com/meatcar/emacs.d?tab=readme-ov-file#fast-scroll
 
 #+begin_src emacs-lisp :tangle init.el
 (setup eldoc
+  (:elpaca nil)
   (:opt eldoc-echo-area-use-multiline-p nil)
   ;; (keymap-global-set "C-c q" 'toggle-eldoc-doc-buffer)
   (keymap-global-set "C-c q" 'eldoc-box-hover-at-point-mode)
@@ -1311,7 +1441,9 @@ see: https://github.com/meatcar/emacs.d?tab=readme-ov-file#fast-scroll
 
 #+begin_src emacs-lisp :tangle init.el
 (setup eglot-booster
+  (:elpaca eglot-booster :host github :repo "jdtsmith/eglot-booster")
   (:load-after eglot)
+  (require 'eglot-booster)
   (eglot-booster-mode))
 
 (setup eglot-signature-eldoc-talkative
@@ -1321,6 +1453,7 @@ see: https://github.com/meatcar/emacs.d?tab=readme-ov-file#fast-scroll
               :override #'eglot-signature-eldoc-talkative))
 
 (setup eglot-x
+  (:elpaca eglot-x :host github :repo "nemethf/eglot-x")
   (:load-after eglot)
   (:with-map eglot-mode-map
     (:bind "s-." eglot-x-find-refs))
@@ -1569,6 +1702,8 @@ see: https://github.com/meatcar/emacs.d?tab=readme-ov-file#fast-scroll
 
 #+begin_src emacs-lisp :tangle init.el
 (setup gptel
+  (:elpaca t)
+  (:load-after transient)
   (add-hook 'gptel-post-stream-hook 'gptel-auto-scroll)
   (add-hook 'gptel-post-response-functions 'gptel-end-of-response)
 
