@@ -2,12 +2,59 @@
 
 * early-init.el
 
+** package.el
+
+初期化を抑制する。
+
+#+begin_src emacs-lisp :tangle early-init.el
+(setq package-enable-at-startup nil)
+#+end_src
+
+** Garbage collection
+
+起動時に GC が走らないように設定する。
+
+#+begin_src emacs-lisp :tangle early-init.el
+(defvar my/original-gc-cons-threshold gc-cons-threshold)
+(defvar my/original-gc-cons-percentage gc-cons-percentage)
+
+(setq gc-cons-threshold most-positive-fixnum
+      gc-cons-percentage 0.6
+      garbage-collection-messages nil)
+
+(add-hook 'emacs-startup-hook
+          (lambda ()
+            (setq gc-cons-threshold (* 64 1024 1024) ; 例: 64MB
+                  gc-cons-percentage 0.1)))
+#+end_src
+
+** file-name-handler-alist を起動中だけ無効化
+
+#+begin_src emacs-lisp :tangle early-init.el
+(defvar my/original-file-name-handler-alist file-name-handler-alist)
+(setq file-name-handler-alist nil)
+
+(add-hook 'emacs-startup-hook
+          (lambda ()
+            (setq file-name-handler-alist my/original-file-name-handler-alist)))
+#+end_src
+
 ** Inhibit
 
 #+begin_src emacs-lisp :tangle early-init.el
 (setq inhibit-splash-screen t)
-(setq frame-inhibit-implied-resize t)
+(setq frame-inhibit-implied-resize t
+      frame-resize-pixelwise t)
 (setq inhibit-compacting-font-caches t)
+
+(setq inhibit-redisplay t
+      inhibit-message t)
+
+(add-hook 'emacs-startup-hook
+          (lambda ()
+            (setq inhibit-redisplay nil
+                  inhibit-message nil)
+            (redisplay)))
 #+end_src
 
 ** I/O
@@ -21,7 +68,7 @@
 ** Frame
 
 #+begin_src emacs-lisp :tangle early-init.el
-(push '(vertical-scroll-bars) default-frame-alist)
+(push '(vertical-scroll-bars . nil) default-frame-alist)
 (push '(menu-bar-lines . 0) default-frame-alist)
 (push '(tool-bar-lines . 0) default-frame-alist)
 #+end_src
@@ -41,16 +88,6 @@
 
 #+begin_src emacs-lisp :tangle init.el
 ;; init.el --- SuzumiyaAoba's init.el -*- lexical-binding: t; coding: utf-8 -*-
-#+end_src
-
-** Garbage collection
-
-Emacs 起動時に GC が走らないように設定する。
-=init.el= の最後に閾値を設定し直す。
-
-#+begin_src emacs-lisp :tangle early-init.el
-(setq gc-cons-threshold most-positive-fixnum)
-(setq garbage-collection-messages nil)
 #+end_src
 
 ** Backup
