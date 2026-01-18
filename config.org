@@ -143,7 +143,6 @@ Emacs デーモン起動時も通常起動時も server を有効化する。
 (add-hook 'after-init-hook #'elpaca-process-queues)
 (elpaca `(,@elpaca-order))
 
-(add-to-list 'elpaca-ignored-dependencies 'ccc)
 #+end_src
 
 ** package.el
