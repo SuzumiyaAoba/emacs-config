@@ -844,16 +844,15 @@ see: https://github.com/meatcar/emacs.d?tab=readme-ov-file#fast-scroll
 
 #+begin_src emacs-lisp :tangle init.el
 (setup orderless
+  (:require orderless)
   (:when-loaded
     (add-to-list 'completion-styles-alist
                  '(orderless orderless-try-completion orderless-all-completions
                              "Completion of multiple components, in any order."))
     (setopt completion-styles '(orderless basic)
-            completion-category-overrides '((file (styles basic partial-completion))))))
-
-(setup minibuffer
-  (:when-loaded
-    (setopt completion-category-overrides '((file (styles basic partial-completion))))))
+            orderless-matching-styles '(orderless-flex orderless-literal orderless-regexp)
+            completion-category-overrides
+            '((file (styles orderless partial-completion))))))
 #+end_src
 
 *** cape
@@ -1330,7 +1329,7 @@ see: https://github.com/meatcar/emacs.d?tab=readme-ov-file#fast-scroll
 
 #+begin_src emacs-lisp :tangle init.el
 (setup org-modern-indent
-  (:only-if is-window)
+  (:only-if (and is-window (require 'org-modern-indent nil t)))
   (:with-mode org-mode
     (:hook org-modern-indent-mode)))
 #+end_src
