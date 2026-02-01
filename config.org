@@ -1398,7 +1398,7 @@ see: https://github.com/meatcar/emacs.d?tab=readme-ov-file#fast-scroll
 
 #+begin_src emacs-lisp :tangle init.el
 (setup markdown-mode
-  (:file-match "\\.mdx?\\'")
+  (:file-match "\\.mdx\\'")
   (:opt markdown-fontify-code-blocks-natively t))
 #+end_src
 
@@ -1660,6 +1660,12 @@ see: https://github.com/meatcar/emacs.d?tab=readme-ov-file#fast-scroll
     (:hook (lambda ()
              (setq prettify-symbols-alist coq-prettify-symbols)
              (prettify-symbols-mode 1)))))
+#+end_src
+
+*** Nix
+
+#+begin_src emacs-lisp :tangle init.el
+(setup nix-mode)
 #+end_src
 
 *** Astro
