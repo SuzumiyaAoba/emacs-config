@@ -38,6 +38,11 @@ cd emacs-config
 # Run locally
 nix run .
 
+# Pre-install and native compile packages before interactive startup
+nix run .#prewarm
+# Override worker count when needed
+EMACS_PREWARM_JOBS=8 nix run .#prewarm
+
 # Update package sources
 nix run .#update
 

@@ -2,3 +2,8 @@
 
 ### Claude ###
 .claude/
+
+init.el
+early-init.el
+result
+result-*
