@@ -310,6 +310,12 @@ The expansion is a string indicating the package has been disabled."
                          #'my/run-in-buffer
                          (or buffer (current-buffer))
                          fn))
+  (defun my/require-feature-after-startup (feature &optional delay)
+    "Require FEATURE after startup and DELAY seconds of idle time."
+    (my/run-after-startup
+     (lambda ()
+       (require feature nil t))
+     delay))
   (:opt blink-matching-paren nil
         auto-mode-case-fold nil
         vc-handled-backends '(Git)
@@ -1163,8 +1169,8 @@ see: https://github.com/meatcar/emacs.d?tab=readme-ov-file#fast-scroll
 #+begin_src emacs-lisp :tangle init.el
 (setup treemacs-nerd-icons
   (:load-after treemacs)
-  (:require treemacs-nerd-icons)
-  (:when-loaded (treemacs-load-theme "nerd-icons")))
+  (:when-loaded
+    (treemacs-load-theme "nerd-icons")))
 #+end_src
 
 **** treemacs-projectile
@@ -1172,7 +1178,8 @@ see: https://github.com/meatcar/emacs.d?tab=readme-ov-file#fast-scroll
 #+begin_src emacs-lisp :tangle init.el
 (setup treemacs-projectile
   (:load-after treemacs projectile)
-  (treemacs-project-follow-mode t))
+  (:when-loaded
+    (treemacs-project-follow-mode t)))
 #+end_src
 
 **** treemacs-magit
@@ -1428,7 +1435,8 @@ see: https://github.com/meatcar/emacs.d?tab=readme-ov-file#fast-scroll
         '(("d" "default" plain "%?"
            :target (file+head "${my-id}.org"
                               "#+title: ${title}\n")
-           :unnarrowed t))))
+           :unnarrowed t)))
+  (my/require-feature-after-startup 'org-roam 5.0))
 #+end_src
 
 **** md-roam
@@ -1438,11 +1446,9 @@ see: https://github.com/meatcar/emacs.d?tab=readme-ov-file#fast-scroll
   (:elpaca md-roam :host github :repo "nobiot/md-roam")
   (:load-after org-roam)
   (:opt org-roam-file-extensions '("org" "md"))
-
-  (require 'md-roam)
-  (md-roam-mode 1)
-
-  (org-roam-db-autosync-mode))
+  (:when-loaded
+    (md-roam-mode +1)
+    (org-roam-db-autosync-mode +1)))
 #+end_src
 
 **** org-roam-ui
@@ -1513,22 +1519,22 @@ see: https://github.com/meatcar/emacs.d?tab=readme-ov-file#fast-scroll
 (setup eglot-booster
   (:elpaca eglot-booster :host github :repo "jdtsmith/eglot-booster")
   (:load-after eglot)
-  (require 'eglot-booster)
-  (eglot-booster-mode))
+  (:when-loaded
+    (eglot-booster-mode +1)))
 
 (setup eglot-signature-eldoc-talkative
   (:load-after eglot)
-  (require 'eglot-signature-eldoc-talkative)
-  (advice-add #'eglot-signature-eldoc-function
-              :override #'eglot-signature-eldoc-talkative))
+  (:when-loaded
+    (advice-add #'eglot-signature-eldoc-function
+                :override #'eglot-signature-eldoc-talkative)))
 
 (setup eglot-x
   (:elpaca eglot-x :host github :repo "nemethf/eglot-x")
   (:load-after eglot)
   (:with-map eglot-mode-map
     (:bind "s-." eglot-x-find-refs))
-  (require 'eglot-x)
-  (eglot-x-setup))
+  (:when-loaded
+    (eglot-x-setup)))
 
 (setup consult-eglot
   (:load-after eglot)
@@ -1610,10 +1616,13 @@ see: https://github.com/meatcar/emacs.d?tab=readme-ov-file#fast-scroll
 
 #+begin_src emacs-lisp :tangle init.el
 (setup dap-mode
+  (defun my/enable-dap-for-scala ()
+    (require 'dap-mode)
+    (dap-auto-configure-mode +1)
+    (dap-mode +1)
+    (dap-ui-mode +1))
   (:with-mode scala-mode
-    (:hook dap-mode
-           dap-ui-mode))
-  (dap-auto-configure-mode))
+    (:hook my/enable-dap-for-scala)))
 #+end_src
 
 *** Emacs Lisp
