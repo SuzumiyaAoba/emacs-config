@@ -15,17 +15,34 @@
 起動時に GC が走らないように設定する。
 
 #+begin_src emacs-lisp :tangle early-init.el
+(defconst my/gc-cons-threshold-startup most-positive-fixnum)
+(defconst my/gc-cons-threshold-normal (* 64 1024 1024))
+
 (defvar my/original-gc-cons-threshold gc-cons-threshold)
 (defvar my/original-gc-cons-percentage gc-cons-percentage)
 
-(setq gc-cons-threshold most-positive-fixnum
+(setq gc-cons-threshold my/gc-cons-threshold-startup
       gc-cons-percentage 0.6
       garbage-collection-messages nil)
 
 (add-hook 'emacs-startup-hook
           (lambda ()
-            (setq gc-cons-threshold (* 64 1024 1024) ; 例: 64MB
+            (setq gc-cons-threshold my/gc-cons-threshold-normal
                   gc-cons-percentage 0.1)))
+
+(add-hook 'minibuffer-setup-hook
+          (lambda ()
+            (setq gc-cons-threshold my/gc-cons-threshold-startup)))
+
+(add-hook 'minibuffer-exit-hook
+          (lambda ()
+            (run-with-idle-timer
+             1 nil
+             (lambda ()
+               (setq gc-cons-threshold my/gc-cons-threshold-normal
+                     gc-cons-percentage 0.1)))))
+
+(add-hook 'focus-out-hook #'garbage-collect)
 #+end_src
 
 ** file-name-handler-alist を起動中だけ無効化
@@ -274,6 +291,25 @@ The expansion is a string indicating the package has been disabled."
 
 #+begin_src emacs-lisp :tangle init.el
 (setup simple
+  (defun my/run-after-startup (fn &optional delay)
+    "Run FN once after startup and DELAY seconds of idle time."
+    (let ((delay (or delay 0.5)))
+      (if after-init-time
+          (run-with-idle-timer delay nil fn)
+        (add-hook 'emacs-startup-hook
+                  (lambda ()
+                    (run-with-idle-timer delay nil fn))))))
+  (defun my/run-in-buffer (buffer fn)
+    "Run FN in BUFFER if BUFFER is live."
+    (when (buffer-live-p buffer)
+      (with-current-buffer buffer
+        (funcall fn))))
+  (defun my/run-after-buffer-idle (fn &optional delay buffer)
+    "Run FN in BUFFER after DELAY seconds of idle time."
+    (run-with-idle-timer (or delay 0.1) nil
+                         #'my/run-in-buffer
+                         (or buffer (current-buffer))
+                         fn))
   (:opt blink-matching-paren nil
         auto-mode-case-fold nil
         vc-handled-backends '(Git)
@@ -282,7 +318,7 @@ The expansion is a string indicating the package has been disabled."
         cursor-in-non-selected-windows nil
         highlight-nonselected-windows nil
         fast-but-imprecise-scrolling t
-        jit-lock-defer-time 0
+        jit-lock-defer-time 0.1
         ffap-machine-p-known 'reject
         idle-update-delay 1.0
         redisplay-skip-fontification-on-input t
@@ -348,7 +384,9 @@ The expansion is a string indicating the package has been disabled."
 
 #+begin_src emacs-lisp :tangle init.el
 (setup auto-revert-mode
-  (global-auto-revert-mode t))
+  (my/run-after-startup (lambda ()
+                          (global-auto-revert-mode +1))
+                        1.0))
 #+end_src
 
 *** recentf-mode
@@ -356,7 +394,9 @@ The expansion is a string indicating the package has been disabled."
 #+begin_src emacs-lisp :tangle init.el
 (setup recentf-mode
   (:opt recentf-max-saved-items 100)
-  (recentf-mode +1))
+  (my/run-after-startup (lambda ()
+                          (recentf-mode +1))
+                        1.0))
 #+end_src
 
 *** savehist-mode
@@ -402,10 +442,15 @@ see: https://github.com/meatcar/emacs.d?tab=readme-ov-file#fast-scroll
 #+begin_src emacs-lisp :tangle init.el
 (setup display-line-numbers
   (:opt display-line-numbers-grow-only t)
+  (defun my/enable-display-line-numbers ()
+    (unless (bound-and-true-p display-line-numbers-mode)
+      (display-line-numbers-mode +1)))
+  (defun my/enable-display-line-numbers-maybe ()
+    (my/run-after-buffer-idle #'my/enable-display-line-numbers 0.1))
   (:with-mode prog-mode
-    (:hook display-line-numbers-mode))
+    (:hook my/enable-display-line-numbers-maybe))
   (:with-mode text-mode
-    (:hook display-line-numbers-mode)))
+    (:hook my/enable-display-line-numbers-maybe)))
 #+end_src
 
 *** Theme
@@ -482,7 +527,9 @@ see: https://github.com/meatcar/emacs.d?tab=readme-ov-file#fast-scroll
 
 #+begin_src emacs-lisp :tangle init.el
 (setup minions
-  (minions-mode))
+  (my/run-after-startup (lambda ()
+                          (minions-mode +1))
+                        1.5))
 #+end_src
 
 *** svg-tag-mode
@@ -509,8 +556,7 @@ see: https://github.com/meatcar/emacs.d?tab=readme-ov-file#fast-scroll
       (remove-hook 'pre-command-hook 'keycast--update)))
 
   (add-to-list 'global-mode-string '("" keycast-mode-line))
-
-  (keycast-mode))
+  (keymap-global-set "C-c k" 'keycast-mode))
 #+end_src
 
 ** Window
@@ -639,7 +685,9 @@ see: https://github.com/meatcar/emacs.d?tab=readme-ov-file#fast-scroll
 
 #+begin_src emacs-lisp :tangle init.el
 (setup which-key
-  (which-key-mode))
+  (my/run-after-startup (lambda ()
+                          (which-key-mode +1))
+                        1.5))
 #+end_src
 
 *** hydra
@@ -666,7 +714,7 @@ see: https://github.com/meatcar/emacs.d?tab=readme-ov-file#fast-scroll
   (:elpaca hydra-posframe :host github :repo "Ladicle/hydra-posframe")
   (:opt hydra-posframe-poshandler 'posframe-poshandler-window-bottom-center)
   (require 'hydra-posframe)
-  (add-hook 'after-init-hook 'hydra-posframe-mode))
+  (my/run-after-startup #'hydra-posframe-mode 1.5))
 #+end_src
 
 ** Parens
@@ -697,7 +745,9 @@ see: https://github.com/meatcar/emacs.d?tab=readme-ov-file#fast-scroll
 
 #+begin_src emacs-lisp :tangle init.el
 (setup flymake-popon
-  (global-flymake-popon-mode))
+  (:load-after flymake)
+  (:with-mode flymake-mode
+    (:hook flymake-popon-mode)))
 #+end_src
 
 
@@ -1085,11 +1135,14 @@ see: https://github.com/meatcar/emacs.d?tab=readme-ov-file#fast-scroll
 
 #+begin_src emacs-lisp :tangle init.el
 (setup projectile
-  (:opt projectile-generic-dommand "fd . -0 --type f --color=never")
-  (:with-map projectile-mode-map
-    (:bind
-      "C-c p" projectile-command-map))
-  (projectile-mode +1))
+  (:opt projectile-indexing-method 'alien
+        projectile-enable-caching t
+        projectile-generic-command "fd . --type f --color=never")
+  (:when-loaded
+    (keymap-global-set "C-c p" 'projectile-command-map))
+  (my/run-after-startup (lambda ()
+                          (projectile-mode +1))
+                        1.0))
 #+end_src
 
 *** treemacs
@@ -1160,6 +1213,7 @@ see: https://github.com/meatcar/emacs.d?tab=readme-ov-file#fast-scroll
 
 #+begin_src emacs-lisp :tangle init.el
 (setup git-gutter
+  (:opt git-gutter:update-interval 2)
   (:when-loaded
     (custom-set-variables
      '(git-gutter:modified-sign " ")
@@ -1169,8 +1223,16 @@ see: https://github.com/meatcar/emacs.d?tab=readme-ov-file#fast-scroll
     (set-face-background 'git-gutter:modified "purple")
     (set-face-background 'git-gutter:added "green")
     (set-face-background 'git-gutter:deleted "red"))
-
-  (global-git-gutter-mode t))
+  (defun my/enable-git-gutter-in-buffer (buffer)
+    (when (buffer-live-p buffer)
+      (with-current-buffer buffer
+        (unless (or (bound-and-true-p git-gutter-mode)
+                    (null buffer-file-name)
+                    (file-remote-p buffer-file-name))
+          (git-gutter-mode +1)))))
+  (defun my/enable-git-gutter-maybe ()
+    (run-with-idle-timer 0.1 nil #'my/enable-git-gutter-in-buffer (current-buffer)))
+  (add-hook 'find-file-hook #'my/enable-git-gutter-maybe))
 #+end_src
 
 *** blamer
@@ -1480,8 +1542,27 @@ see: https://github.com/meatcar/emacs.d?tab=readme-ov-file#fast-scroll
 (setup treesit-auto
   (:opt treesit-auto-install t)
   (:require treesit-auto)
-  (treesit-auto-add-to-auto-mode-alist 'all)
-  (global-treesit-auto-mode))
+  (defun my/treesit-auto-apply-in-buffer ()
+    (when (and buffer-file-name
+               (not (file-remote-p buffer-file-name)))
+      (when-let* ((fallback-mode major-mode)
+                  (recipe (treesit-auto--get-mode-recipe fallback-mode))
+                  (ts-mode (treesit-auto-recipe-ts-mode recipe))
+                  ((not (eq fallback-mode ts-mode)))
+                  ((fboundp ts-mode)))
+        (let ((fallback-hook (intern (format "%s-hook" fallback-mode)))
+              (treesit-language-source-alist (treesit-auto--build-treesit-source-alist)))
+          (unless (treesit-auto--ready-p fallback-mode)
+            (dolist (req-lang (ensure-list (treesit-auto-recipe-requires recipe)))
+              (treesit-auto--prompt-to-install-package req-lang))
+            (treesit-auto--prompt-to-install-package (treesit-auto-recipe-lang recipe)))
+          (when (treesit-auto--ready-p fallback-mode)
+            (funcall ts-mode)
+            (when (boundp fallback-hook)
+              (run-hooks fallback-hook)))))))
+  (defun my/treesit-auto-apply-maybe ()
+    (my/run-after-buffer-idle #'my/treesit-auto-apply-in-buffer 0.2))
+  (add-hook 'find-file-hook #'my/treesit-auto-apply-maybe))
 #+end_src
 
 *** ligature
@@ -1753,6 +1834,7 @@ see: https://github.com/meatcar/emacs.d?tab=readme-ov-file#fast-scroll
 
 #+begin_src emacs-lisp :tangle init.el
 (setup exec-path-from-shell
+  (:only-if (or is-window (daemonp)))
   (:opt exec-path-from-shell-arguments (quote ("-l")))
   (:require exec-path-from-shell)
   (setenv "PATH" (concat (getenv "PATH") ":~/.volta/bin"))
@@ -1769,5 +1851,6 @@ see: https://github.com/meatcar/emacs.d?tab=readme-ov-file#fast-scroll
 GC が利用できるメモリの上限を無制限から戻す。
 
 #+begin_src emacs-lisp :tangle init.el
-(setq gc-cons-threshold 100 * 1024 * 1024) ;; 100 mb
+(setq gc-cons-threshold my/gc-cons-threshold-normal
+      gc-cons-percentage 0.1)
 #+end_src
