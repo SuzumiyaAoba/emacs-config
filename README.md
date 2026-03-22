@@ -1,29 +1,44 @@
 # emacs-config
 
-SuzumiyaAoba's personal Emacs configuration built with Nix flakes and org-babel literate programming.
+Minimal Emacs configuration based on [`emacs-batteries`](https://github.com/SuzumiyaAoba/emacs-batteries) and [`packlet`](https://github.com/SuzumiyaAoba/packlet).
 
-## Features
+## What This Repository Does
 
-- **Nix-based**: Reproducible builds with pinned package versions
-- **Literate configuration**: Written in org-mode with tangled Emacs Lisp
-- **Modern completion**: Vertico + Consult + Corfu + Orderless stack
-- **LSP integration**: Eglot with performance optimizations
-- **Multi-language support**: Scala, TypeScript, Go, Rust, Coq, and more
-- **Japanese input**: SKK (Simple Kana to Kanji conversion)
-- **Git integration**: Magit with visual indicators
-- **AI assistance**: GPTel and Ellama integration
-- **Project management**: Projectile + Treemacs
+- tangles `config.org` into `init.el` and `early-init.el`
+- loads `emacs-batteries-early-init.el` from `early-init.el`
+- loads the external `packlet` DSL from `init.el`
+- loads `emacs-batteries` and runs `emacs-batteries-setup` from `init.el`
+- installs `catppuccin-theme` via Nix
+- installs `mlscroll` via Nix
+- installs `minions` via Nix
+- installs `moody` via Nix
+- installs tree-sitter grammars via Nix
+- installs `magit` via Nix
+- installs `markdown-mode` via Nix
+- installs `nix-mode` via Nix
+- installs `nerd-icons` via Nix
+- installs `nerd-icons-dired` via Nix
+- installs `rainbow-delimiters` via Nix
+- installs `undohist` via Nix
+- installs `vundo` via Nix
+- keeps the setup intentionally minimal, with no extra packages or personal tweaks
 
-## Quick Start
+## Requirements
 
-### Running from GitHub
+- Nix with flakes enabled
+- internet access for fetching flake inputs
 
-#### GUI Mode
+`emacs-batteries` targets Emacs 30.1 or newer. This flake uses `emacs-unstable`
+from `emacs-overlay`.
+
+## Usage
+
+### Run from GitHub
+
 ```shell
 nix run github:SuzumiyaAoba/emacs-config
 ```
 
-#### Terminal Mode
 ```shell
 nix run github:SuzumiyaAoba/emacs-config -- -nw
 ```
@@ -31,99 +46,16 @@ nix run github:SuzumiyaAoba/emacs-config -- -nw
 ### Local Development
 
 ```shell
-# Clone the repository
 git clone https://github.com/SuzumiyaAoba/emacs-config.git
 cd emacs-config
 
-# Run locally
+nix build .
 nix run .
-
-# Pre-install and native compile packages before interactive startup
-nix run .#prewarm
-# Override worker count when needed
-EMACS_PREWARM_JOBS=8 nix run .#prewarm
-
-# Update package sources
-nix run .#update
-
-# Update flake inputs
-nix flake update
+nix run . -- -nw
 ```
 
-## Architecture
+## Structure
 
-This configuration uses a sophisticated build system:
-
-### Configuration Files
-- `config.org` - Main configuration in literate org-mode format
-- `flake.nix` - Nix flake definition with build instructions
-
-### Package Management
-The configuration employs a hybrid package management approach:
-
-1. **Standard packages**: Installed via Elpaca in `config.org`
-
-### Build Process
-2. Nix builds Emacs with all packages using emacs-overlay
-3. Configuration files are tangled from `config.org` during build
-4. Final executable includes all packages and configuration
-
-### Update Process
-2. **Custom packages**: Install via Elpaca recipes in `config.org`
-- **Flake inputs**: Run `nix flake update` to update nixpkgs, emacs-overlay, and other flake dependencies
-- **Lock file**: Both commands update `flake.lock` for reproducible builds
-
-## Key Packages
-
-### Completion & Navigation
-- **Vertico**: Vertical completion interface
-- **Consult**: Enhanced search and navigation commands
-- **Corfu**: In-buffer completion popup
-- **Orderless**: Flexible completion style
-- **Embark**: Contextual actions
-
-### Programming
-- **Eglot**: LSP client with performance boosters
-- **Tree-sitter**: Syntax highlighting and parsing
-- **Magit**: Git interface
-- **Projectile**: Project management
-- **Flymake**: On-the-fly syntax checking
-
-### UI & Themes
-- **Modus themes**: Accessible color schemes
-- **Nerd Icons**: Modern icon set
-- **Treemacs**: File tree sidebar
-- **Moody**: Enhanced mode line
-
-### Japanese Input
-- **ddskk**: Japanese input method
-- **ddskk-posframe**: Modern popup interface for SKK
-
-## Configuration Structure
-
-The configuration is organized into logical sections in `config.org`:
-
-- **Early initialization**: Performance optimizations
-- **Basic behavior**: File handling, encoding, UI settings
-- **Completion system**: Vertico, Consult, Corfu setup
-- **Programming**: LSP, syntax highlighting, language-specific settings
-- **Documents**: Org-mode, Markdown configuration
-- **Git integration**: Magit and related tools
-- **AI tools**: GPTel and Ellama setup
-
-## Requirements
-
-- Nix with flakes enabled
-- macOS or Linux
-- Internet connection for initial package downloads
-
-## Contributing
-
-This is a personal configuration, but feel free to:
-- Report issues or bugs
-- Suggest improvements
-- Use as inspiration for your own configuration
-
-## License
-
-This configuration is provided as-is for educational and personal use.
+- `config.org`: source of truth for the Emacs configuration
+- `flake.nix`: Nix flake that pins Emacs, `emacs-batteries`, and `packlet`
+- `flake.lock`: locked input revisions for reproducibility

@@ -2,95 +2,18 @@
 
 * early-init.el
 
-** package.el
-
-初期化を抑制する。
+`emacs-batteries` が提供する early-init 用の設定だけを読み込む。
 
 #+begin_src emacs-lisp :tangle early-init.el
-(setq package-enable-at-startup nil)
-#+end_src
-
-** Garbage collection
-
-起動時に GC が走らないように設定する。
-
-#+begin_src emacs-lisp :tangle early-init.el
-(defconst my/gc-cons-threshold-startup most-positive-fixnum)
-(defconst my/gc-cons-threshold-normal (* 64 1024 1024))
-
-(defvar my/original-gc-cons-threshold gc-cons-threshold)
-(defvar my/original-gc-cons-percentage gc-cons-percentage)
-
-(setq gc-cons-threshold my/gc-cons-threshold-startup
-      gc-cons-percentage 0.6
-      garbage-collection-messages nil)
-
-(add-hook 'emacs-startup-hook
-          (lambda ()
-            (setq gc-cons-threshold my/gc-cons-threshold-normal
-                  gc-cons-percentage 0.1)))
-
-(add-hook 'minibuffer-setup-hook
-          (lambda ()
-            (setq gc-cons-threshold my/gc-cons-threshold-startup)))
-
-(add-hook 'minibuffer-exit-hook
-          (lambda ()
-            (run-with-idle-timer
-             1 nil
-             (lambda ()
-               (setq gc-cons-threshold my/gc-cons-threshold-normal
-                     gc-cons-percentage 0.1)))))
-
-(add-hook 'focus-out-hook #'garbage-collect)
-#+end_src
-
-** file-name-handler-alist を起動中だけ無効化
-
-#+begin_src emacs-lisp :tangle early-init.el
-(defvar my/original-file-name-handler-alist file-name-handler-alist)
-(setq file-name-handler-alist nil)
-
-(add-hook 'emacs-startup-hook
-          (lambda ()
-            (setq file-name-handler-alist my/original-file-name-handler-alist)))
-#+end_src
-
-** Inhibit
-
-#+begin_src emacs-lisp :tangle early-init.el
-(setq inhibit-splash-screen t)
-(setq frame-inhibit-implied-resize t
-      frame-resize-pixelwise t)
-(setq inhibit-compacting-font-caches t)
-
-(setq inhibit-redisplay t
-      inhibit-message t)
-
-(add-hook 'emacs-startup-hook
-          (lambda ()
-            (setq inhibit-redisplay nil
-                  inhibit-message nil)
-            (redisplay)))
-#+end_src
-
-** I/O
-
-#+begin_src emacs-lisp :tangle early-init.el
-(when (boundp 'read-process-output-max)
-  ;; 1MB in bytes, default 4096 bytes
-  (setq read-process-output-max 1048576))
-#+end_src
-
-** Frame
-
-#+begin_src emacs-lisp :tangle early-init.el
-(push '(vertical-scroll-bars . nil) default-frame-alist)
-(push '(menu-bar-lines . 0) default-frame-alist)
-(push '(tool-bar-lines . 0) default-frame-alist)
+(load (expand-file-name
+       "site-lisp/emacs-batteries/emacs-batteries-early-init.el"
+       user-emacs-directory)
+      nil 'nomessage)
 #+end_src
 
 ** Fonts
+
+フォントを設定する。
 
 #+begin_src emacs-lisp :tangle early-init.el
 (set-face-attribute 'default nil :family "Cascadia Next JP" :height 145)
@@ -99,1767 +22,219 @@
 
 * init.el
 
-** Header
-
-文字コードを UTF-8 に設定し、レキシカルバインディングを有効にする。
+`packlet` と `emacs-batteries` を読み込み、基本セットアップを有効化する。
 
 #+begin_src emacs-lisp :tangle init.el
-;; init.el --- SuzumiyaAoba's init.el -*- lexical-binding: t; coding: utf-8 -*-
+;; init.el --- Minimal emacs-batteries setup -*- lexical-binding: t; coding: utf-8 -*-
+
+(add-to-list 'load-path
+             (expand-file-name "site-lisp/packlet" user-emacs-directory))
+(add-to-list 'load-path
+             (expand-file-name "site-lisp/emacs-batteries" user-emacs-directory))
+
+(require 'packlet)
+(require 'emacs-batteries)
+(emacs-batteries-setup)
 #+end_src
 
-** Server (Emacs デーモン / emacsclient)
+* Language environment
 
-Emacs デーモン起動時も通常起動時も server を有効化する。
+日本語の言語環境を使う。
 
 #+begin_src emacs-lisp :tangle init.el
-(require 'server)
-(unless (server-running-p)
-  (server-start))
+(set-language-environment "Japanese")
 #+end_src
 
-** Elpaca
+* Startup
+
+ファイル指定なしで起動したときは、起動ディレクトリを `dired` で開く。
 
 #+begin_src emacs-lisp :tangle init.el
-;; Elpaca installer (from official README)
-(defvar elpaca-installer-version 0.11)
-(defvar elpaca-directory (expand-file-name "elpaca/" user-emacs-directory))
-(defvar elpaca-builds-directory (expand-file-name "builds/" elpaca-directory))
-(defvar elpaca-repos-directory (expand-file-name "repos/" elpaca-directory))
-(defvar elpaca-order '(elpaca :repo "https://github.com/progfolio/elpaca.git"
-                              :ref nil :depth 1 :inherit ignore
-                              :files (:defaults "elpaca-test.el" (:exclude "extensions"))
-                              :build (:not elpaca--activate-package)))
-(let* ((repo (expand-file-name "elpaca/" elpaca-repos-directory))
-       (build (expand-file-name "elpaca/" elpaca-builds-directory))
-       (order (cdr elpaca-order))
-       (default-directory repo))
-  (add-to-list 'load-path (if (file-exists-p build) build repo))
-  (unless (file-exists-p repo)
-    (make-directory repo t)
-    (when (<= emacs-major-version 28) (require 'subr-x))
-    (condition-case-unless-debug err
-        (if-let* ((buffer (pop-to-buffer-same-window "*elpaca-bootstrap*"))
-                  ((zerop (apply #'call-process `("git" nil ,buffer t "clone"
-                                                  ,@(when-let* ((depth (plist-get order :depth)))
-                                                      (list (format "--depth=%d" depth) "--no-single-branch"))
-                                                  ,(plist-get order :repo) ,repo))))
-                  ((zerop (call-process "git" nil buffer t "checkout"
-                                        (or (plist-get order :ref) "--"))))
-                  (emacs (concat invocation-directory invocation-name))
-                  ((zerop (call-process emacs nil buffer nil "-Q" "-L" "." "--batch"
-                                        "--eval" "(byte-recompile-directory \".\" 0 'force)")))
-                  ((require 'elpaca))
-                  ((elpaca-generate-autoloads "elpaca" repo)))
-            (progn (message "%s" (buffer-string)) (kill-buffer buffer))
-          (error "%s" (with-current-buffer buffer (buffer-string))))
-      ((error) (warn "%s" err) (delete-directory repo 'recursive))))
-  (unless (require 'elpaca-autoloads nil t)
-    (require 'elpaca)
-    (elpaca-generate-autoloads "elpaca" repo)
-    (let ((load-source-file-function nil)) (load "./elpaca-autoloads"))))
-(add-hook 'after-init-hook #'elpaca-process-queues)
-(elpaca `(,@elpaca-order))
+(defun my/open-startup-directory-in-dired ()
+  "Open the startup directory in Dired when Emacs starts on *scratch*."
+  (when (and (string= (buffer-name) "*scratch*")
+             (file-directory-p default-directory))
+    (switch-to-buffer (dired-noselect default-directory))))
 
+(add-hook 'window-setup-hook #'my/open-startup-directory-in-dired)
 #+end_src
 
-** package.el
+* Theme
+
+`catppuccin-theme` の `macchiato` を起動時に有効化する。
 
 #+begin_src emacs-lisp :tangle init.el
-(require 'package)
-(setopt package-enable-at-startup nil)
+(packlet catppuccin-theme
+  :demand t
+  :config
+  (setq catppuccin-flavor 'macchiato)
+  (mapc #'disable-theme custom-enabled-themes)
+  (load-theme 'catppuccin t))
 #+end_src
 
-** Backup
+* Mode line
+
+`moody` で mode line を整える。
 
 #+begin_src emacs-lisp :tangle init.el
-(setq make-backup-files nil)
-(setq backup-inhibited nil)
-(setq auto-save-default nil)
-#+end_src
-
-** Setup El
-
-#+begin_src emacs-lisp :tangle init.el
-(elpaca setup
-  (require 'setup))
-
-(elpaca-wait)
-
-(fset 'setup--orig (symbol-function 'setup))
-
-(defun my/elpaca-recipe-available-p (name)
-  (condition-case nil
-      (when-let* ((recipe (elpaca-recipe name))
-                  (urlish (or (plist-get recipe :url)
-                              (plist-get recipe :repo)
-                              (plist-get recipe :host)
-                              (plist-get recipe :fetcher))))
-        urlish)
-    (error nil)))
-
-(defmacro setup (name &rest body)
-  "Wrap `setup' to auto-install packages with Elpaca."
-  (declare (indent defun))
-  (let ((elpaca-form nil)
-        (clean-body nil))
-    (dolist (form body)
-      (if (and (consp form) (eq (car form) :elpaca) (null elpaca-form))
-          (setq elpaca-form form)
-        (push form clean-body)))
-    (setq clean-body (nreverse clean-body))
-    (if (and (symbolp name) (not (keywordp name)))
-        (let* ((force-elpaca (and elpaca-form t))
-               (recipe (cdr elpaca-form))
-               (disable-elpaca (and elpaca-form (null (car recipe))))
-               (order (cond
-                       ((null elpaca-form) name)
-                       ((or (eq (car recipe) t) (null (car recipe))) name)
-                       ((symbolp (car recipe)) (if (cdr recipe)
-                                                   (cons (car recipe) (cdr recipe))
-                                                 (car recipe)))
-                       (t (car recipe)))))
-          `(if (and (not ,disable-elpaca)
-                    (or ,force-elpaca (my/elpaca-recipe-available-p ',name)))
-               (elpaca ,order (setup--orig ,name ,@clean-body))
-             (setup--orig ,name ,@clean-body)))
-      `(setup--orig ,name ,@clean-body))))
-
-(defmacro -setup (order &rest body)
-  "Execute BODY in `setup' declaration after ORDER is finished.
-If the :disabled keyword is present in body, the package is completely ignored.
-This happens regardless of the value associated with :disabled.
-The expansion is a string indicating the package has been disabled."
-  (declare (indent 1))
-  (if (memq :disabled body)
-      (format "%S :disabled by -setup" order)
-    (let ((o order))
-      (when-let ((ensure (cl-position :ensure body)))
-        (setq o (if (null (nth (1+ ensure) body)) nil order)
-              body (append (cl-subseq body 0 ensure)
-                           (cl-subseq body (+ ensure 2)))))
-      `(elpaca ,o (setup--orig
-                    ,(if-let (((memq (car-safe order) '(quote \`)))
-                              (feature (flatten-tree order)))
-                         (cadr feature)
-                       (elpaca--first order))
-                    ,@body)))))
-
-(setup-define :load-after
-  (lambda (&rest features)
-    (let ((body `(require ',(setup-get 'feature))))
-      (dolist (feature (nreverse features))
-        (setq body `(with-eval-after-load ',feature ,body)))
-      body))
-  :documentation "Load the current feature after FEATURES.")
-
-(setup-define :opt
-  (lambda (&rest pairs)
-    `(setopt ,@pairs))
-  :after-loaded t)
-
-(setup-define :face
-    (lambda (face spec) `(custom-set-faces (quote (,face ,spec))))
-    :documentation "Customize FACE to SPEC."
-    :signature '(face spec ...)
-    :debug '(setup)
-    :repeatable t
-    :after-loaded t)
-
-(setup-define :file-match
-  (lambda (glob)
-    `(add-to-list 'auto-mode-alist (cons ,(wildcard-to-regexp glob) ',(setup-get 'mode))))
-  :documentation "Associate the current mode with files that match GLOB."
-  :debug '(form)
-  :repeatable t)
-#+end_src
-
-** OS
-
-#+begin_src emacs-lisp :tangle init.el
-(defconst is-darwin (string= system-type "darwin"))
-
-(defconst is-window window-system)
-
-;; is-darwin-window
-(defconst is-darwin-window (and is-darwin is-window))
-
-;; when-darwin-not-window-system
-(defconst is-darwin-not-window (and is-darwin is-window))
-#+end_src
-
-** Performance tips
-
-#+begin_src emacs-lisp :tangle init.el
-(setup simple
-  (defun my/run-after-startup (fn &optional delay)
-    "Run FN once after startup and DELAY seconds of idle time."
-    (let ((delay (or delay 0.5)))
-      (if after-init-time
-          (run-with-idle-timer delay nil fn)
-        (add-hook 'emacs-startup-hook
-                  (lambda ()
-                    (run-with-idle-timer delay nil fn))))))
-  (defun my/run-in-buffer (buffer fn)
-    "Run FN in BUFFER if BUFFER is live."
-    (when (buffer-live-p buffer)
-      (with-current-buffer buffer
-        (funcall fn))))
-  (defun my/run-after-buffer-idle (fn &optional delay buffer)
-    "Run FN in BUFFER after DELAY seconds of idle time."
-    (run-with-idle-timer (or delay 0.1) nil
-                         #'my/run-in-buffer
-                         (or buffer (current-buffer))
-                         fn))
-  (defun my/require-feature-after-startup (feature &optional delay)
-    "Require FEATURE after startup and DELAY seconds of idle time."
-    (my/run-after-startup
-     (lambda ()
-       (require feature nil t))
-     delay))
-  (:opt blink-matching-paren nil
-        auto-mode-case-fold nil
-        vc-handled-backends '(Git)
-        bidi-display-reordering 'left-to-right
-        bidi-inhibit-bpa t
-        cursor-in-non-selected-windows nil
-        highlight-nonselected-windows nil
-        fast-but-imprecise-scrolling t
-        jit-lock-defer-time 0.1
-        ffap-machine-p-known 'reject
-        idle-update-delay 1.0
-        redisplay-skip-fontification-on-input t
-        process-adaptive-read-buffering t)
-  (:only-if is-darwin)
-  (:opt command-line-ns-option-alist nil))
-#+end_src
-
-*** so-long
-
-#+begin_src emacs-lisp :tangle init.el
-(setup so-long
-  (global-so-long-mode +1))
-#+end_src
-
-** Basic behavior
-
-#+begin_src emacs-lisp :tangle init.el
-(setq make-backup-files nil)
-(setq backup-inhibited nil)
-(setq create-lockfiles nil)
-(setq auto-save-default nil)
-(setq delete-by-moving-to-trash t)
-(setq vc-follow-symlinks t)
-(setq ring-bell-function 'ignore)
-(defalias 'yes-or-no-p 'y-or-n-p)
-(setq inhibit-startup-message t)
-(setq kill-whole-line t)
-
-(setq-default indent-tabs-mode nil)
-#+end_src
-
-*** show-trailing-whitespace
-
-#+begin_src emacs-lisp :tangle init.el
-(setq-default show-trailing-whitespace t)
-
-(defun my/disable-trailing-mode-hook ()
-  "Disable show tail whitespace."
-  (setq show-trailing-whitespace nil))
-
-(defvar my/disable-trailing-modes
-  '(eshell-mode
-    eww-mode
-    term-mode
-    special-mode
-    coq-goals-mode))
-
-(mapc
- (lambda (mode)
-   (add-hook (intern (concat (symbol-name mode) "-hook"))
-             'my/disable-trailing-mode-hook))
- my/disable-trailing-modes)
-#+end_src
-
-*** blink-cursor-mode
-
-#+begin_src emacs-lisp :tangle init.el
-(blink-cursor-mode -1)
-#+end_src
-
-*** auto-revert-mode
-
-#+begin_src emacs-lisp :tangle init.el
-(setup auto-revert-mode
-  (my/run-after-startup (lambda ()
-                          (global-auto-revert-mode +1))
-                        1.0))
-#+end_src
-
-*** recentf-mode
-
-#+begin_src emacs-lisp :tangle init.el
-(setup recentf-mode
-  (:opt recentf-max-saved-items 100)
-  (my/run-after-startup (lambda ()
-                          (recentf-mode +1))
-                        1.0))
-#+end_src
-
-*** savehist-mode
-
-#+begin_src emacs-lisp :tangle init.el
-(with-eval-after-load 'savehist-mode
-  (savehist-mode +1))
-#+end_src
-
-*** delsel
-
-#+begin_src emacs-lisp :tangle init.el
-(setup delsel
-  (delete-selection-mode +1))
-#+end_src
-
-** Scroll
-
-#+begin_src emacs-lisp :tangle init.el
-(setup simple
-  (setq scroll-margin 0)
-  (setq scroll-conservatively 100000)
-  (setq scroll-preserve-screen-position t))
-
-(setup pixel-scroll-precision-mode
-  (:only-if is-darwin-window)
-  (pixel-scroll-precision-mode t))
-#+end_src
-
-*** fast-scroll
-
-see: https://github.com/meatcar/emacs.d?tab=readme-ov-file#fast-scroll
-
-#+begin_src emacs-lisp :tangle init.el
-(setup fast-scroll
-  (:when-loaded
-    (fastscroll-config)
-    (fastscroll-mode 1)))
-#+end_src
-
-** Looks & Feels
-
-#+begin_src emacs-lisp :tangle init.el
-(setup display-line-numbers
-  (:opt display-line-numbers-grow-only t)
-  (defun my/enable-display-line-numbers ()
-    (unless (bound-and-true-p display-line-numbers-mode)
-      (display-line-numbers-mode +1)))
-  (defun my/enable-display-line-numbers-maybe ()
-    (my/run-after-buffer-idle #'my/enable-display-line-numbers 0.1))
-  (:with-mode prog-mode
-    (:hook my/enable-display-line-numbers-maybe))
-  (:with-mode text-mode
-    (:hook my/enable-display-line-numbers-maybe)))
-#+end_src
-
-*** Theme
-
-#+begin_src emacs-lisp :tangle init.el
-;; (setup modus-themes
-;;   (:opt modus-themes-italic-constructs t
-;;         modus-themes-bold-constructs t
-;;         modus-themes-region '(bg-only no-extend)
-;;         modus-themes-mixed-fonts t
-;;         modus-themes-subtle-line-numbers t
-;;         modus-themes-org-blocks 'gray-background
-;;         modus-themes-common-palette-overrides
-;; 	'(
-;;           (comment yellow-cooler)
-;;           ;; (comment yellow-warmer)
-;;           ;; (string green-cooler)
-;;           (string green-warmer)
-;;           ;; (keyword cyan-cooler)
-;;           ))
-
-;;   (load-theme 'modus-operandi-tinted t)
-;;   ;; (load-theme 'modus-vivendi-tritanopia t)
-;;   ;; (load-theme 'modus-operandi-deuteranopia t)
-;;   ;; (load-theme 'modus-operandi-tritanopia t)
-;;   )
-#+end_src
-
-#+begin_src emacs-lisp :tangle init.el
-(setup catppuccin-theme
-  (:opt catppuccin-flavor 'macchiato)
-
-  (load-theme 'catppuccin :no-confirm)
-  (catppuccin-reload))
-#+end_src
-
-*** Modeline
-
-#+begin_src emacs-lisp :tangle init.el
-(setup moody
-  (:opt x-underline-at-decent-line t)
-
+(packlet moody
+  :demand t
+  :config
   (moody-replace-mode-line-front-space)
-  (moody-replace-mode-line-buffer-identification))
+  (moody-replace-mode-line-buffer-identification)
+  (moody-replace-vc-mode)
+  (set-face-attribute 'mode-line-active nil :box 'unspecified)
+  (set-face-attribute 'mode-line-inactive nil :box 'unspecified))
 #+end_src
 
-*** mlscroll
+* Minor modes
 
-#+begin_src emacs-lisp :tangle init.el
-(setup mlscroll
-  (if (daemonp)
-      (add-hook 'server-after-make-frame-hook #'mlscroll-mode)
-    (mlscroll-mode 1)))
-#+end_src
-
-*** Terminal
-
-#+begin_src emacs-lisp :tangle init.el
-(setup
-  (:only-if is-darwin-not-window)
-  (set-face-attribute 'vertical-border nil :foreground "gray")
-  (set-display-table-slot standard-display-table 'vertical-border (make-glyph-code ?\u2502)))
-
-(setup xterm-mouse-mode
-  (:only-if is-darwin-not-window)
-  (xterm-mouse-mode t))
-
-(setup mouse-wheel-mode
-  (:only-if is-darwin-not-window)
-  (mouse-wheel-mode t))
-#+end_src
-
-*** minions
-
-#+begin_src emacs-lisp :tangle init.el
-(setup minions
-  (my/run-after-startup (lambda ()
-                          (minions-mode +1))
-                        1.5))
-#+end_src
-
-*** svg-tag-mode
-
-#+begin_src emacs-lisp :tagnle init.el
-(setup svg-tag-mode
-  (global-svg-tag-mode))
-#+end_src
-
-*** keycast
-
-#+begin_src emacs-lisp :tangle init.el
-(setup keycast
-  (:load-after moody)
-  (:require keycast)
-  ;; (keycast-tab-bar-mode)
-  ;; (keycast-mode-line-mode)
-
-  (define-minor-mode keycast-mode
-    "Show current command and its key binding in the mode line (fix for use with doom-modeline)."
-    :global t
-    (if keycast-mode
-	(add-hook 'pre-command-hook 'keycast--update t)
-      (remove-hook 'pre-command-hook 'keycast--update)))
-
-  (add-to-list 'global-mode-string '("" keycast-mode-line))
-  (keymap-global-set "C-c k" 'keycast-mode))
-#+end_src
-
-** Window
-
-*** ace-window
-
-#+begin_src emacs-lisp :tangle init.el
-(setup ace-window
-  (keymap-global-set "M-o" 'ace-window)
-  (:opt aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l)))
-#+end_src
-
-
-** Languages & Encoding
-
-#+begin_src emacs-lisp :tangle init.el
-(setup simple
-  (set-language-environment "Japanese")
-  (prefer-coding-system 'utf-8)
-  (set-default-coding-systems 'utf-8)
-  (set-terminal-coding-system 'utf-8)
-  (set-keyboard-coding-system 'utf-8)
-  (set-selection-coding-system 'utf-8)
-  (set-file-name-coding-system 'utf-8)
-  (set-clipboard-coding-system 'utf-8)
-  (set-buffer-file-coding-system 'utf-8))
-#+end_src
-
-** Case ignore
-
-#+begin_src emacs-lisp :tangle init.el
-(setq read-file-name-completion-ignore-case t)
-(setq read-buffer-completion-ignore-case t)
-(setq completion-ignore-case t)
-#+end_src
-
-** Copy & Pasge
-
-#+begin_src emacs-lisp :tangle init.el
-(setup (:only-if is-darwin)
-  (defun copy-from-osx ()
-    (shell-command-to-string "pbpaste"))
-
-  (defun paste-to-osx (text &optional push)
-    (let ((process-connection-type nil))
-      (let ((proc (start-process "pbcopy" "*Messages*" "pbcopy")))
-        (process-send-string proc text)
-        (process-send-eof proc))))
-
-  (setq interprogram-cut-function 'paste-to-osx)
-  (setq interprogram-paste-function 'copy-from-osx))
-#+end_src
-
-** Undo & Redo
-
-*** vundo
-
-#+begin_src emacs-lisp :tangle init.el
-(setup vundo
-  (keymap-global-set "C-x u" 'vundo))
-#+end_src
-
-*** undohist
-
-#+begin_src emacs-lisp :tangle init.el
-(setup undohist
-  (undohist-initialize))
-#+end_src
-
-** Search
-
-*** anzu
-
-#+begin_src emacs-lisp :tangle init.el
-(setup anzu
-  (keymap-global-set "M-%" 'anzu-query-replace)
-  (keymap-global-set "C-M-%" 'anzu-query-replace-regex)
-  (:opt anzu-replace-threshold 1000
-        anzu-search-threshold 1000)
-  (:with-mode emacs-startup
-    (:hook global-anzu-mode))
-  (copy-face 'mode-line 'anzu-mode-line))
-#+end_src
-
-*** ripgrep
-
-#+begin_src emacs-lisp :tangle init.el
-(setup ripgrep)
-#+end_src
-
-** dired
-
-#+begin_src emacs-lisp :tangle init.el
-(setup dired
-  (:hook dired-hide-details-mode)
-  (:opt dired-do-revert-buffer t
-        dired-recursive-copies 'always
-        dired-isearch-filenames t
-        ;; https://qiita.com/wakamenod/items/6609b812a99e99f24cf4
-        dired-dwim-target (lambda () (if current-prefix-arg (dired-dwim-target-next) nil))
-        )
-
-  (require 'dired-x))
-#+end_src
-
-*** nerd-icons-dired
-
-#+begin_src emacs-lisp :tangle init.el
-(setup nerd-icons-dired
-  (:with-mode dired-mode
-    (:hook nerd-icons-dired-mode))
-  (:require nerd-icons)
-
-  (add-to-list 'nerd-icons-extension-icon-alist
-               '("mdx" nerd-icons-octicon "nf-oct-markdown" :face nerd-icons-lblue)))
-#+end_src
-
-** key
-
-#+begin_src emacs-lisp :tangle init.el
-;; (setup devil
-;;   (global-devil-mode))
-#+end_src
-
-*** which-key
-
-#+begin_src emacs-lisp :tangle init.el
-(setup which-key
-  (my/run-after-startup (lambda ()
-                          (which-key-mode +1))
-                        1.5))
-#+end_src
-
-*** hydra
-
-#+begin_src emacs-lisp :tangle init.el
-(setup hydra)
-#+end_src
-
-*** pretty-hydra
-
-#+begin_src emacs-lisp :tangle init.el
-(setup pretty-hydra
-  (:elpaca (pretty-hydra
-            :host github
-            :repo "jerrypnz/major-mode-hydra.el"
-            :files ("pretty-hydra.el")))
-  (require 'pretty-hydra))
-#+end_src
-
-**** hydra-posframe
-
-#+begin_src emacs-lisp :tangle init.el
-(setup hydra-posframe
-  (:elpaca hydra-posframe :host github :repo "Ladicle/hydra-posframe")
-  (:opt hydra-posframe-poshandler 'posframe-poshandler-window-bottom-center)
-  (require 'hydra-posframe)
-  (my/run-after-startup #'hydra-posframe-mode 1.5))
-#+end_src
-
-** Parens
-
-*** electric-pair
-
-#+begin_src emacs-lisp :tangle init.el
-(setup electric-pair
-  (electric-pair-mode 1))
-#+end_src
-
-*** rainbow-delimiters
-
-#+begin_src emacs-lisp :tangle init.el
-(setup rainbow-delimiters
-  (:with-mode prog-mode
-    (:hook rainbow-delimiters-mode)))
-#+end_src
-
-** Flymake
-
-
-#+begin_src emacs-lisp :tangle init.el
-(setup flymake)
-#+end_src
-
-*** flymake-popon
-
-#+begin_src emacs-lisp :tangle init.el
-(setup flymake-popon
-  (:load-after flymake)
-  (:with-mode flymake-mode
-    (:hook flymake-popon-mode)))
-#+end_src
-
-
-** Completion
-
-*** corfu
-
-#+begin_src emacs-lisp :tangle init.el
-(setup corfu
-  (:opt corfu-auto t
-        corfu-auto-delay 0.5
-        corfu-popupifo-delay 0.5
-        corfu-quit-no-match t
-        corfu-auto-prefix 1
-        tab-always-indent 'complete
-        text-mode-ispell-word-completion nil)
-  ;; (:with-map corfu-mode-map
-  ;;   (:bind
-  ;;    "SPC" corfu-insert-separator))
-  (global-corfu-mode))
-#+end_src
-
-**** corfu-terminal
-
-#+begin_src emacs-lisp :tangle init.el
-(setup corfu-terminal
-  (:load-after corfu)
-  (:when-loaded
-    (corfu-terminal-mode +1)))
-#+end_src
-
-**** corfu-prescient
-
-#+begin_src emacs-lisp :tangle init.el
-(setup corfu-prescient
-  (:opt corfu-prescient-enable-filtering nil
-        prescient-aggressive-file-save t)
-  (require 'prescient)
-  (prescient-persist-mode +1)
-  (corfu-prescient-mode +1))
-#+end_src
-
-**** nerd-icons-corfu
-
-#+begin_src emacs-lisp :tangle init.el
-(setup nerd-icons-corfu
-  (:load-after corfu)
-  (:when-loaded
-    (add-to-list 'corfu-margin-formatters #'nerd-icons-corfu-formatter)))
-#+end_src
-
-*** vertico
-
-#+begin_src emacs-lisp :tangle init.el
-(setup vertico
-  (:with-map vertico-map
-    (:bind "C-r" vertico-previous
-           "C-s" vertico-next))
-  (:opt vertico-count 12
-        vertico-cycle t)
-  (defvar +vertico-current-arrow t)
-
-  (vertico-mode)
-
-  ;; vertico-directory
-  (:with-map vertico-map
-    (:bind "C-l" vertico-directory-up
-           "DEL" vertico-directory-delete-char)))
-#+end_src
-
-**** vertico-prescient
-
-#+begin_src emacs-lisp :tangle init.el
-(setup vertico-prescient
-  (:load-after prescient)
-  (:opt vertico-prescient-enable-filtering nil)
-  (vertico-prescient-mode +1))
-#+end_src
-
-*** consult
-
-#+begin_src emacs-lisp :tangle init.el
-(setup consult
-  (:opt consult-preview-raw-size 1024000
-        consult-preview-max-size 1024000
-        consult-preview-key 'any
-        xref-show-xrefs-function #'consult-xref
-        xref-show-definitions-function #'consult-xref)
-  (keymap-global-set "C-x b" 'consult-buffer)
-
-  (keymap-global-set "M-y" 'consult-yank-pop)
-
-  (keymap-global-set "M-g f" 'consult-flymake)
-  (keymap-global-set "M-g o" 'consult-outline)
-  (keymap-global-set "M-g i" 'consult-imenu)
-
-  (keymap-global-set "M-s @" 'consult-line-at)
-  (keymap-global-set "M-s s" 'consult-line)
-  (keymap-global-set "M-s f" 'consult-find)
-  (keymap-global-set "M-s r" 'consult-ripgrep)
-  (keymap-global-set "M-s F" 'consult-focus-lines)
-  (:when-loaded
-    (consult-customize
-     consult-buffer
-     consult-recent-file
-     consult-xref
-     :preview-key '(:debounce 0.4 any)))
-
-  (defun consult-line-at (&optional at-point)
-    "Consult-line uses things-at-point if set C-u prefix."
-    (interactive "P")
-    (if at-point
-        (consult-line (thing-at-point 'symbol))
-      (consult-line))))
-#+end_src
-
-**** consult-ghq
-
-#+begin_src emacs-lisp :tangle init.el
-(setup consult-ghq
-  (keymap-global-set "C-c C-g" 'consult-ghq-switch-project))
-#+end_src
-
-**** consult-projectile
-
-#+begin_src emacs-lisp :tangle init.el
-(setup consult-projectile
-  (:load-after projectile)
-  (:when-loaded
-    (advice-add 'projectile-switch-to-buffer :override #'consult-projectile-switch-to-buffer)
-    (advice-add 'projectile-switch-to-buffer-other-window :override #'consult-projectile-switch-to-buffer-other-window)
-    (advice-add 'projectile-switch-to-buffer-other-frame :override #'consult-projectile-switch-to-buffer-other-frame)
-    (advice-add 'projectile-find-dir :override #'consult-projectile-find-dir)
-    (advice-add 'projectile-find-file :override #'consult-projectile-find-file)
-    (advice-add 'projectile-find-file-other-window :override #'consult-projectile-find-file-other-window)
-    (advice-add 'projectile-find-file-other-frame :override #'consult-projectile-find-file-other-frame)
-    (advice-add 'projectile-recentf :override #'consult-projectile-recentf)
-    (advice-add 'projectile-switch-project :override #'consult-projectile-switch-project)
-    (advice-add 'projectile-ripgrep :override #'consult-ripgrep)))
-#+end_src
-
-*** orderless
-
-#+begin_src emacs-lisp :tangle init.el
-(setup orderless
-  (:require orderless)
-  (:when-loaded
-    (add-to-list 'completion-styles-alist
-                 '(orderless orderless-try-completion orderless-all-completions
-                             "Completion of multiple components, in any order."))
-    (setopt completion-styles '(orderless basic)
-            orderless-matching-styles '(orderless-flex orderless-literal orderless-regexp)
-            completion-category-overrides
-            '((file (styles orderless partial-completion))))))
-#+end_src
-
-*** cape
-
-#+begin_src emacs-lisp :tangle init.el
-(setup cape
-  (add-to-list 'completion-at-point-functions #'cape-dabbrev)
-  (add-to-list 'completion-at-point-functions #'cape-file)
-  (add-to-list 'completion-at-point-functions #'cape-elisp-block)
-  (add-to-list 'completion-at-point-functions #'cape-history))
-#+end_src
-
-*** marginalia
-
-#+begin_src emacs-lisp :tangle init.el
-(setup marginalia
-  (marginalia-mode t))
-#+end_src
-
-*** nerd-icons-completion
-
-#+begin_src emacs-lisp :tangle init.el
-(setup nerd-icons-completion
-  (:load-after marginalia)
-  (:when-loaded
-    (add-hook 'marginalia-mode-hook #'nerd-icons-completion-marginalia-setup)
-    (nerd-icons-completion-mode)))
-#+end_src
-
-*** prescient
-
-#+begin_src emacs-lisp :tangle init.el
-(setup prescient
-  (:opt prescient-aggressive-file-save t)
-  (:require prescient)
-  (prescient-persist-mode +1))
-#+end_src
-
-** embark
-
-#+begin_src emacs-lisp :tangle init.el
-(setup embark
-  (keymap-global-set "C-." 'embark-act)
-  ;; (:opt embark-indicators
-  ;;       '(embark-highlight-indicator
-  ;;         embark-isearch-highlight-indicator
-  ;;         embark-minimal-indicator))
-
-  (add-to-list 'display-buffer-alist
-               '("\\*Embark Actions\\*"
-                 (display-buffer-in-side-window)
-                 (side . bottom)
-                 (slot . 0)
-                 (window-height . 0.5)))
-  )
-#+end_src
-
-*** embark-consult
-
-#+begin_src emacs-lisp :tangle init.el
-(setup embark-consult
-  (:load-after consult embark)
-  (:with-mode consult-preview-at-point-mode
-    (:hook embark-collect-mode)))
-#+end_src
-
-** IME
-
-#+begin_src emacs-lisp :tangle init.el
-(setup ccc
-  (:elpaca (ccc
-            :host github
-            :repo "skk-dev/ddskk"
-            :files ("ccc.el")
-            :version (lambda (_e) "1.43"))))
-
-(setup ddskk
-  (:elpaca ddskk
-           :host github
-           :repo "skk-dev/ddskk")
-  (:load-after ccc)
-  (keymap-global-set "C-x j" 'skk-mode)
-  (:opt skk-preload t
-        default-input-method "japanese-skk"
-        skk-byte-compile-init-file t
-        skk-isearch-mode-enable 'always
-        skk-egg-like-newline t
-        skk-show-annotation nil
-        skk-auto-insert-paren t)
-
-  (defun my/enable-skk-latin-mode ()
-    (skk-latin-mode 1))
-  (add-hook 'find-file-hook #'my/enable-skk-latin-mode))
-#+end_src
-
-*** ddskk-posframe
-
-#+begin_src emacs-lisp :tangle init.el
-(setup ddskk-posframe
-  (:load-after ddskk)
-  (:only-if is-darwin-window)
-  (ddskk-posframe-mode t))
-#+end_src
-
-** Move
-
-*** avy
-
-#+begin_src emacs-lisp :tangle init.el
-(setup avy
-  (keymap-global-set "C-:" 'avy-goto-char)
-  (keymap-global-set "C-'" 'avy-goto-char-2))
-#+end_src
-
-** Curosr
-
-*** multiple-cursors
+`minions` で minor mode 表示をまとめる。
 
 #+begin_src emacs-lisp :tangle init.el
-(setup multiple-cursors
-  (:load-after hydra pretty-hydra)
-  (require 'pretty-hydra)
-  (keymap-global-set "C-*" 'multiple-cursors/body)
-
-  (defvar multiple-cursors--title "Multiple cursors")
-  (pretty-hydra-define multiple-cursors (:foreign-keys warn :title multiple-cursors--title :quit-key "q")
-    ("Mark"
-     (("n" mc/mark-next-like-this "next")
-      ("N" mc/unmark-next-like-this "unmark next")
-      ("p" mc/mark-previous-like-this "previous")
-      ("P" mc/unmark-previous-like-this "unmark previous")
-      ("e" mc/mark-more-like-this-extended "extend"))
-     "Many"
-     (("a" mc/mark-all-in-region "all in region" :exit t)
-      ("*" mc/mark-all-like-this "all" :exit t)))))
+(packlet minions
+  :demand t
+  :config
+  (minions-mode 1))
 #+end_src
 
-** Highlight
+* Editing
 
-*** highlight-symbol
+`electric-pair` と `rainbow-delimiters` を有効にする。
 
 #+begin_src emacs-lisp :tangle init.el
-(setup highlight-symbol
-  (:with-mode prog-mode
-    (:hook highlight-symbol-mode)))
-#+end_src
-
-*** volatile-highlights
-
-#+begin_src emacs-lisp :tangle init.el
-(setup volatile-highlights
-  (:when-loaded
-    (set-face-attribute
-     'vhl/default-face nil :foreground "#FF3333" :background "#FFCDCD")
-
-    (vhl/define-extension 'undo-tree 'undo-tree-yank 'undo-tree-mode)
-    (vhl/install-extension 'undo-tree))
-
-  (volatile-highlights-mode t))
-#+end_src
-
-*** dimmer
-
-#+begin_src emacs-lisp :tangle init.el
-(-setup dimmer
-  :disabled
-  (:opt dimmer-fraction 0.05
-        dimmer-adjustment-mode :background
-        dimmer-use-colorspace :rgb
-        dimmer-watch-frame-focus-events nil
-        dimmer-exclusion-regexp-list '(".*Minibuf.*"
-                                       ".*which-key.*"
-                                       ".*NeoTree.*"
-                                       ".*Messages.*"
-                                       ".*Async.*"
-                                       ".*Warnings.*"
-                                       ".*LV.*"
-                                       ".*Ilist.*"
-))
-  (:require dimmer)
-
-  ;; corfu に対応する。
-  ;; https://github.com/gonewest818/dimmer.el/issues/62
-  (defun advise-dimmer-config-change-handler ()
-    "Advise to only force process if no predicate is truthy."
-    (let ((ignore (cl-some (lambda (f) (and (fboundp f) (funcall f)))
-                           dimmer-prevent-dimming-predicates)))
-      (unless ignore
-        (when (fboundp 'dimmer-process-all)
-          (dimmer-process-all t)))))
-
-  (defun corfu-frame-p ()
-    "Check if the buffer is a corfu frame buffer."
-    (string-match-p "\\` \\*corfu" (buffer-name)))
-
-  (defun dimmer-configure-corfu ()
-    "Convenience settings for corfu users."
-    (add-to-list
-     'dimmer-prevent-dimming-predicates
-     #'corfu-frame-p))
-
-  (advice-add
-   'dimmer-config-change-handler
-   :override 'advise-dimmer-config-change-handler)
-
-  ;; https://github.com/gonewest818/dimmer.el/issues/49#issuecomment-804500887
-  (defun dimmer-lsp-ui-doc-p ()
-    (string-prefix-p " *lsp-ui-doc-" (buffer-name)))
-  (add-to-list 'dimmer-prevent-dimming-predicates #'dimmer-lsp-ui-doc-p)
-
-  (defun advices/dimmer-config-change-handler ()
-    (dimmer--dbg-buffers 1 "dimmer-config-change-handler")
-    (let ((ignore (cl-some (lambda (f) (and (fboundp f) (funcall f)))
-                         dimmer-prevent-dimming-predicates)))
-      (dimmer-process-all (not ignore))))
-  (advice-add 'dimmer-config-change-handler :override #'advices/dimmer-config-change-handler)
-
-  (dimmer-configure-corfu)
-
-  (dimmer-configure-which-key)
-  (dimmer-configure-magit)
-  (dimmer-configure-org)
-  (dimmer-configure-posframe)
-
-  (dimmer-mode t))
-#+end_src
-
-** Project
-
-*** projectile
-
-#+begin_src emacs-lisp :tangle init.el
-(setup projectile
-  (:opt projectile-indexing-method 'alien
-        projectile-enable-caching t
-        projectile-generic-command "fd . --type f --color=never")
-  (:when-loaded
-    (keymap-global-set "C-c p" 'projectile-command-map))
-  (my/run-after-startup (lambda ()
-                          (projectile-mode +1))
-                        1.0))
-#+end_src
-
-*** treemacs
-
-#+begin_src emacs-lisp :tangle init.el
-(setup treemacs
-  (keymap-global-set "C-\\" 'treemacs)
-  (:opt treemacs-user-mode-line-format 'none)
-  (:when-loaded
-    (treemacs-fringe-indicator-mode t)
-    (treemacs-filewatch-mode t)
-    (treemacs-git-commit-diff-mode t)
-    (treemacs-git-mode 'deferred)))
-#+end_src
-
-**** treemacs-nerd-icons
-
-#+begin_src emacs-lisp :tangle init.el
-(setup treemacs-nerd-icons
-  (:load-after treemacs)
-  (:when-loaded
-    (treemacs-load-theme "nerd-icons")))
-#+end_src
-
-**** treemacs-projectile
-
-#+begin_src emacs-lisp :tangle init.el
-(setup treemacs-projectile
-  (:load-after treemacs projectile)
-  (:when-loaded
-    (treemacs-project-follow-mode t)))
-#+end_src
-
-**** treemacs-magit
-
-#+begin_src emacs-lisp :tangle init.el
-(setup treemacs-magit
-  (:load-after treemacs magit))
-#+end_src
-
-**** treemacs-tab-bar
-
-#+begin_src emacs-lisp :tangle init.el
-(setup treemacs-tab-bar
-  (:load-after treemacs)
-  (:opt treemacs-set-scope-type 'Tabs))
-#+end_src
-
-** Git
-
-*** magit
-
-#+begin_src emacs-lisp :tangle init.el
-(setup transient
-  (:elpaca t))
-
-(setup magit
-  (:elpaca t)
-  (:load-after transient))
-#+end_src
-
-*** git-modes
-
-#+begin_src emacs-lisp :tangle init.el
-(setup git-modes)
-#+end_src
-
-*** git-gutter
-
-#+begin_src emacs-lisp :tangle init.el
-(setup git-gutter
-  (:opt git-gutter:update-interval 2)
-  (:when-loaded
-    (custom-set-variables
-     '(git-gutter:modified-sign " ")
-     '(git-gutter:added-sign " ")
-     '(git-gutter:deleted-sign " "))
-
-    (set-face-background 'git-gutter:modified "purple")
-    (set-face-background 'git-gutter:added "green")
-    (set-face-background 'git-gutter:deleted "red"))
-  (defun my/enable-git-gutter-in-buffer (buffer)
-    (when (buffer-live-p buffer)
-      (with-current-buffer buffer
-        (unless (or (bound-and-true-p git-gutter-mode)
-                    (null buffer-file-name)
-                    (file-remote-p buffer-file-name))
-          (git-gutter-mode +1)))))
-  (defun my/enable-git-gutter-maybe ()
-    (run-with-idle-timer 0.1 nil #'my/enable-git-gutter-in-buffer (current-buffer)))
-  (add-hook 'find-file-hook #'my/enable-git-gutter-maybe))
-#+end_src
-
-*** blamer
-
-#+begin_src emacs-lisp :tangle init.el
-(setup blamer
-  (:face blamer-face ((t :foreground "#7a88cf"
-                         :background nil
-                         :height 120
-                         :italic t))))
-#+end_src
-
-*** git-timemachine
-
-
-#+begin_src emacs-lisp :tangle init.el
-(setup git-timemachine)
-#+end_src
-
-*** fill-column-indicator
-
-#+begin_src emacs-lisp :tangle init.el
-(setup fill-column-indicator
-  (:with-mode git-commit-mode
-    (:hook fci-mode)))
-#+end_src
-
-** Documents
-
-*** org-mode
-
-#+begin_src emacs-lisp :tangle init.el
-(setup org
-  (:opt
-   org-startup-indented t
-   org-latex-create-formula-image-program 'dvisvgm
-
-   org-log-done 'time
-   org-src-fontify-natively t
-   org-src-preserve-indentation t
-   org-src-tab-acts-natively t
-
-   system-time-locate nil
-   org-startup-with-inline-images t
-   org-ellipsis " ▼"
-   org-hide-emphasis-markers t
-   org-fontify-quote-and-verse-blocks t
-   org-use-speed-commands t
-   org-return-follows-link t
-
-   org-special-ctrl-a/e t
-   org-auto-align-tags nil
-   org-tags-column 0
-
-   org-display-custom-times t
-   org-image-actual-width nil
-
-   org-todo-keywords '((sequence "TODO(t)" "DOING(i)" "WAIT(w)" "WIP(p)" "REMIND(r)" "SOMEDAY(s)" "UNREAD(u)" "|" "DONE(d)" "READ" "CANCELED(c@)"))
-   org-enforce-todo-dependencies t
-   org-hierarchical-todo-statistics nil
-   org-log-done 'time
-
-   org-emphasis-regexp-components '("-[:space:]('\"{[:nonascii:]"
-                                    "-[:space:].,:!?;'\")}\\[[:nonascii:]"
-                                    "[:space:]"
-                                    "."
-                                    1)
-   org-match-substring-regexp
-        (concat
-         "\\([0-9a-zA-Zα-γΑ-Ω]\\)\\([_^]\\)\\("
-         "\\(?:" (org-create-multibrace-regexp "{" "}" org-match-sexp-depth) "\\)"
-         "\\|"
-         "\\(?:" (org-create-multibrace-regexp "(" ")" org-match-sexp-depth) "\\)"
-         "\\|"
-         "\\(?:\\*\\|[+-]?[[:alnum:].,\\]*[[:alnum:]]\\)\\)")
-
-   ;; org-agenda
-   org-agenda-span 'day
-   org-agenda-tags-column 0
-   ;; org-agenda-block-separator ?─
-   org-agenda-time-grid '((daily today require-timed)
-                          (800 1000 1200 1400 1600 1800 2000)
-                          " ┄┄┄┄┄ " "┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄")
-   org-agenda-current-time-string "⭠ now ─────────────────────────────────────────────────"
-
-   ;; see: https://misohena.jp/blog/2021-08-29-colorize-saturday-and-japanese-holidays-in-org-agenda.html
-   org-agenda-day-face-function (lambda (date)
-                                  (let ((face (cond
-                                               ;; 土曜日
-                                               ((= (calendar-day-of-week date) 6)
-                                                '(:inherit org-agenda-date :foreground "#0df"))
-                                               ;; 日曜日か日本の祝日
-                                               ((or (= (calendar-day-of-week date) 0)
-                                                    (let ((calendar-holidays japanese-holidays))
-                                                      (calendar-check-holidays date)))
-                                                'org-agenda-date-weekend)
-                                               ;; 普通の日
-                                               (t 'org-agenda-date))))
-                                    ;; 今日は色を反転
-                                    (if (org-agenda-today-p date) (list :inherit face :inverse-video t) face)))
-   org-time-stamp-custom-formats '("<%Y年%m月%d日(%a)>" . "<%Y年%m月%d日(%a)%H時%M分>"))
-
-  (:when-loaded
-   ;; see: https://github.com/lijigang/emacs.d/blob/main/readme.org
-   (require 'org)
-   (org-set-emph-re 'org-emphasis-regexp-components org-emphasis-regexp-components)
-   (org-element-update-syntax)
-
-   (defun org-babel-execute:jshell (body params)
-     "Execute a block of jshell code snippets or commands with org-babel"
-     (message "Executing jshell snippets")
-     (org-babel-eval "jshell -q" (concat body "\n/exit")))
-   (add-to-list 'org-src-lang-modes '("jshell" . "java")))
-  (:with-mode org-mode
-    (:hook (lambda () (setq truncate-lines nil))))
-)
-#+end_src
-
-**** org-modern
-
-#+begin_src emacs-lisp :tangle init.el
-(setup org-modern
-  ;; (:only-if is-window)
-  (:with-mode org-mode
-    (:hook org-modern-mode))
-  (:opt ;; org-modern-hide-stars 'leading
-        org-modern-table nil
-        org-modern-hide-stars nil
-        org-modern-timestamp '(" %Y年%m月%d日(%a) " . " %H時%M分 ")
-        org-modern-star 'replace
-        org-modern-replace-stars
-        (list #("󰎥" 0 1 (face (:family "Symbols Nerd Font Mono" :height 1.0) font-lock-face (:family "Symbols Nerd Font Mono" :height 1.0) display (raise 0.0) rear-nonsticky t))
-              #("󰎨" 0 1 (face (:family "Symbols Nerd Font Mono" :height 1.0) font-lock-face (:family "Symbols Nerd Font Mono" :height 1.0) display (raise 0.0) rear-nonsticky t))
-              #("󰎫" 0 1 (face (:family "Symbols Nerd Font Mono" :height 1.0) font-lock-face (:family "Symbols Nerd Font Mono" :height 1.0) display (raise 0.0) rear-nonsticky t))
-              #("󰎲" 0 1 (face (:family "Symbols Nerd Font Mono" :height 1.0) font-lock-face (:family "Symbols Nerd Font Mono" :height 1.0) display (raise 0.0) rear-nonsticky t))
-              #("󰎯" 0 1 (face (:family "Symbols Nerd Font Mono" :height 1.0) font-lock-face (:family "Symbols Nerd Font Mono" :height 1.0) display (raise 0.0) rear-nonsticky t))
-              #("󰎴" 0 1 (face (:family "Symbols Nerd Font Mono" :height 1.0) font-lock-face (:family "Symbols Nerd Font Mono" :height 1.0) display (raise 0.0) rear-nonsticky t))
-              #("󰎷" 0 1 (face (:family "Symbols Nerd Font Mono" :height 1.0) font-lock-face (:family "Symbols Nerd Font Mono" :height 1.0) display (raise 0.0) rear-nonsticky t))
-              ))
-  (let ((comment-color (face-attribute 'font-lock-comment-face :foreground)))
-    (custom-theme-set-faces
-     'user
-     `(org-quote ((t (:inherit org-block :slant italic :foreground ,comment-color))))))
-
-  (:when-loaded
-    (set-face-attribute 'org-table nil :inherit 'fixed-pitch))
-
-  (setq org-ditaa-jar-path "~/.nix-profile/lib/ditaa.jar")
-  (org-babel-do-load-languages
-   'org-babel-load-languages
-   '((ditaa . t))))
-#+end_src
-
-**** org-modern-indent
-
-#+begin_src emacs-lisp :tangle init.el
-(setup org-modern-indent
-  (:only-if (and is-window (require 'org-modern-indent nil t)))
-  (:with-mode org-mode
-    (:hook org-modern-indent-mode)))
-#+end_src
-
-**** org-roam
-
-#+begin_src emacs-lisp :tangle init.el
-(setup org-roam
-  (define-prefix-command 'org-roam-prefix-map)
-  (keymap-global-set "C-c n" 'org-roam-prefix-map)
-  (:with-map org-roam-prefix-map
-     (:bind
-      "l" org-roam-buffer-toggle
-      "f" org-roam-node-find
-      "g" org-roam-graph
-      "i" org-roam-node-insert
-      "c" org-roam-capture
-      "j" org-roam-dailies-capture-today))
-
-  (with-eval-after-load 'org-roam-node
-    (cl-defmethod org-roam-node-my-id ((node org-roam-node))
-      "タイムスタンプとUUIDを組み合わせたファイル名を生成する。"
-      ;; この関数は node 引数を取りますが、今回は使用しません。
-      (let* ((node-id (format "%08x-%04x-4%03x-%04x-%012x"
-                              (random (expt 16 8))
-                              (random (expt 16 4))
-                              (random (expt 16 3))
-                              (+ #x8000 (random #x4000)) ; UUID v4 の variant
-                              (random (expt 16 12))))
-             (timestamp (format-time-string "%Y%m%d%H%M%S")))
-        (concat timestamp "-" node-id))))
-
-  (:opt org-roam-directory (file-truename "~/org-roam")
-        org-roam-capture-templates
-        '(("d" "default" plain "%?"
-           :target (file+head "${my-id}.org"
-                              "#+title: ${title}\n")
-           :unnarrowed t)))
-  (my/require-feature-after-startup 'org-roam 5.0))
-#+end_src
-
-**** md-roam
-
-#+begin_src emacs-lisp :tangle init.el
-(setup md-roam
-  (:elpaca md-roam :host github :repo "nobiot/md-roam")
-  (:load-after org-roam)
-  (:opt org-roam-file-extensions '("org" "md"))
-  (:when-loaded
-    (md-roam-mode +1)
-    (org-roam-db-autosync-mode +1)))
-#+end_src
-
-**** org-roam-ui
-
-#+begin_src emacs-lisp :tangle init.el
-(setup org-roam-ui
-  (:load-after org-roam)
-  (:opt org-roam-ui-sync-theme t
-        org-roam-ui-follow t
-        org-roam-ui-update-on-save t
-        org-roam-ui-open-on-start t))
-#+end_src
-
-*** markdown-mode
-
-#+begin_src emacs-lisp :tangle init.el
-(setup markdown-mode
-  (:file-match "\\.mdx\\'")
-  (:opt markdown-fontify-code-blocks-natively t))
-#+end_src
-
-** eldoc
+(packlet elec-pair
+  :hook (after-init-hook . electric-pair-mode))
 
-
-#+begin_src emacs-lisp :tangle init.el
-(setup eldoc
-  (:elpaca nil)
-  (:opt eldoc-echo-area-use-multiline-p nil)
-  ;; (keymap-global-set "C-c q" 'toggle-eldoc-doc-buffer)
-  (keymap-global-set "C-c q" 'eldoc-box-hover-at-point-mode)
-  (defun get-buffer-by-regex (regex)
-    (car (seq-filter (lambda (buf)
-                       (string-match-p regex (buffer-name buf)))
-                     (buffer-list))))
-
-  (seq-filter (lambda (buf)
-                (string-match-p "^*scratch" (buffer-name buf)))
-              (buffer-list))
-
-  (setq eldoc-buffer-regex "^\\*eldoc\\( for [^*]+\\)\?\\*")
-
-  (add-to-list 'display-buffer-alist
-               `(,eldoc-buffer-regex
-                 display-buffer-at-bottom
-                 (window-height . 20)))
-
-  (defun my/eldoc-doc-buffer-active ()
-    (let* ((buffer (get-buffer-by-regex eldoc-buffer-regex))
-           (window (get-buffer-window buffer)))
-      (when window
-        (select-window window))))
-  (add-hook 'window-configuration-change-hook 'my/eldoc-doc-buffer-active)
-
-  (defun toggle-eldoc-doc-buffer (&optional interactive)
-    "Toggle the display of the eldoc documentation buffer."
-    (interactive '(t))
-    (let ((buffer (get-buffer-by-regex eldoc-buffer-regex)))
-      (if (and buffer (get-buffer-window buffer))
-          (delete-window (get-buffer-window buffer))
-        (eldoc-print-current-symbol-info interactive)))))
-#+end_src
-
-** Programming
-
-*** eglot
-
-#+begin_src emacs-lisp :tangle init.el
-(setup eglot-booster
-  (:elpaca eglot-booster :host github :repo "jdtsmith/eglot-booster")
-  (:load-after eglot)
-  (:when-loaded
-    (eglot-booster-mode +1)))
-
-(setup eglot-signature-eldoc-talkative
-  (:load-after eglot)
-  (:when-loaded
-    (advice-add #'eglot-signature-eldoc-function
-                :override #'eglot-signature-eldoc-talkative)))
-
-(setup eglot-x
-  (:elpaca eglot-x :host github :repo "nemethf/eglot-x")
-  (:load-after eglot)
-  (:with-map eglot-mode-map
-    (:bind "s-." eglot-x-find-refs))
-  (:when-loaded
-    (eglot-x-setup)))
-
-(setup consult-eglot
-  (:load-after eglot)
-  (:with-map eglot-mode-map
-    (:bind "C-c s" consult-eglot-symbols)))
-#+end_src
-
-*** Tree Sitter
-
-#+begin_src emacs-lisp :tangle init.el
-(setup treesit-auto
-  (:opt treesit-auto-install t)
-  (:require treesit-auto)
-  (defun my/treesit-auto-apply-in-buffer ()
-    (when (and buffer-file-name
-               (not (file-remote-p buffer-file-name)))
-      (when-let* ((fallback-mode major-mode)
-                  (recipe (treesit-auto--get-mode-recipe fallback-mode))
-                  (ts-mode (treesit-auto-recipe-ts-mode recipe))
-                  ((not (eq fallback-mode ts-mode)))
-                  ((fboundp ts-mode)))
-        (let ((fallback-hook (intern (format "%s-hook" fallback-mode)))
-              (treesit-language-source-alist (treesit-auto--build-treesit-source-alist)))
-          (unless (treesit-auto--ready-p fallback-mode)
-            (dolist (req-lang (ensure-list (treesit-auto-recipe-requires recipe)))
-              (treesit-auto--prompt-to-install-package req-lang))
-            (treesit-auto--prompt-to-install-package (treesit-auto-recipe-lang recipe)))
-          (when (treesit-auto--ready-p fallback-mode)
-            (funcall ts-mode)
-            (when (boundp fallback-hook)
-              (run-hooks fallback-hook)))))))
-  (defun my/treesit-auto-apply-maybe ()
-    (my/run-after-buffer-idle #'my/treesit-auto-apply-in-buffer 0.2))
-  (add-hook 'find-file-hook #'my/treesit-auto-apply-maybe))
-#+end_src
-
-*** ligature
-
-#+begin_src emacs-lisp :tangle init.el
-(setup ligature
-  (setq ligature-symbols '("-->" "//" "/**" "/*" "*/" "<!--" ":=" "->>" "<<-" "->" "<-"
-                           "<=>" "==" "!=" "<=" ">=" "=:=" "!==" "&&" "||" "..." ".."
-                           "|||" "///" "&&&" "===" "++" "--" "=>" "|>" "<|" "||>" "<||"
-                           "|||>" "<|||" ">>" "<<" "::=" "|]" "[|" "{|" "|}"
-                           "[<" ">]" ":?>" ":?" "/=" "[||]" "!!" "?:" "?." "::"
-                           "+++" "??" "###" "##" ":::" "####" ".?" "?=" "=!=" "<|>"
-                           "<:" ":<" ":>" ">:" "<>" "***" ";;" "/==" ".=" ".-" "__"
-                           "=/=" "<-<" "<<<" ">>>" "<=<" "<<=" "<==" "<==>" "==>" "=>>"
-                           ">=>" ">>=" ">>-" ">-" "<~>" "-<" "-<<" "=<<" "---" "<-|"
-                           "<=|" "/\\" "\\/" "|=>" "|~>" "<~~" "<~" "~~" "~~>" "~>"
-                           "<$>" "<$" "$>" "<+>" "<+" "+>" "<*>" "<*" "*>" "</>" "</" "/>"
-                           "<->" "..<" "~=" "~-" "-~" "~@" "^=" "-|" "_|_" "|-" "||-"
-                           "|=" "||=" "#{" "#[" "]#" "#(" "#?" "#_" "#_(" "#:" "#!" "#="
-                           "&="))
-
-  (ligature-set-ligatures 't '("www"))
-  (ligature-set-ligatures 'prog-mode ligature-symbols)
-  (ligature-set-ligatures 'coq-goals-mode ligature-symbols)
-
-  (global-ligature-mode t))
-#+end_src
-
-*** editorconfig
-
-#+begin_src emacs-lisp :tangle init.el
-(setup editorconfig
-  (editorconfig-mode))
-#+end_src
-
-*** rainbow-mode
-
-#+begin_src emacs-lisp :tangle init.el
-(setup rainbow-mode
-  (:with-mode prog-mode
-    (:hook rainbow-mode)))
-#+end_src
-
-*** dap-mode
-
-#+begin_src emacs-lisp :tangle init.el
-(setup dap-mode
-  (defun my/enable-dap-for-scala ()
-    (require 'dap-mode)
-    (dap-auto-configure-mode +1)
-    (dap-mode +1)
-    (dap-ui-mode +1))
-  (:with-mode scala-mode
-    (:hook my/enable-dap-for-scala)))
-#+end_src
-
-*** Emacs Lisp
-
-**** highlight-defined
-
-#+begin_src emacs-lisp :tangle init.el
-(setup highlight-defined
-  (:with-mode emacs-lisp-mode
-    (:hook highlight-defined-mode)))
-#+end_src
-
-**** highlight-quoted
-
-#+begin_src emacs-lisp :tangle init.el
-(setup highlight-quoted
-  (:with-mode emacs-lisp-mode
-    (:hook highlight-quoted-mode)))
-#+end_src
-
-*** Docker
-
-**** dockerfile-mode
-
-#+begin_src emacs-lisp :tangle init.el
-(setup dockerfile-mode)
-#+end_src
-
-*** YAML
-
-#+begin_src emacs-lisp :tangle init.el
-(setup yaml-mode)
+(packlet rainbow-delimiters
+  :hook (prog-mode-hook . rainbow-delimiters-mode))
 #+end_src
 
-*** Groovy
+* Scrollbar
 
-#+begin_src emacs-lisp :tangle init.el
-(setup groovy-mode
-  (:with-mode groovy-mode
-    (:hook (lambda ()
-             (setq indent-tabs-mode t)
-             (setq tab-width 4)))))
-#+end_src
-
-*** Kotlin
-
-#+begin_src emacs-lisp :tangle init.el
-(setup kotlin-mode)
-#+end_src
-
-*** SCSS
-
-#+begin_src emacs-lisp :tangle init.el
-(setup scss-mode
-  (:opt css-indent-offset 2))
-#+end_src
-
-*** Scala
+`mlscroll` で mode line にスクロールバーを表示する。
 
-**** scala-mode
-
-#+begin_src emacs-lisp :tangle init.el
-(setup scala-mode)
-#+end_src
-
-**** sbt-mode
-
-#+begin_src emacs-lisp :tangle init.el
-(setup sbt-mode
-  (:opt sbt:program-options '("-Dsbt.supershell=false"))
-  ;; WORKAROUND: https://github.com/ensime/emacs-sbt-mode/issues/31
-  ;; allows using SPACE when in the minibuffer
-  (substitute-key-definition
-   'minibuffer-complete-word
-   'self-insert-command
-   minibuffer-local-completion-map))
-#+end_src
-
-*** Golang
-
 #+begin_src emacs-lisp :tangle init.el
-(setup go-mode
-  (:with-mode go-mode
-    (:hook (lambda () (add-hook 'before-save-hook 'gofmt nil t))))
-  (:opt gofmt-command "gofmt"))
+(packlet mlscroll
+  :after (moody)
+  :demand t
+  :config
+  (mlscroll-mode 1))
 #+end_src
-
-*** TypeScript
-
-#+begin_src emacs-lisp :tangle init.el
-(setup typescript-ts-mode
-  (:file-match "\\.m?ts\\'")
-  (:opt typescript-indent-level 2
-        typescript-tsx-indent-offset 2))
 
-(setup coverlay)
+* Tree-sitter
 
-(setup css-in-js-mode)
+tree-sitter によるシンタックスハイライトを優先して使う。
 
-(setup origami)
-
-(setup tsx-mode
-  (:load-after coverlay css-in-js-mode origami)
-  (:file-match "\\.[jt]s[x]?\\'"))
-#+end_src
-
-*** Coq
-
 #+begin_src emacs-lisp :tangle init.el
-(setup proof-general
-  (setq coq-prettify-symbols '(("forall" . "∀")
-                               ;; ("->"     . "→")
-                               ("exists" . "∃")
-                               ;; ("=>"     . "⇒")
-                               ("False"  . "⊥")
-                               ("True"   . "⊤")
-                               ("~"      . "¬")
-                               ("~~"     . "¬¬")
-                               ("~~~"    . "¬¬¬")))
-  (:with-mode coq-mode
-    (:hook (lambda ()
-             (setq prettify-symbols-alist coq-prettify-symbols)
-             (prettify-symbols-mode 1))))
-  (:with-mode coq-goals-mode
-    (:hook (lambda ()
-             (setq prettify-symbols-alist coq-prettify-symbols)
-             (prettify-symbols-mode 1)))))
-#+end_src
+(defun my/treesit-language-ready-p (language)
+  "Return non-nil when LANGUAGE can be used by tree-sitter."
+  (and (fboundp 'treesit-available-p)
+       (treesit-available-p)
+       (fboundp 'treesit-language-available-p)
+       (treesit-language-available-p language)))
 
-*** Nix
+(setq treesit-font-lock-level 4)
 
-#+begin_src emacs-lisp :tangle init.el
-(setup nix-mode)
-#+end_src
-
-*** Astro
+(dolist (entry '((bash sh-mode bash-ts-mode)
+                 (c c-mode c-ts-mode)
+                 (cpp c++-mode c++-ts-mode)
+                 (css css-mode css-ts-mode)
+                 (html mhtml-mode html-ts-mode)
+                 (java java-mode java-ts-mode)
+                 (javascript javascript-mode js-ts-mode)
+                 (json js-json-mode json-ts-mode)
+                 (python python-mode python-ts-mode)
+                 (toml conf-toml-mode toml-ts-mode)))
+  (pcase-let ((`(,language ,mode ,ts-mode) entry))
+    (when (and (fboundp ts-mode)
+               (my/treesit-language-ready-p language))
+      (add-to-list 'major-mode-remap-alist (cons mode ts-mode)))))
 
-#+begin_src emacs-lisp :tangle init.el
-(setup web-mode
-  (define-derived-mode astro-mode web-mode "astro")
-  (setq auto-mode-alist
-        (append '((".*\\.astro\\'" . astro-mode))
-                auto-mode-alist)))
+(dolist (entry '((cmake "CMakeLists\\.txt\\'" cmake-ts-mode)
+                 (cmake "\\.cmake\\'" cmake-ts-mode)
+                 (dockerfile "Dockerfile\\'" dockerfile-ts-mode)
+                 (dockerfile "\\.dockerfile\\'" dockerfile-ts-mode)
+                 (go "\\.go\\'" go-ts-mode)
+                 (rust "\\.rs\\'" rust-ts-mode)
+                 (tsx "\\.tsx\\'" tsx-ts-mode)
+                 (typescript "\\.ts\\'" typescript-ts-mode)
+                 (yaml "\\.ya?ml\\'" yaml-ts-mode)))
+  (pcase-let ((`(,language ,pattern ,mode) entry))
+    (when (and (fboundp mode)
+               (my/treesit-language-ready-p language))
+      (add-to-list 'auto-mode-alist (cons pattern mode)))))
 #+end_src
 
-*** nginx-mode
-
-#+begin_src emacs-lisp :tangle init.el
-(setup nginx-mode)
-#+end_src
+* Markdown
 
-*** Lean4
+`.md` と `.mdx` を `markdown-mode` で開く。
 
 #+begin_src emacs-lisp :tangle init.el
-(setup lean4-mode)
+(packlet markdown-mode
+  :mode ("\\.md\\'" . markdown-mode)
+  :mode ("\\.mdx\\'" . markdown-mode))
 #+end_src
 
-** AI
+* Nix
 
-*** copilot
+`.nix` を `nix-mode` で開く。
 
 #+begin_src emacs-lisp :tangle init.el
-;; (setup copilot
-;;   (:with-map copilot-completion-map
-;;     (:bind "<tab>" copilot-accept-completion)
-;;     (:bind "TAB" copilot-accept-completion)))
+(packlet nix-mode
+  :mode ("\\.nix\\'" . nix-mode))
 #+end_src
 
-*** ellama
-
-#+begin_src emacs-lisp :tangle init.el
-(setup ellama
-  (:opt ellama-language "Japanese"
-        ellama-naming-scheme 'ellama-generate-name-by-llm
-        ellama-provider (make-llm-ollama
-                         :chat-model "deepseek-r1:70b"
-                         :embedding-model "deepseek-r1:70b")))
-#+end_src
+* Icons
 
-*** gptel
+GUI の `dired` では `nerd-icons-dired` を有効にする。
 
 #+begin_src emacs-lisp :tangle init.el
-(setup gptel
-  (:elpaca t)
-  (:load-after transient)
-  (add-hook 'gptel-post-stream-hook 'gptel-auto-scroll)
-  (add-hook 'gptel-post-response-functions 'gptel-end-of-response)
-
-  (setq
-   gptel-model 'qwq
-   gptel-backend (gptel-make-ollama "Ollama"
-                                    :host "localhost:11434"
-                                    :stream t
-                                    :models '(gemma3:27b gemma3:12b qwq))))
-#+end_src
-
-*** Aidermacs
+(defun my/enable-nerd-icons-dired-mode ()
+  "Enable `nerd-icons-dired-mode' in graphical Dired buffers."
+  (when (display-graphic-p)
+    (nerd-icons-dired-mode 1)))
 
-#+begin_src emacs-lisp :tangle init.el
-(setup aidermacs
-  (:bind "C-c a" aidermacs-transient-menu))
+(packlet nerd-icons-dired
+  :autoload nerd-icons-dired-mode
+  :hook (dired-mode-hook . my/enable-nerd-icons-dired-mode))
 #+end_src
 
-** System
+* Undo
 
-*** Window
+`undohist` で undo 履歴を保存し、`vundo` で可視化する。
 
 #+begin_src emacs-lisp :tangle init.el
-(setup simple
-  (:only-if is-darwin-window)
-  (add-hook 'window-setup-hook
-            (lambda ()
-              (set-frame-parameter nil 'fullscreen 'fullboth))))
-#+end_src
-
-*** Path
+(packlet undohist
+  :init
+  (setq undohist-directory
+        (expand-file-name "undohist/" user-emacs-directory))
+  :autoload undohist-initialize
+  :hook (after-init-hook . undohist-initialize))
 
-
-#+begin_src emacs-lisp :tangle init.el
-(setup exec-path-from-shell
-  (:only-if (or is-window (daemonp)))
-  (:opt exec-path-from-shell-arguments (quote ("-l")))
-  (:require exec-path-from-shell)
-  (setenv "PATH" (concat (getenv "PATH") ":~/.volta/bin"))
-  (dolist (var '("SSH_AUTH_SOCK" "SSH_AGENT_PID" "GPG_AGENT_INFO" "LANG" "LC_CTYPE" "NIX_SSL_CERT_FILE" "NIX_PATH" "LSP_USE_PLISTS"))
-    (add-to-list 'exec-path-from-shell-variables var))
-
-  (exec-path-from-shell-initialize))
+(packlet vundo
+  :commands (vundo)
+  :bind ("C-x u" . vundo))
 #+end_src
-
-** Finalization
 
-*** Garbage Collection
+* Git
 
-GC が利用できるメモリの上限を無制限から戻す。
+`magit` を遅延ロードで使えるようにする。
 
 #+begin_src emacs-lisp :tangle init.el
-(setq gc-cons-threshold my/gc-cons-threshold-normal
-      gc-cons-percentage 0.1)
+(packlet magit
+  :init
+  (setq magit-define-global-key-bindings nil
+        magit-status-show-untracked-files nil
+        magit-diff-refine-hunk nil
+        magit-log-section-commit-count 10
+        magit-refresh-status-buffer nil
+        magit-save-repository-buffers 'dontask
+        magit-status-sections-hook
+        '(magit-insert-status-headers
+          magit-insert-unstaged-changes
+          magit-insert-staged-changes))
+  :commands (magit-status magit-dispatch)
+  :bind (("C-x g" . magit-status)
+         ("C-x M-g" . magit-dispatch)))
 #+end_src

@@ -1,5 +1,22 @@
 {
   "nodes": {
+    "emacs-batteries": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1774111343,
+        "narHash": "sha256-CEuujuSfxO78fG/pDqVTaH7ScpvtZ/Jt011Cc1N/2RQ=",
+        "owner": "SuzumiyaAoba",
+        "repo": "emacs-batteries",
+        "rev": "fe55f4fc8c9622bfac72abc3c8d9f0f2f2e96958",
+        "type": "github"
+      },
+      "original": {
+        "owner": "SuzumiyaAoba",
+        "ref": "master",
+        "repo": "emacs-batteries",
+        "type": "github"
+      }
+    },
     "emacs-overlay": {
       "inputs": {
         "nixpkgs": "nixpkgs",
@@ -32,8 +49,9 @@
         "type": "github"
       },
       "original": {
-        "id": "flake-utils",
-        "type": "indirect"
+        "owner": "numtide",
+        "repo": "flake-utils",
+        "type": "github"
       }
     },
     "nixpkgs": {
@@ -84,11 +102,30 @@
         "type": "github"
       }
     },
+    "packlet": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1774158892,
+        "narHash": "sha256-RWTonfk+YolUN7UuHi8TWbjHSU/pIq8HBUhWDhT2jDQ=",
+        "owner": "SuzumiyaAoba",
+        "repo": "packlet",
+        "rev": "fc6ffcb1e2f3132c91982e6b9c0328f4b85e9679",
+        "type": "github"
+      },
+      "original": {
+        "owner": "SuzumiyaAoba",
+        "ref": "master",
+        "repo": "packlet",
+        "type": "github"
+      }
+    },
     "root": {
       "inputs": {
+        "emacs-batteries": "emacs-batteries",
         "emacs-overlay": "emacs-overlay",
         "flake-utils": "flake-utils",
-        "nixpkgs": "nixpkgs_2"
+        "nixpkgs": "nixpkgs_2",
+        "packlet": "packlet"
       }
     },
     "systems": {
