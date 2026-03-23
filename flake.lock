@@ -3,11 +3,11 @@
     "emacs-batteries": {
       "flake": false,
       "locked": {
-        "lastModified": 1774111343,
-        "narHash": "sha256-CEuujuSfxO78fG/pDqVTaH7ScpvtZ/Jt011Cc1N/2RQ=",
+        "lastModified": 1774172084,
+        "narHash": "sha256-5x4DTy6dQHjIBfQ/XEPaagj4BSSKeAHpja5m4KUkJAs=",
         "owner": "SuzumiyaAoba",
         "repo": "emacs-batteries",
-        "rev": "fe55f4fc8c9622bfac72abc3c8d9f0f2f2e96958",
+        "rev": "b58f494a100d1e9bbbaca5576e683976719276ca",
         "type": "github"
       },
       "original": {

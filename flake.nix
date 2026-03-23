@@ -37,17 +37,32 @@
         sharedLibraryExt = pkgs.stdenv.hostPlatform.extensions.sharedLibrary;
         emacsWithPackages = epkgs.emacsWithPackages (
           epkgs': with epkgs'; [
+            cape
             catppuccin-theme
+            consult
+            consult-ghq
+            corfu
+            corfu-prescient
+            corfu-terminal
+            ddskk
+            git-gutter
+            git-modes
             magit
+            marginalia
             markdown-mode
             mlscroll
             minions
             nerd-icons
+            nerd-icons-corfu
             nerd-icons-dired
             nix-mode
             moody
+            orderless
+            projectile
+            prescient
             rainbow-delimiters
             undohist
+            vertico
             vundo
           ]
         );
@@ -153,6 +168,7 @@
           set -eu
 
           mkdir -p "${initDirectory}/site-lisp"
+          mkdir -p "${initDirectory}/var"
 
           ln -sfn "${emacsConfig}/.emacs.d/init.el" \
             "${initDirectory}/init.el"
@@ -164,6 +180,9 @@
             "${initDirectory}/site-lisp/emacs-batteries"
           ln -sfn "${treeSitterGrammars}" \
             "${initDirectory}/tree-sitter"
+
+          export EMACS_CONFIG_ROOT="${initDirectory}"
+          export PATH="${pkgs.lib.makeBinPath [ pkgs.fd pkgs.ripgrep ]}:$PATH"
 
           exec ${emacsWithPackages}/bin/emacs \
             --init-directory="${initDirectory}" \

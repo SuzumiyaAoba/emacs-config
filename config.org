@@ -2,12 +2,21 @@
 
 * early-init.el
 
-`emacs-batteries` が提供する early-init 用の設定だけを読み込む。
+=emacs-batteries= が提供する early-init 用の設定だけを読み込む。
 
 #+begin_src emacs-lisp :tangle early-init.el
+(defconst my/config-root
+  (file-name-as-directory
+   (expand-file-name
+    (or (getenv "EMACS_CONFIG_ROOT")
+        (file-name-directory (or load-file-name user-init-file))))))
+
+(setq user-emacs-directory (expand-file-name "var/" my/config-root)
+      user-emacs-directory-warning nil)
+
 (load (expand-file-name
        "site-lisp/emacs-batteries/emacs-batteries-early-init.el"
-       user-emacs-directory)
+       my/config-root)
       nil 'nomessage)
 #+end_src
 
@@ -16,21 +25,38 @@
 フォントを設定する。
 
 #+begin_src emacs-lisp :tangle early-init.el
-(set-face-attribute 'default nil :family "Cascadia Next JP" :height 145)
-(set-face-attribute 'default nil :family "Cascadia Code NF" :height 145)
+(set-face-attribute 'default nil :family "UDEV Gothic JPDOC" :height 145)
+
+;; Nerd Icons live in the Private Use Area.
+(set-fontset-font t '(#xE000 . #xF8FF) "Symbols Nerd Font Mono" nil 'prepend)
 #+end_src
 
 * init.el
 
-`packlet` と `emacs-batteries` を読み込み、基本セットアップを有効化する。
+=packlet= と =emacs-batteries= を読み込み、基本セットアップを有効化する。
 
 #+begin_src emacs-lisp :tangle init.el
 ;; init.el --- Minimal emacs-batteries setup -*- lexical-binding: t; coding: utf-8 -*-
 
+(defconst my/config-root
+  (file-name-as-directory
+   (expand-file-name
+    (or (getenv "EMACS_CONFIG_ROOT")
+        (file-name-directory (or load-file-name user-init-file))))))
+
+(let ((root (expand-file-name user-emacs-directory))
+      kept)
+  (dolist (dir load-path)
+    (unless (and (stringp dir)
+                 (string-equal (file-name-as-directory (expand-file-name dir))
+                               root))
+      (push dir kept)))
+  (setq load-path (nreverse kept)))
+
 (add-to-list 'load-path
-             (expand-file-name "site-lisp/packlet" user-emacs-directory))
+             (expand-file-name "site-lisp/packlet" my/config-root))
 (add-to-list 'load-path
-             (expand-file-name "site-lisp/emacs-batteries" user-emacs-directory))
+             (expand-file-name "site-lisp/emacs-batteries" my/config-root))
 
 (require 'packlet)
 (require 'emacs-batteries)
@@ -45,23 +71,136 @@
 (set-language-environment "Japanese")
 #+end_src
 
-* Startup
+* Input method
 
-ファイル指定なしで起動したときは、起動ディレクトリを `dired` で開く。
+=DDSKK= を日本語入力として使う。
 
 #+begin_src emacs-lisp :tangle init.el
-(defun my/open-startup-directory-in-dired ()
-  "Open the startup directory in Dired when Emacs starts on *scratch*."
-  (when (and (string= (buffer-name) "*scratch*")
-             (file-directory-p default-directory))
-    (switch-to-buffer (dired-noselect default-directory))))
+(packlet skk
+  :init
+  (setq default-input-method "japanese-skk"
+        skk-user-directory (expand-file-name "skk/" user-emacs-directory))
+  (make-directory skk-user-directory t)
+  (autoload 'ccc-setup "ccc" nil t)
+  (autoload 'skk-cus-setup "skk-cus" nil t)
+  (autoload 'skk-cursor-current-color "skk-cursor" nil t)
+  (autoload 'skk-cursor-set-1 "skk-cursor" nil t)
+  (autoload 'skk-cursor-off-1 "skk-cursor" nil t)
+  (autoload 'skk-emacs-prepare-menu "skk-emacs" nil t)
+  (autoload 'skk-annotation-start-python "skk-annotation" nil t)
+  (autoload 'skk-version "skk-version" nil t)
+  (autoload 'skk-activate "skk-leim" nil t)
+  (autoload 'skk-auto-fill-activate "skk-leim" nil t)
+  (defun my/load-ddskk-autoloads ()
+    "Load `ddskk-autoloads' while skipping the obsolete isearch advice form."
+    (when-let ((file (locate-library "ddskk-autoloads")))
+      (with-temp-buffer
+        (insert-file-contents file)
+        (goto-char (point-min))
+        (let (form)
+          (condition-case nil
+              (while t
+                (setq form (read (current-buffer)))
+                (unless (and (listp form)
+                             (eq (car-safe form) 'defconst)
+                             (eq (cadr form) 'skk-isearch-really-early-advice))
+                  (eval form t)))
+            (end-of-file nil))))))
+  (my/load-ddskk-autoloads)
+  (register-input-method
+   "japanese-skk" "Japanese" #'skk-activate ""
+   "Simple Kana to Kanji conversion program")
+  (register-input-method
+   "japanese-skk-auto-fill" "Japanese" #'skk-auto-fill-activate ""
+   "Simple Kana to Kanji conversion program with auto-fill")
+  (defun my/skk-handle-c-j ()
+    "Enable SKK or return to hiragana mode on `C-j'."
+    (interactive)
+    (cond
+     ((not (bound-and-true-p skk-mode))
+      (let ((input-method-verbose-flag nil))
+        (activate-input-method default-input-method)))
+     ((bound-and-true-p skk-henkan-mode)
+      (call-interactively #'skk-kakutei))
+     ((or (bound-and-true-p skk-latin-mode)
+          (bound-and-true-p skk-jisx0208-latin-mode)
+          (bound-and-true-p skk-abbrev-mode)
+          (bound-and-true-p skk-katakana))
+      (skk-j-mode-on))
+     (t
+      (call-interactively #'skk-kakutei))))
+  (defvar my/skk-shortcut-mode-map
+    (let ((map (make-sparse-keymap)))
+      (define-key map (kbd "C-j") #'my/skk-handle-c-j)
+      (define-key map (kbd "C-x j") #'toggle-input-method)
+      map))
+  (define-minor-mode my/skk-shortcut-mode
+    "Provide global keybindings for SKK."
+    :global t
+    :lighter ""
+    :keymap my/skk-shortcut-mode-map)
+  (defun my/skk-auto-enable-p ()
+    "Return non-nil when SKK should be enabled automatically."
+    (and (not noninteractive)
+         (not (minibufferp))
+         (not buffer-read-only)
+         (not (derived-mode-p 'dired-mode))
+         (not (derived-mode-p 'special-mode))))
+  (defvar my/skk-default-enable-delay 1.0
+    "Idle seconds before enabling SKK by default.")
+  (defun my/enable-skk-by-default ()
+    "Enable SKK by default in editable interactive buffers.
+When SKK is newly enabled, switch to ASCII mode."
+    (cond
+     ((my/skk-auto-enable-p)
+      (when (null current-input-method)
+        (let ((input-method-verbose-flag nil))
+          (activate-input-method default-input-method))
+        (when (and (bound-and-true-p skk-mode)
+                   (fboundp 'skk-latin-mode))
+          (skk-latin-mode 1))))
+     ((and (stringp current-input-method)
+           (string-prefix-p "japanese-skk" current-input-method))
+      (let ((input-method-verbose-flag nil))
+        (deactivate-input-method)))))
+  (defun my/schedule-skk-by-default ()
+    "Schedule delayed SKK activation for the current buffer."
+    (let ((buffer (current-buffer)))
+      (run-with-idle-timer
+       my/skk-default-enable-delay nil
+       (lambda (buffer)
+         (when (buffer-live-p buffer)
+           (with-current-buffer buffer
+             (my/enable-skk-by-default))))
+       buffer)))
+  (my/skk-shortcut-mode 1)
+  :hook ((after-init-hook . my/schedule-skk-by-default)
+         (after-change-major-mode-hook . my/schedule-skk-by-default))
+  :config
+  (with-eval-after-load 'skk
+    (when window-system
+      (ccc-setup)))
+  :commands (skk-mode))
+#+end_src
 
-(add-hook 'window-setup-hook #'my/open-startup-directory-in-dired)
+* Startup
+
+ファイル指定なしで起動したときは、起動ディレクトリを =dired= で開く。
+
+#+begin_src emacs-lisp :tangle init.el
+(packlet startup
+  :init
+  (defun my/open-startup-directory-in-dired ()
+    "Open the startup directory in Dired when Emacs starts on *scratch*."
+    (when (and (string= (buffer-name) "*scratch*")
+               (file-directory-p default-directory))
+      (switch-to-buffer (dired-noselect default-directory))))
+  :hook (window-setup-hook . my/open-startup-directory-in-dired))
 #+end_src
 
 * Theme
 
-`catppuccin-theme` の `macchiato` を起動時に有効化する。
+=catppuccin-theme= の =macchiato= を起動時に有効化する。
 
 #+begin_src emacs-lisp :tangle init.el
 (packlet catppuccin-theme
@@ -74,7 +213,7 @@
 
 * Mode line
 
-`moody` で mode line を整える。
+=moody= で mode line を整える。
 
 #+begin_src emacs-lisp :tangle init.el
 (packlet moody
@@ -89,7 +228,7 @@
 
 * Minor modes
 
-`minions` で minor mode 表示をまとめる。
+=minions= で minor mode 表示をまとめる。
 
 #+begin_src emacs-lisp :tangle init.el
 (packlet minions
@@ -100,7 +239,7 @@
 
 * Editing
 
-`electric-pair` と `rainbow-delimiters` を有効にする。
+=electric-pair= と =rainbow-delimiters= を有効にする。
 
 #+begin_src emacs-lisp :tangle init.el
 (packlet elec-pair
@@ -110,9 +249,208 @@
   :hook (prog-mode-hook . rainbow-delimiters-mode))
 #+end_src
 
+* Completion
+
+=vertico=, =consult=, =corfu=, =cape= などで補完体験を整える。
+
+#+begin_src emacs-lisp :tangle init.el
+(packlet savehist
+  :hook (after-init-hook . savehist-mode))
+
+(packlet vertico
+  :hook (after-init-hook . vertico-mode))
+
+(packlet marginalia
+  :hook (after-init-hook . marginalia-mode))
+
+(packlet orderless
+  :init
+  (setq completion-styles '(orderless basic)
+        orderless-matching-styles
+        '(orderless-flex orderless-literal orderless-regexp)
+        completion-category-defaults nil
+        completion-category-overrides
+        '((file (styles orderless partial-completion basic))))
+  :demand t)
+
+(defun my/consult-fd-current-directory-items ()
+  "Return non-hidden entries in `default-directory' for `my/consult-fd'."
+  (sort
+   (mapcar
+    (lambda (name)
+      (if (file-directory-p (expand-file-name name default-directory))
+          (concat name "/")
+        name))
+    (directory-files default-directory nil directory-files-no-dot-files-regexp))
+   #'string-lessp))
+
+(defun my/consult-fd-open (dir file)
+  "Open FILE relative to DIR.
+When FILE is empty, open DIR itself."
+  (consult--file-action
+   (expand-file-name (if (string-empty-p file) "." file) dir)))
+
+(defun my/consult-read-directory (prompt dir)
+  "Return directory for consult commands.
+Use DIR when given, otherwise use `default-directory'.
+With `C-u', use the project root.  With larger prefix arguments,
+prompt with PROMPT starting from `default-directory'."
+  (file-name-as-directory
+   (expand-file-name
+    (cond
+     ((stringp dir) dir)
+     ((equal dir '(4)) (or (consult--project-root) default-directory))
+     (dir (read-directory-name prompt default-directory nil t))
+     (t default-directory)))))
+
+(defun my/consult-fd (&optional dir initial)
+  "Select a file in DIR, showing current directory entries and `fd' results."
+  (interactive "P")
+  (require 'consult)
+  (let* ((dir (my/consult-read-directory "Fd directory: " dir))
+         (prompt (format "Fd (%s): " (consult--left-truncate-file dir)))
+         (paths '(".")))
+    (pcase-let* ((default-directory dir)
+                 (builder (consult--fd-make-builder paths))
+                 (sources
+                  `((:name "Current"
+                     :narrow ?c
+                     :category file
+                     :face consult-file
+                     :history file-name-history
+                     :state ,#'consult--file-preview
+                     :action ,(lambda (file)
+                                (my/consult-fd-open dir file))
+                     :new ,(lambda (file)
+                             (my/consult-fd-open dir file))
+                     :items ,#'my/consult-fd-current-directory-items)
+                    (:name "fd"
+                     :narrow ?f
+                     :category file
+                     :face consult-file
+                     :history file-name-history
+                     :state ,#'consult--file-preview
+                     :action ,(lambda (file)
+                                (my/consult-fd-open dir file))
+                     :new ,(lambda (file)
+                             (my/consult-fd-open dir file))
+                     :async
+                     ,(consult--process-collection
+                       builder
+                       :transform (consult--async-map
+                                   (lambda (x) (string-remove-prefix "./" x)))
+                       :highlight t
+                       :file-handler t)))))
+      (consult--multi
+       sources
+       :prompt prompt
+       :sort nil
+       :require-match nil
+       :initial initial
+       :add-history (thing-at-point 'filename)
+       :history '(:input consult--find-history)))))
+
+(defun my/consult-ripgrep (&optional dir initial)
+  "Search with `rg' in DIR, defaulting to the project root."
+  (interactive "P")
+  (require 'consult)
+  (consult-ripgrep
+   (file-name-as-directory
+    (expand-file-name
+     (cond
+      ((stringp dir) dir)
+      (dir (read-directory-name "Ripgrep directory: " default-directory nil t))
+      (t (or (consult--project-root) default-directory)))))
+   initial))
+
+(defun my/enable-corfu-terminal-mode ()
+  "Enable `corfu-terminal-mode' in non-graphical Emacs sessions."
+  (unless (display-graphic-p)
+    (corfu-terminal-mode 1)))
+
+(packlet corfu
+  :init
+  (setq corfu-cycle t
+        tab-always-indent 'complete)
+  :hook (after-init-hook . global-corfu-mode))
+
+(packlet prescient
+  :hook (after-init-hook . prescient-persist-mode))
+
+(packlet corfu-prescient
+  :after (corfu prescient)
+  :hook (after-init-hook . corfu-prescient-mode))
+
+(packlet nerd-icons-corfu
+  :after corfu
+  :demand t
+  :config
+  (add-to-list 'corfu-margin-formatters #'nerd-icons-corfu-formatter))
+
+(packlet corfu-terminal
+  :after corfu
+  :autoload corfu-terminal-mode
+  :hook (after-init-hook . my/enable-corfu-terminal-mode))
+
+(packlet cape
+  :init
+  (add-to-list 'completion-at-point-functions #'cape-file)
+  :commands (cape-dabbrev)
+  :autoload (cape-file)
+  :bind ("M-/" . cape-dabbrev))
+
+(packlet consult
+  :commands (consult-buffer
+             consult-fd
+             consult-goto-line
+             consult-imenu
+             consult-line
+             consult-ripgrep
+             consult-yank-pop)
+  :bind (("C-s" . consult-line)
+         ("C-x b" . consult-buffer)
+         ("C-x C-f" . my/consult-fd)
+         ("M-s r" . my/consult-ripgrep)
+         ("M-g g" . consult-goto-line)
+         ("M-g i" . consult-imenu)
+         ("M-y" . consult-yank-pop)))
+
+(packlet consult-ghq
+  :after consult
+  :custom (consult-ghq-find-function #'my/consult-fd)
+  :commands (consult-ghq-find)
+  :bind ("C-c C-g" . consult-ghq-find))
+#+end_src
+
+* Project
+
+=projectile= を有効にし、project 操作をまとめる。
+
+#+begin_src emacs-lisp :tangle init.el
+(packlet projectile
+  :init
+  (setq projectile-keymap-prefix (kbd "C-c p")
+        projectile-cache-file
+        (expand-file-name "projectile-cache.eld" user-emacs-directory)
+        projectile-known-projects-file
+        (expand-file-name "projectile-bookmarks.eld" user-emacs-directory))
+  :hook (after-init-hook . projectile-mode)
+  :config
+  (with-eval-after-load 'consult
+    (setq consult-project-function
+          (lambda (&optional may-prompt)
+            (or (projectile-project-root)
+                (when may-prompt
+                  (projectile-switch-project-by-name
+                   (projectile-completing-read
+                    "Switch to project: "
+                    (projectile-relevant-known-projects)))
+                  (projectile-project-root)))))))
+#+end_src
+
 * Scrollbar
 
-`mlscroll` で mode line にスクロールバーを表示する。
+=mlscroll= で mode line にスクロールバーを表示する。
 
 #+begin_src emacs-lisp :tangle init.el
 (packlet mlscroll
@@ -168,7 +506,7 @@ tree-sitter によるシンタックスハイライトを優先して使う。
 
 * Markdown
 
-`.md` と `.mdx` を `markdown-mode` で開く。
+=.md= と =.mdx= を =markdown-mode= で開く。
 
 #+begin_src emacs-lisp :tangle init.el
 (packlet markdown-mode
@@ -178,31 +516,34 @@ tree-sitter によるシンタックスハイライトを優先して使う。
 
 * Nix
 
-`.nix` を `nix-mode` で開く。
+=.nix= を =nix-mode= で開く。
 
 #+begin_src emacs-lisp :tangle init.el
 (packlet nix-mode
   :mode ("\\.nix\\'" . nix-mode))
 #+end_src
 
-* Icons
+* Git files
 
-GUI の `dired` では `nerd-icons-dired` を有効にする。
+=.gitignore= や =.gitconfig= などを適切な mode で開く。
 
 #+begin_src emacs-lisp :tangle init.el
-(defun my/enable-nerd-icons-dired-mode ()
-  "Enable `nerd-icons-dired-mode' in graphical Dired buffers."
-  (when (display-graphic-p)
-    (nerd-icons-dired-mode 1)))
+(packlet git-modes
+  :demand t)
+#+end_src
 
+* Icons
+
+=dired= では =nerd-icons-dired= を有効にする。
+
+#+begin_src emacs-lisp :tangle init.el
 (packlet nerd-icons-dired
-  :autoload nerd-icons-dired-mode
-  :hook (dired-mode-hook . my/enable-nerd-icons-dired-mode))
+  :hook (dired-mode-hook . nerd-icons-dired-mode))
 #+end_src
 
 * Undo
 
-`undohist` で undo 履歴を保存し、`vundo` で可視化する。
+=undohist= で undo 履歴を保存し、 =vundo= で可視化する。
 
 #+begin_src emacs-lisp :tangle init.el
 (packlet undohist
@@ -217,9 +558,18 @@ GUI の `dired` では `nerd-icons-dired` を有効にする。
   :bind ("C-x u" . vundo))
 #+end_src
 
+* Gutter
+
+=git-gutter= で変更行を表示する。
+
+#+begin_src emacs-lisp :tangle init.el
+(packlet git-gutter
+  :hook (after-init-hook . global-git-gutter-mode))
+#+end_src
+
 * Git
 
-`magit` を遅延ロードで使えるようにする。
+=magit= を遅延ロードで使えるようにする。
 
 #+begin_src emacs-lisp :tangle init.el
 (packlet magit
