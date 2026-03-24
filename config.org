@@ -225,10 +225,6 @@ When SKK is newly enabled, switch to ASCII mode."
   (my/skk-shortcut-mode 1)
   :hook ((after-init-hook my/enable-skk-by-default 1.0)
          (after-change-major-mode-hook my/enable-skk-by-default 1.0))
-  :after-load
-  (skk
-   (when (and (display-graphic-p) (fboundp 'ccc-setup))
-     (ccc-setup)))
   :commands (skk-mode))
 #+end_src
 
