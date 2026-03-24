@@ -122,8 +122,6 @@
          (not (minibufferp))
          (not buffer-read-only)
          (not (derived-mode-p 'special-mode))))
-  (defvar my/skk-default-enable-delay 1.0
-    "Idle seconds before enabling SKK by default.")
   (defun my/enable-skk-by-default ()
     "Enable SKK by default in editable interactive buffers.
 When SKK is newly enabled, switch to ASCII mode."
@@ -139,28 +137,12 @@ When SKK is newly enabled, switch to ASCII mode."
            (string-prefix-p "japanese-skk" current-input-method))
       (let ((input-method-verbose-flag nil))
         (deactivate-input-method)))))
-  (defvar-local my/skk--pending-timer nil
-    "Pending idle timer for SKK activation in this buffer.")
-  (defun my/schedule-skk-by-default ()
-    "Schedule delayed SKK activation for the current buffer."
-    (when (timerp my/skk--pending-timer)
-      (cancel-timer my/skk--pending-timer))
-    (let ((buffer (current-buffer)))
-      (setq my/skk--pending-timer
-            (run-with-idle-timer
-             my/skk-default-enable-delay nil
-             (lambda (buffer)
-               (when (buffer-live-p buffer)
-                 (with-current-buffer buffer
-                   (setq my/skk--pending-timer nil)
-                   (my/enable-skk-by-default))))
-             buffer))))
   (my/skk-shortcut-mode 1)
-  :hook ((after-init-hook . my/schedule-skk-by-default)
-         (after-change-major-mode-hook . my/schedule-skk-by-default))
+  :hook ((after-init-hook my/enable-skk-by-default 1.0)
+         (after-change-major-mode-hook my/enable-skk-by-default 1.0))
   :after-load
   (skk
-   (when (display-graphic-p)
+   (when (and (display-graphic-p) (fboundp 'ccc-setup))
      (ccc-setup)))
   :commands (skk-mode))
 #+end_src
@@ -248,7 +230,7 @@ When SKK is newly enabled, switch to ASCII mode."
 (packlet orderless
   :setq ((completion-styles '(orderless basic))
          (orderless-matching-styles
-          '(orderless-flex orderless-literal orderless-regexp))
+          '(orderless-literal orderless-regexp orderless-initialism))
          (completion-category-defaults nil)
          (completion-category-overrides
           '((file (styles orderless partial-completion basic)))))
@@ -285,8 +267,7 @@ When FILE is empty, open DIR itself."
                          :face consult-file
                          :history file-name-history
                          :state ,#'consult--file-preview
-                         :action ,open
-                         :new ,open))
+                         :action ,open))
                  (sources
                   `(,`(:name "Current" :narrow ?c
                        ,@base
@@ -300,14 +281,18 @@ When FILE is empty, open DIR itself."
                                      (lambda (x) (string-remove-prefix "./" x)))
                          :highlight t
                          :file-handler t)))))
-      (consult--multi
-       sources
-       :prompt prompt
-       :sort nil
-       :require-match nil
-       :initial initial
-       :add-history (thing-at-point 'filename)
-       :history '(:input consult--find-history)))))
+      (pcase (consult--multi
+              sources
+              :prompt prompt
+              :sort nil
+              :require-match nil
+              :initial initial
+              :add-history (thing-at-point 'filename)
+              :history '(:input consult--find-history))
+        (`(,candidate . ,rest)
+         (if (plist-get rest :match)
+             (funcall open candidate)
+           (dired dir)))))))
 
 (defun my/consult-read-directory (prompt dir &optional default)
   "Return directory for consult commands.
@@ -462,6 +447,69 @@ tree-sitter によるシンタックスハイライトを優先して使う。
         (add-to-list 'auto-mode-alist (cons pattern mode))))))
 #+end_src
 
+* Org
+
+=org-mode= の基本設定。インデント表示、ソースブロックのフォント、日本語向けタイムスタンプなどを整える。
+
+#+begin_src emacs-lisp :tangle init.el
+(packlet org
+  :setq ((org-startup-indented t)
+         (org-log-done 'time)
+         (org-src-fontify-natively t)
+         (org-src-preserve-indentation t)
+         (org-src-tab-acts-natively t)
+         (org-startup-with-inline-images t)
+         (org-ellipsis " ▼")
+         (org-hide-emphasis-markers t)
+         (org-fontify-quote-and-verse-blocks t)
+         (org-use-speed-commands t)
+         (org-return-follows-link t)
+         (org-special-ctrl-a/e t)
+         (org-auto-align-tags nil)
+         (org-tags-column 0)
+         (org-display-custom-times t)
+         (org-image-actual-width nil)
+         (org-todo-keywords
+          '((sequence "TODO(t)" "DOING(i)" "WAIT(w)" "|" "DONE(d)" "CANCELED(c@)")))
+         (org-enforce-todo-dependencies t)
+         (org-hierarchical-todo-statistics nil)
+         (org-time-stamp-custom-formats
+          '("<%Y年%m月%d日(%a)>" . "<%Y年%m月%d日(%a)%H時%M分>"))
+         (org-agenda-span 'day)
+         (org-agenda-tags-column 0)
+         (org-agenda-time-grid
+          '((daily today require-timed)
+            (800 1000 1200 1400 1600 1800 2000)
+            " ┄┄┄┄┄ " "┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄"))
+         (org-agenda-current-time-string
+          "⭠ now ─────────────────────────────────────────────────"))
+  :hook (org-mode-hook . (lambda () (setq truncate-lines nil)))
+  :config
+  (require 'org)
+  (org-set-emph-re 'org-emphasis-regexp-components
+                   '("-[:space:]('\"{[:nonascii:]"
+                     "-[:space:].,:!?;'\")}\\[[:nonascii:]"
+                     "[:space:]"
+                     "."
+                     1))
+  (org-element-update-syntax))
+#+end_src
+
+** org-modern
+
+=org-modern= で見出しやタイムスタンプの表示を改善する。
+
+#+begin_src emacs-lisp :tangle init.el
+(packlet org-modern
+  :setq ((org-modern-table nil)
+         (org-modern-hide-stars nil)
+         (org-modern-timestamp '(" %Y年%m月%d日(%a) " . " %H時%M分 "))
+         (org-modern-star 'replace))
+  :hook (org-mode-hook . org-modern-mode)
+  :config
+  (set-face-attribute 'org-table nil :inherit 'fixed-pitch))
+#+end_src
+
 * Markdown
 
 =.md= と =.mdx= を =markdown-mode= で開く。
@@ -519,7 +567,14 @@ tree-sitter によるシンタックスハイライトを優先して使う。
 
 #+begin_src emacs-lisp :tangle init.el
 (packlet git-gutter
-  :hook (after-init-hook . global-git-gutter-mode))
+  :setq ((git-gutter:modified-sign " ")
+         (git-gutter:added-sign " ")
+         (git-gutter:deleted-sign " "))
+  :hook (after-init-hook . global-git-gutter-mode)
+  :config
+  (set-face-background 'git-gutter:modified "purple")
+  (set-face-background 'git-gutter:added "green")
+  (set-face-background 'git-gutter:deleted "red"))
 #+end_src
 
 * Git
