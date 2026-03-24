@@ -77,36 +77,13 @@
 
 #+begin_src emacs-lisp :tangle init.el
 (packlet skk
+  :setq ((default-input-method "japanese-skk")
+         (skk-user-directory (expand-file-name "skk/" user-emacs-directory)))
+  :load "ddskk-autoloads"
   :init
-  (setq default-input-method "japanese-skk"
-        skk-user-directory (expand-file-name "skk/" user-emacs-directory))
   (make-directory skk-user-directory t)
-  (autoload 'ccc-setup "ccc" nil t)
-  (autoload 'skk-cus-setup "skk-cus" nil t)
-  (autoload 'skk-cursor-current-color "skk-cursor" nil t)
-  (autoload 'skk-cursor-set-1 "skk-cursor" nil t)
-  (autoload 'skk-cursor-off-1 "skk-cursor" nil t)
-  (autoload 'skk-emacs-prepare-menu "skk-emacs" nil t)
-  (autoload 'skk-annotation-start-python "skk-annotation" nil t)
-  (autoload 'skk-version "skk-version" nil t)
-  (autoload 'skk-activate "skk-leim" nil t)
-  (autoload 'skk-auto-fill-activate "skk-leim" nil t)
-  (defun my/load-ddskk-autoloads ()
-    "Load `ddskk-autoloads' while skipping the obsolete isearch advice form."
-    (when-let ((file (locate-library "ddskk-autoloads")))
-      (with-temp-buffer
-        (insert-file-contents file)
-        (goto-char (point-min))
-        (let (form)
-          (condition-case nil
-              (while t
-                (setq form (read (current-buffer)))
-                (unless (and (listp form)
-                             (eq (car-safe form) 'defconst)
-                             (eq (cadr form) 'skk-isearch-really-early-advice))
-                  (eval form t)))
-            (end-of-file nil))))))
-  (my/load-ddskk-autoloads)
+  (defconst skk-isearch-really-early-advice nil
+    "Neutralised – the old defadvice mechanism is obsolete.")
   (register-input-method
    "japanese-skk" "Japanese" #'skk-activate ""
    "Simple Kana to Kanji conversion program")
@@ -144,7 +121,6 @@
     (and (not noninteractive)
          (not (minibufferp))
          (not buffer-read-only)
-         (not (derived-mode-p 'dired-mode))
          (not (derived-mode-p 'special-mode))))
   (defvar my/skk-default-enable-delay 1.0
     "Idle seconds before enabling SKK by default.")
@@ -163,23 +139,29 @@ When SKK is newly enabled, switch to ASCII mode."
            (string-prefix-p "japanese-skk" current-input-method))
       (let ((input-method-verbose-flag nil))
         (deactivate-input-method)))))
+  (defvar-local my/skk--pending-timer nil
+    "Pending idle timer for SKK activation in this buffer.")
   (defun my/schedule-skk-by-default ()
     "Schedule delayed SKK activation for the current buffer."
+    (when (timerp my/skk--pending-timer)
+      (cancel-timer my/skk--pending-timer))
     (let ((buffer (current-buffer)))
-      (run-with-idle-timer
-       my/skk-default-enable-delay nil
-       (lambda (buffer)
-         (when (buffer-live-p buffer)
-           (with-current-buffer buffer
-             (my/enable-skk-by-default))))
-       buffer)))
+      (setq my/skk--pending-timer
+            (run-with-idle-timer
+             my/skk-default-enable-delay nil
+             (lambda (buffer)
+               (when (buffer-live-p buffer)
+                 (with-current-buffer buffer
+                   (setq my/skk--pending-timer nil)
+                   (my/enable-skk-by-default))))
+             buffer))))
   (my/skk-shortcut-mode 1)
   :hook ((after-init-hook . my/schedule-skk-by-default)
          (after-change-major-mode-hook . my/schedule-skk-by-default))
-  :config
-  (with-eval-after-load 'skk
-    (when window-system
-      (ccc-setup)))
+  :after-load
+  (skk
+   (when (display-graphic-p)
+     (ccc-setup)))
   :commands (skk-mode))
 #+end_src
 
@@ -264,13 +246,12 @@ When SKK is newly enabled, switch to ASCII mode."
   :hook (after-init-hook . marginalia-mode))
 
 (packlet orderless
-  :init
-  (setq completion-styles '(orderless basic)
-        orderless-matching-styles
-        '(orderless-flex orderless-literal orderless-regexp)
-        completion-category-defaults nil
-        completion-category-overrides
-        '((file (styles orderless partial-completion basic))))
+  :setq ((completion-styles '(orderless basic))
+         (orderless-matching-styles
+          '(orderless-flex orderless-literal orderless-regexp))
+         (completion-category-defaults nil)
+         (completion-category-overrides
+          '((file (styles orderless partial-completion basic)))))
   :demand t)
 
 (defun my/consult-fd-current-directory-items ()
@@ -290,57 +271,35 @@ When FILE is empty, open DIR itself."
   (consult--file-action
    (expand-file-name (if (string-empty-p file) "." file) dir)))
 
-(defun my/consult-read-directory (prompt dir)
-  "Return directory for consult commands.
-Use DIR when given, otherwise use `default-directory'.
-With `C-u', use the project root.  With larger prefix arguments,
-prompt with PROMPT starting from `default-directory'."
-  (file-name-as-directory
-   (expand-file-name
-    (cond
-     ((stringp dir) dir)
-     ((equal dir '(4)) (or (consult--project-root) default-directory))
-     (dir (read-directory-name prompt default-directory nil t))
-     (t default-directory)))))
-
 (defun my/consult-fd (&optional dir initial)
   "Select a file in DIR, showing current directory entries and `fd' results."
   (interactive "P")
   (require 'consult)
   (let* ((dir (my/consult-read-directory "Fd directory: " dir))
          (prompt (format "Fd (%s): " (consult--left-truncate-file dir)))
-         (paths '(".")))
+         (paths '("."))
+         (open (lambda (file) (my/consult-fd-open dir file))))
     (pcase-let* ((default-directory dir)
                  (builder (consult--fd-make-builder paths))
+                 (base `(:category file
+                         :face consult-file
+                         :history file-name-history
+                         :state ,#'consult--file-preview
+                         :action ,open
+                         :new ,open))
                  (sources
-                  `((:name "Current"
-                     :narrow ?c
-                     :category file
-                     :face consult-file
-                     :history file-name-history
-                     :state ,#'consult--file-preview
-                     :action ,(lambda (file)
-                                (my/consult-fd-open dir file))
-                     :new ,(lambda (file)
-                             (my/consult-fd-open dir file))
-                     :items ,#'my/consult-fd-current-directory-items)
-                    (:name "fd"
-                     :narrow ?f
-                     :category file
-                     :face consult-file
-                     :history file-name-history
-                     :state ,#'consult--file-preview
-                     :action ,(lambda (file)
-                                (my/consult-fd-open dir file))
-                     :new ,(lambda (file)
-                             (my/consult-fd-open dir file))
-                     :async
-                     ,(consult--process-collection
-                       builder
-                       :transform (consult--async-map
-                                   (lambda (x) (string-remove-prefix "./" x)))
-                       :highlight t
-                       :file-handler t)))))
+                  `(,`(:name "Current" :narrow ?c
+                       ,@base
+                       :items ,#'my/consult-fd-current-directory-items)
+                    ,`(:name "fd" :narrow ?f
+                       ,@base
+                       :async
+                       ,(consult--process-collection
+                         builder
+                         :transform (consult--async-map
+                                     (lambda (x) (string-remove-prefix "./" x)))
+                         :highlight t
+                         :file-handler t)))))
       (consult--multi
        sources
        :prompt prompt
@@ -350,17 +309,26 @@ prompt with PROMPT starting from `default-directory'."
        :add-history (thing-at-point 'filename)
        :history '(:input consult--find-history)))))
 
+(defun my/consult-read-directory (prompt dir &optional default)
+  "Return directory for consult commands.
+Use DIR when given, otherwise use DEFAULT or `default-directory'.
+With `C-u', use the project root.  With larger prefix arguments,
+prompt with PROMPT starting from `default-directory'."
+  (file-name-as-directory
+   (expand-file-name
+    (cond
+     ((stringp dir) dir)
+     ((equal dir '(4)) (or (consult--project-root) default-directory))
+     (dir (read-directory-name prompt default-directory nil t))
+     (t (or default default-directory))))))
+
 (defun my/consult-ripgrep (&optional dir initial)
   "Search with `rg' in DIR, defaulting to the project root."
   (interactive "P")
   (require 'consult)
   (consult-ripgrep
-   (file-name-as-directory
-    (expand-file-name
-     (cond
-      ((stringp dir) dir)
-      (dir (read-directory-name "Ripgrep directory: " default-directory nil t))
-      (t (or (consult--project-root) default-directory)))))
+   (my/consult-read-directory "Ripgrep directory: " dir
+                              (consult--project-root))
    initial))
 
 (defun my/enable-corfu-terminal-mode ()
@@ -369,9 +337,8 @@ prompt with PROMPT starting from `default-directory'."
     (corfu-terminal-mode 1)))
 
 (packlet corfu
-  :init
-  (setq corfu-cycle t
-        tab-always-indent 'complete)
+  :setq ((corfu-cycle t)
+         (tab-always-indent 'complete))
   :hook (after-init-hook . global-corfu-mode))
 
 (packlet prescient
@@ -428,24 +395,23 @@ prompt with PROMPT starting from `default-directory'."
 
 #+begin_src emacs-lisp :tangle init.el
 (packlet projectile
-  :init
-  (setq projectile-keymap-prefix (kbd "C-c p")
-        projectile-cache-file
-        (expand-file-name "projectile-cache.eld" user-emacs-directory)
-        projectile-known-projects-file
-        (expand-file-name "projectile-bookmarks.eld" user-emacs-directory))
+  :setq ((projectile-keymap-prefix (kbd "C-c p"))
+         (projectile-cache-file
+          (expand-file-name "projectile-cache.eld" user-emacs-directory))
+         (projectile-known-projects-file
+          (expand-file-name "projectile-bookmarks.eld" user-emacs-directory)))
   :hook (after-init-hook . projectile-mode)
-  :config
-  (with-eval-after-load 'consult
-    (setq consult-project-function
-          (lambda (&optional may-prompt)
-            (or (projectile-project-root)
-                (when may-prompt
-                  (projectile-switch-project-by-name
-                   (projectile-completing-read
-                    "Switch to project: "
-                    (projectile-relevant-known-projects)))
-                  (projectile-project-root)))))))
+  :after-load
+  (consult
+   (setq consult-project-function
+         (lambda (&optional may-prompt)
+           (or (projectile-project-root)
+               (when may-prompt
+                 (projectile-switch-project-by-name
+                  (projectile-completing-read
+                   "Switch to project: "
+                   (projectile-relevant-known-projects)))
+                 (projectile-project-root)))))))
 #+end_src
 
 * Scrollbar
@@ -465,43 +431,35 @@ prompt with PROMPT starting from `default-directory'."
 tree-sitter によるシンタックスハイライトを優先して使う。
 
 #+begin_src emacs-lisp :tangle init.el
-(defun my/treesit-language-ready-p (language)
-  "Return non-nil when LANGUAGE can be used by tree-sitter."
-  (and (fboundp 'treesit-available-p)
-       (treesit-available-p)
-       (fboundp 'treesit-language-available-p)
-       (treesit-language-available-p language)))
-
 (setq treesit-font-lock-level 4)
 
-(dolist (entry '((bash sh-mode bash-ts-mode)
-                 (c c-mode c-ts-mode)
-                 (cpp c++-mode c++-ts-mode)
-                 (css css-mode css-ts-mode)
-                 (html mhtml-mode html-ts-mode)
-                 (java java-mode java-ts-mode)
-                 (javascript javascript-mode js-ts-mode)
-                 (json js-json-mode json-ts-mode)
-                 (python python-mode python-ts-mode)
-                 (toml conf-toml-mode toml-ts-mode)))
-  (pcase-let ((`(,language ,mode ,ts-mode) entry))
-    (when (and (fboundp ts-mode)
-               (my/treesit-language-ready-p language))
-      (add-to-list 'major-mode-remap-alist (cons mode ts-mode)))))
+(when (and (fboundp 'treesit-available-p) (treesit-available-p))
+  (dolist (entry '((bash sh-mode bash-ts-mode)
+                   (c c-mode c-ts-mode)
+                   (cpp c++-mode c++-ts-mode)
+                   (css css-mode css-ts-mode)
+                   (html mhtml-mode html-ts-mode)
+                   (java java-mode java-ts-mode)
+                   (javascript javascript-mode js-ts-mode)
+                   (json js-json-mode json-ts-mode)
+                   (python python-mode python-ts-mode)
+                   (toml conf-toml-mode toml-ts-mode)))
+    (pcase-let ((`(,language ,mode ,ts-mode) entry))
+      (when (and (fboundp ts-mode)
+                 (treesit-language-available-p language))
+        (add-to-list 'major-mode-remap-alist (cons mode ts-mode)))))
 
-(dolist (entry '((cmake "CMakeLists\\.txt\\'" cmake-ts-mode)
-                 (cmake "\\.cmake\\'" cmake-ts-mode)
-                 (dockerfile "Dockerfile\\'" dockerfile-ts-mode)
-                 (dockerfile "\\.dockerfile\\'" dockerfile-ts-mode)
-                 (go "\\.go\\'" go-ts-mode)
-                 (rust "\\.rs\\'" rust-ts-mode)
-                 (tsx "\\.tsx\\'" tsx-ts-mode)
-                 (typescript "\\.ts\\'" typescript-ts-mode)
-                 (yaml "\\.ya?ml\\'" yaml-ts-mode)))
-  (pcase-let ((`(,language ,pattern ,mode) entry))
-    (when (and (fboundp mode)
-               (my/treesit-language-ready-p language))
-      (add-to-list 'auto-mode-alist (cons pattern mode)))))
+  (dolist (entry '((cmake "\\(?:CMakeLists\\.txt\\|\\.cmake\\)\\'" cmake-ts-mode)
+                   (dockerfile "\\(?:Dockerfile\\|\\.dockerfile\\)\\'" dockerfile-ts-mode)
+                   (go "\\.go\\'" go-ts-mode)
+                   (rust "\\.rs\\'" rust-ts-mode)
+                   (tsx "\\.tsx\\'" tsx-ts-mode)
+                   (typescript "\\.ts\\'" typescript-ts-mode)
+                   (yaml "\\.ya?ml\\'" yaml-ts-mode)))
+    (pcase-let ((`(,language ,pattern ,mode) entry))
+      (when (and (fboundp mode)
+                 (treesit-language-available-p language))
+        (add-to-list 'auto-mode-alist (cons pattern mode))))))
 #+end_src
 
 * Markdown
@@ -510,8 +468,7 @@ tree-sitter によるシンタックスハイライトを優先して使う。
 
 #+begin_src emacs-lisp :tangle init.el
 (packlet markdown-mode
-  :mode ("\\.md\\'" . markdown-mode)
-  :mode ("\\.mdx\\'" . markdown-mode))
+  :mode ("\\.mdx?\\'" . markdown-mode))
 #+end_src
 
 * Nix
@@ -528,8 +485,7 @@ tree-sitter によるシンタックスハイライトを優先して使う。
 =.gitignore= や =.gitconfig= などを適切な mode で開く。
 
 #+begin_src emacs-lisp :tangle init.el
-(packlet git-modes
-  :demand t)
+(packlet git-modes)
 #+end_src
 
 * Icons
@@ -547,9 +503,8 @@ tree-sitter によるシンタックスハイライトを優先して使う。
 
 #+begin_src emacs-lisp :tangle init.el
 (packlet undohist
-  :init
-  (setq undohist-directory
-        (expand-file-name "undohist/" user-emacs-directory))
+  :setq (undohist-directory
+         (expand-file-name "undohist/" user-emacs-directory))
   :autoload undohist-initialize
   :hook (after-init-hook . undohist-initialize))
 
@@ -573,17 +528,16 @@ tree-sitter によるシンタックスハイライトを優先して使う。
 
 #+begin_src emacs-lisp :tangle init.el
 (packlet magit
-  :init
-  (setq magit-define-global-key-bindings nil
-        magit-status-show-untracked-files nil
-        magit-diff-refine-hunk nil
-        magit-log-section-commit-count 10
-        magit-refresh-status-buffer nil
-        magit-save-repository-buffers 'dontask
-        magit-status-sections-hook
-        '(magit-insert-status-headers
-          magit-insert-unstaged-changes
-          magit-insert-staged-changes))
+  :setq ((magit-define-global-key-bindings nil)
+         (magit-status-show-untracked-files nil)
+         (magit-diff-refine-hunk nil)
+         (magit-log-section-commit-count 10)
+         (magit-refresh-status-buffer nil)
+         (magit-save-repository-buffers 'dontask)
+         (magit-status-sections-hook
+          '(magit-insert-status-headers
+            magit-insert-unstaged-changes
+            magit-insert-staged-changes)))
   :commands (magit-status magit-dispatch)
   :bind (("C-x g" . magit-status)
          ("C-x M-g" . magit-dispatch)))
