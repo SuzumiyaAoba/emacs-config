@@ -37,6 +37,7 @@
         sharedLibraryExt = pkgs.stdenv.hostPlatform.extensions.sharedLibrary;
         emacsWithPackages = epkgs.emacsWithPackages (
           epkgs': with epkgs'; [
+            avy
             cape
             catppuccin-theme
             consult
@@ -45,6 +46,9 @@
             corfu-prescient
             corfu-terminal
             ddskk
+            editorconfig
+            embark
+            embark-consult
             git-gutter
             git-modes
             magit
@@ -53,6 +57,7 @@
             mlscroll
             minions
             nerd-icons
+            nerd-icons-completion
             nerd-icons-corfu
             nerd-icons-dired
             nix-mode
@@ -65,6 +70,7 @@
             undohist
             vertico
             vundo
+            which-key
           ]
         );
         treeSitterGrammars = pkgs.linkFarm "emacs-tree-sitter-grammars" [

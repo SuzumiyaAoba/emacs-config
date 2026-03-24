@@ -63,12 +63,97 @@
 (emacs-batteries-setup)
 #+end_src
 
+* Basic behavior
+
+バックアップ、ロックファイルの無効化、基本的な操作感の改善。
+
+#+begin_src emacs-lisp :tangle init.el
+(setq make-backup-files nil)
+(setq backup-inhibited nil)
+(setq create-lockfiles nil)
+(setq auto-save-default nil)
+(setq delete-by-moving-to-trash t)
+(setq vc-follow-symlinks t)
+(setq ring-bell-function 'ignore)
+(defalias 'yes-or-no-p 'y-or-n-p)
+(setq kill-whole-line t)
+(setq-default indent-tabs-mode nil)
+(blink-cursor-mode -1)
+#+end_src
+
+** trailing whitespace
+
+末尾の空白を表示する。特殊モードでは無効にする。
+
+#+begin_src emacs-lisp :tangle init.el
+(setq-default show-trailing-whitespace t)
+
+(defun my/disable-trailing-whitespace ()
+  "Disable trailing whitespace display."
+  (setq show-trailing-whitespace nil))
+
+(dolist (hook '(eshell-mode-hook
+                eww-mode-hook
+                term-mode-hook
+                special-mode-hook))
+  (add-hook hook #'my/disable-trailing-whitespace))
+#+end_src
+
+** auto-revert
+
+外部で変更されたファイルを自動で再読み込みする。
+
+#+begin_src emacs-lisp :tangle init.el
+(packlet autorevert
+  :hook (after-init-hook . global-auto-revert-mode))
+#+end_src
+
+** recentf
+
+最近開いたファイルを記録する。
+
+#+begin_src emacs-lisp :tangle init.el
+(packlet recentf
+  :setq (recentf-max-saved-items 100)
+  :hook (after-init-hook . recentf-mode))
+#+end_src
+
+** delete-selection
+
+選択範囲を上書き入力できるようにする。
+
+#+begin_src emacs-lisp :tangle init.el
+(packlet delsel
+  :hook (after-init-hook . delete-selection-mode))
+#+end_src
+
+** so-long
+
+長い行を含むファイルのパフォーマンスを改善する。
+
+#+begin_src emacs-lisp :tangle init.el
+(packlet so-long
+  :hook (after-init-hook . global-so-long-mode))
+#+end_src
+
 * Language environment
 
 日本語の言語環境を使う。
 
 #+begin_src emacs-lisp :tangle init.el
 (set-language-environment "Japanese")
+(prefer-coding-system 'utf-8)
+(set-default-coding-systems 'utf-8)
+#+end_src
+
+** Case ignore
+
+補完時の大文字小文字を無視する。
+
+#+begin_src emacs-lisp :tangle init.el
+(setq read-file-name-completion-ignore-case t)
+(setq read-buffer-completion-ignore-case t)
+(setq completion-ignore-case t)
 #+end_src
 
 * Input method
@@ -160,6 +245,32 @@ When SKK is newly enabled, switch to ASCII mode."
                (file-directory-p default-directory))
       (switch-to-buffer (dired-noselect default-directory))))
   :hook (window-setup-hook . my/open-startup-directory-in-dired))
+#+end_src
+
+* Scroll
+
+スクロール挙動を改善する。
+
+#+begin_src emacs-lisp :tangle init.el
+(setq scroll-margin 0)
+(setq scroll-conservatively 100000)
+(setq scroll-preserve-screen-position t)
+
+(when (and (display-graphic-p)
+           (eq system-type 'darwin))
+  (pixel-scroll-precision-mode t))
+#+end_src
+
+* Line numbers
+
+=prog-mode= と =text-mode= で行番号を表示する。
+
+#+begin_src emacs-lisp :tangle init.el
+(setq display-line-numbers-grow-only t)
+
+(packlet display-line-numbers
+  :hook ((prog-mode-hook . display-line-numbers-mode)
+         (text-mode-hook . display-line-numbers-mode)))
 #+end_src
 
 * Theme
@@ -372,6 +483,29 @@ prompt with PROMPT starting from `default-directory'."
   :custom (consult-ghq-find-function #'my/consult-fd)
   :commands (consult-ghq-find)
   :bind ("C-c C-g" . consult-ghq-find))
+
+(packlet embark
+  :commands (embark-act embark-dwim)
+  :bind (("C-." . embark-act)
+         ("C-;" . embark-dwim))
+  :init
+  (add-to-list 'display-buffer-alist
+               '("\\*Embark Actions\\*"
+                 (display-buffer-in-side-window)
+                 (side . bottom)
+                 (slot . 0)
+                 (window-height . 0.5))))
+
+(packlet embark-consult
+  :after (consult embark)
+  :demand t)
+
+(packlet nerd-icons-completion
+  :after marginalia
+  :demand t
+  :config
+  (add-hook 'marginalia-mode-hook #'nerd-icons-completion-marginalia-setup)
+  (nerd-icons-completion-mode))
 #+end_src
 
 * Project
@@ -516,6 +650,7 @@ tree-sitter によるシンタックスハイライトを優先して使う。
 
 #+begin_src emacs-lisp :tangle init.el
 (packlet markdown-mode
+  :setq (markdown-fontify-code-blocks-natively t)
   :mode ("\\.mdx?\\'" . markdown-mode))
 #+end_src
 
@@ -596,4 +731,56 @@ tree-sitter によるシンタックスハイライトを優先して使う。
   :commands (magit-status magit-dispatch)
   :bind (("C-x g" . magit-status)
          ("C-x M-g" . magit-dispatch)))
+#+end_src
+
+* Which-key
+
+キーバインドのヘルプを表示する。
+
+#+begin_src emacs-lisp :tangle init.el
+(packlet which-key
+  :hook (after-init-hook . which-key-mode))
+#+end_src
+
+* Navigation
+
+=avy= で画面上の任意の位置にジャンプする。
+
+#+begin_src emacs-lisp :tangle init.el
+(packlet avy
+  :commands (avy-goto-char avy-goto-char-2)
+  :bind (("C-:" . avy-goto-char)
+         ("C-'" . avy-goto-char-2)))
+#+end_src
+
+* Dired
+
+=dired= の操作感を改善する。
+
+#+begin_src emacs-lisp :tangle init.el
+(packlet dired
+  :setq ((dired-do-revert-buffer t)
+         (dired-recursive-copies 'always)
+         (dired-isearch-filenames t))
+  :hook (dired-mode-hook . dired-hide-details-mode)
+  :config
+  (require 'dired-x))
+#+end_src
+
+* Editorconfig
+
+=.editorconfig= に基づいてインデントやエンコーディングを自動設定する。
+
+#+begin_src emacs-lisp :tangle init.el
+(packlet editorconfig
+  :hook (after-init-hook . editorconfig-mode))
+#+end_src
+
+* Eldoc
+
+=eldoc= の表示設定。
+
+#+begin_src emacs-lisp :tangle init.el
+(packlet eldoc
+  :setq (eldoc-echo-area-use-multiline-p nil))
 #+end_src
