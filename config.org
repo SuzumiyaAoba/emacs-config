@@ -69,7 +69,6 @@
 
 #+begin_src emacs-lisp :tangle init.el
 (setq make-backup-files nil)
-(setq backup-inhibited nil)
 (setq create-lockfiles nil)
 (setq auto-save-default nil)
 (setq delete-by-moving-to-trash t)
@@ -143,7 +142,6 @@
 #+begin_src emacs-lisp :tangle init.el
 (set-language-environment "Japanese")
 (prefer-coding-system 'utf-8)
-(set-default-coding-systems 'utf-8)
 #+end_src
 
 ** Case ignore
@@ -276,8 +274,8 @@ When SKK is newly enabled, switch to ASCII mode."
 #+begin_src emacs-lisp :tangle init.el
 (packlet catppuccin-theme
   :demand t
+  :setq (catppuccin-flavor 'macchiato)
   :config
-  (setq catppuccin-flavor 'macchiato)
   (mapc #'disable-theme custom-enabled-themes)
   (load-theme 'catppuccin t))
 #+end_src
@@ -340,8 +338,7 @@ When SKK is newly enabled, switch to ASCII mode."
           '(orderless-literal orderless-regexp orderless-initialism))
          (completion-category-defaults nil)
          (completion-category-overrides
-          '((file (styles orderless partial-completion basic)))))
-  :demand t)
+          '((file (styles orderless partial-completion basic))))))
 
 (defun my/consult-fd-current-directory-items ()
   "Return non-hidden entries in `default-directory' for `my/consult-fd'."
@@ -459,13 +456,6 @@ prompt with PROMPT starting from `default-directory'."
   :bind ("M-/" . cape-dabbrev))
 
 (packlet consult
-  :commands (consult-buffer
-             consult-fd
-             consult-goto-line
-             consult-imenu
-             consult-line
-             consult-ripgrep
-             consult-yank-pop)
   :bind (("C-s" . consult-line)
          ("C-x b" . consult-buffer)
          ("C-x C-f" . my/consult-fd)
@@ -477,11 +467,9 @@ prompt with PROMPT starting from `default-directory'."
 (packlet consult-ghq
   :after consult
   :custom (consult-ghq-find-function #'my/consult-fd)
-  :commands (consult-ghq-find)
   :bind ("C-c C-g" . consult-ghq-find))
 
 (packlet embark
-  :commands (embark-act embark-dwim)
   :bind (("C-." . embark-act)
          ("C-;" . embark-dwim))
   :init
@@ -499,8 +487,8 @@ prompt with PROMPT starting from `default-directory'."
 (packlet nerd-icons-completion
   :after marginalia
   :demand t
+  :hook (marginalia-mode-hook . nerd-icons-completion-marginalia-setup)
   :config
-  (add-hook 'marginalia-mode-hook #'nerd-icons-completion-marginalia-setup)
   (nerd-icons-completion-mode))
 #+end_src
 
@@ -615,7 +603,6 @@ tree-sitter によるシンタックスハイライトを優先して使う。
           "⭠ now ─────────────────────────────────────────────────"))
   :hook (org-mode-hook . (lambda () (setq truncate-lines nil)))
   :config
-  (require 'org)
   (org-set-emph-re 'org-emphasis-regexp-components
                    '("-[:space:]('\"{[:nonascii:]"
                      "-[:space:].,:!?;'\")}\\[[:nonascii:]"
@@ -688,7 +675,6 @@ tree-sitter によるシンタックスハイライトを優先して使う。
   :hook (after-init-hook . undohist-initialize))
 
 (packlet vundo
-  :commands (vundo)
   :bind ("C-x u" . vundo))
 #+end_src
 
@@ -744,7 +730,6 @@ tree-sitter によるシンタックスハイライトを優先して使う。
 
 #+begin_src emacs-lisp :tangle init.el
 (packlet avy
-  :commands (avy-goto-char avy-goto-char-2)
   :bind (("C-:" . avy-goto-char)
          ("C-'" . avy-goto-char-2)))
 #+end_src
