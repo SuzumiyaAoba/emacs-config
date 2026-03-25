@@ -877,10 +877,9 @@ Git blame の情報をインラインで表示する。
 (packlet yaml-mode)
 
 (packlet groovy-mode
-  :hook (groovy-mode-hook
-         (lambda ()
-           (setq indent-tabs-mode t)
-           (setq tab-width 4))))
+  :hook (groovy-mode-hook . (lambda ()
+                              (setq indent-tabs-mode t)
+                              (setq tab-width 4))))
 
 (packlet kotlin-mode)
 
@@ -899,9 +898,8 @@ Git blame の情報をインラインで表示する。
 
 (packlet go-mode
   :setq (gofmt-command "gofmt")
-  :hook (go-mode-hook
-         (lambda ()
-           (add-hook 'before-save-hook 'gofmt nil t))))
+  :hook (go-mode-hook . (lambda ()
+                          (add-hook 'before-save-hook 'gofmt nil t))))
 
 (packlet web-mode
   :config
@@ -923,14 +921,12 @@ Git blame の情報をインラインで表示する。
                                 ("~"      . "¬")
                                 ("~~"     . "¬¬")
                                 ("~~~"    . "¬¬¬")))
-  :hook ((coq-mode-hook
-          (lambda ()
-            (setq prettify-symbols-alist coq-prettify-symbols)
-            (prettify-symbols-mode 1)))
-         (coq-goals-mode-hook
-          (lambda ()
-            (setq prettify-symbols-alist coq-prettify-symbols)
-            (prettify-symbols-mode 1)))))
+  :hook ((coq-mode-hook . (lambda ()
+                            (setq prettify-symbols-alist coq-prettify-symbols)
+                            (prettify-symbols-mode 1)))
+         (coq-goals-mode-hook . (lambda ()
+                                  (setq prettify-symbols-alist coq-prettify-symbols)
+                                  (prettify-symbols-mode 1)))))
 
 (packlet lean4-mode)
 #+end_src
