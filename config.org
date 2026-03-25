@@ -65,43 +65,12 @@
 
 * Basic behavior
 
-バックアップ、ロックファイルの無効化、基本的な操作感の改善。
+バックアップ無効化。=emacs-batteries= が有効にする安全なバックアップ設定を上書き。
 
 #+begin_src emacs-lisp :tangle init.el
 (setq make-backup-files nil)
 (setq create-lockfiles nil)
 (setq auto-save-default nil)
-(setq delete-by-moving-to-trash t)
-(setq ring-bell-function 'ignore)
-(defalias 'yes-or-no-p 'y-or-n-p)
-(setq kill-whole-line t)
-(setq-default indent-tabs-mode nil)
-#+end_src
-
-** trailing whitespace
-
-末尾の空白を表示する。特殊モードでは無効にする。
-
-#+begin_src emacs-lisp :tangle init.el
-(setq-default show-trailing-whitespace t)
-
-(defun my/disable-trailing-whitespace ()
-  "Disable trailing whitespace display."
-  (setq show-trailing-whitespace nil))
-
-(dolist (hook '(eshell-mode-hook
-                eww-mode-hook
-                term-mode-hook
-                special-mode-hook))
-  (add-hook hook #'my/disable-trailing-whitespace))
-#+end_src
-
-** recentf
-
-=emacs-batteries= が有効にするが、保存数だけ上書きする。
-
-#+begin_src emacs-lisp :tangle init.el
-(setq recentf-max-saved-items 100)
 #+end_src
 
 * Language environment
@@ -201,19 +170,10 @@ When SKK is newly enabled, switch to ASCII mode."
   :hook (window-setup-hook . my/open-startup-directory-in-dired))
 #+end_src
 
-* Scroll
-
-スクロール挙動を改善する。
-
-#+begin_src emacs-lisp :tangle init.el
-(setq scroll-margin 0)
-(setq scroll-conservatively 100000)
-(setq scroll-preserve-screen-position t)
-#+end_src
 
 * Line numbers
 
-=prog-mode= と =text-mode= で行番号を表示する。
+=emacs-batteries= が =prog-mode= を担当するので =text-mode= だけ追加する。
 
 #+begin_src emacs-lisp :tangle init.el
 (setq display-line-numbers-grow-only t)
@@ -241,18 +201,13 @@ When SKK is newly enabled, switch to ASCII mode."
 
 #+begin_src emacs-lisp :tangle init.el
 (packlet moody
-  :commands (moody-replace-mode-line-front-space
-             moody-replace-mode-line-buffer-identification
-             moody-replace-vc-mode)
-  :init
-  (defun my/setup-moody ()
-    "Set up moody mode line."
-    (moody-replace-mode-line-front-space)
-    (moody-replace-mode-line-buffer-identification)
-    (moody-replace-vc-mode)
-    (set-face-attribute 'mode-line-active nil :box 'unspecified)
-    (set-face-attribute 'mode-line-inactive nil :box 'unspecified))
-  :hook (after-init-hook . my/setup-moody))
+  :demand t
+  :config
+  (moody-replace-mode-line-front-space)
+  (moody-replace-mode-line-buffer-identification)
+  (moody-replace-vc-mode)
+  (set-face-attribute 'mode-line-active nil :box 'unspecified)
+  (set-face-attribute 'mode-line-inactive nil :box 'unspecified))
 #+end_src
 
 * Minor modes
@@ -285,18 +240,14 @@ When SKK is newly enabled, switch to ASCII mode."
   :hook (after-init-hook . marginalia-mode))
 
 (packlet orderless
-  :commands (orderless-literal orderless-regexp orderless-initialism)
-  :init
-  (defun my/setup-orderless ()
-    "Load orderless and configure completion styles."
-    (require 'orderless)
-    (setq completion-styles '(orderless basic))
-    (setq orderless-matching-styles
-          '(orderless-literal orderless-regexp orderless-initialism))
-    (setq completion-category-defaults nil)
-    (setq completion-category-overrides
-          '((file (styles orderless partial-completion basic)))))
-  :hook (after-init-hook . my/setup-orderless))
+  :demand t
+  :config
+  (setq completion-styles '(orderless basic))
+  (setq orderless-matching-styles
+        '(orderless-literal orderless-regexp orderless-initialism))
+  (setq completion-category-defaults nil)
+  (setq completion-category-overrides
+        '((file (styles orderless partial-completion basic)))))
 
 (defun my/consult-fd-current-directory-items ()
   "Return non-hidden entries in `default-directory' for `my/consult-fd'."
@@ -384,8 +335,7 @@ prompt with PROMPT starting from `default-directory'."
     (corfu-terminal-mode 1)))
 
 (packlet corfu
-  :setq ((corfu-cycle t)
-         (tab-always-indent 'complete))
+  :setq (corfu-cycle t)
   :hook (after-init-hook . global-corfu-mode))
 
 (packlet prescient
@@ -393,7 +343,8 @@ prompt with PROMPT starting from `default-directory'."
 
 (packlet corfu-prescient
   :after (corfu prescient)
-  :hook (after-init-hook . corfu-prescient-mode))
+  :config
+  (corfu-prescient-mode 1))
 
 (packlet nerd-icons-corfu
   :after corfu
@@ -529,10 +480,6 @@ tree-sitter によるシンタックスハイライトを優先して使う。
 #+begin_src emacs-lisp :tangle init.el
 (packlet org
   :setq ((org-log-done 'time)
-         (org-src-fontify-natively t)
-         (org-src-preserve-indentation t)
-         (org-src-tab-acts-natively t)
-         (org-startup-with-inline-images nil)
          (org-ellipsis " ▼")
          (org-hide-emphasis-markers t)
          (org-fontify-quote-and-verse-blocks t)
@@ -541,14 +488,11 @@ tree-sitter によるシンタックスハイライトを優先して使う。
          (org-special-ctrl-a/e t)
          (org-auto-align-tags nil)
          (org-tags-column 0)
-         (org-display-custom-times nil)
          (org-image-actual-width nil)
          (org-todo-keywords
           '((sequence "TODO(t)" "DOING(i)" "WAIT(w)" "|" "DONE(d)" "CANCELED(c@)")))
          (org-enforce-todo-dependencies t)
          (org-hierarchical-todo-statistics nil)
-         (org-time-stamp-custom-formats
-          '("<%Y年%m月%d日(%a)>" . "<%Y年%m月%d日(%a)%H時%M分>"))
          (org-agenda-span 'day)
          (org-agenda-tags-column 0)
          (org-agenda-time-grid
@@ -681,11 +625,3 @@ tree-sitter によるシンタックスハイライトを優先して使う。
   (require 'dired-x))
 #+end_src
 
-* Eldoc
-
-=eldoc= の表示設定。
-
-#+begin_src emacs-lisp :tangle init.el
-(packlet eldoc
-  :setq (eldoc-echo-area-use-multiline-p nil))
-#+end_src
