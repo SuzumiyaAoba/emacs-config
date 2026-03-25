@@ -79,7 +79,6 @@
 
 #+begin_src emacs-lisp :tangle init.el
 (set-language-environment "Japanese")
-(prefer-coding-system 'utf-8)
 #+end_src
 
 * Input method
@@ -359,7 +358,6 @@ prompt with PROMPT starting from `default-directory'."
 (packlet cape
   :init
   (add-to-list 'completion-at-point-functions #'cape-file)
-  :commands (cape-dabbrev)
   :autoload (cape-file)
   :bind ("M-/" . cape-dabbrev))
 
@@ -389,8 +387,7 @@ prompt with PROMPT starting from `default-directory'."
                  (window-height . 0.5))))
 
 (packlet embark-consult
-  :after (consult embark)
-  :demand t)
+  :after (consult embark))
 
 (packlet nerd-icons-completion
   :after marginalia
@@ -618,7 +615,6 @@ tree-sitter によるシンタックスハイライトを優先して使う。
 #+begin_src emacs-lisp :tangle init.el
 (packlet dired
   :setq ((dired-do-revert-buffer t)
-         (dired-recursive-copies 'always)
          (dired-isearch-filenames t))
   :hook (dired-mode-hook . dired-hide-details-mode)
   :config
