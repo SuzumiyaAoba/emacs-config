@@ -92,6 +92,7 @@
   :load "ddskk-autoloads"
   :init
   (require 'ccc-autoloads nil t)
+  (require 'ddskk-posframe-autoloads nil t)
   (make-directory skk-user-directory t)
   (defconst skk-isearch-really-early-advice nil
     "Neutralised – the old defadvice mechanism is obsolete.")
@@ -152,6 +153,12 @@ When SKK is newly enabled, switch to ASCII mode."
   :hook ((after-init-hook my/enable-skk-by-default 1.0)
          (after-change-major-mode-hook my/enable-skk-by-default 1.0))
   :commands (skk-mode))
+
+(packlet ddskk-posframe
+  :after skk
+  :config
+  (when (display-graphic-p)
+    (ddskk-posframe-mode t)))
 #+end_src
 
 * Startup
@@ -389,6 +396,12 @@ prompt with PROMPT starting from `default-directory'."
 (packlet embark-consult
   :after (consult embark))
 
+(packlet vertico-prescient
+  :after (vertico prescient)
+  :setq (vertico-prescient-enable-filtering nil)
+  :config
+  (vertico-prescient-mode 1))
+
 (packlet nerd-icons-completion
   :after marginalia
   :hook (marginalia-mode-hook . nerd-icons-completion-marginalia-setup)
@@ -421,6 +434,16 @@ prompt with PROMPT starting from `default-directory'."
                    "Switch to project: "
                    (projectile-relevant-known-projects)))
                  (projectile-project-root)))))))
+
+(packlet consult-projectile
+  :after (consult projectile)
+  :config
+  (advice-add 'projectile-switch-to-buffer :override #'consult-projectile-switch-to-buffer)
+  (advice-add 'projectile-find-dir :override #'consult-projectile-find-dir)
+  (advice-add 'projectile-find-file :override #'consult-projectile-find-file)
+  (advice-add 'projectile-recentf :override #'consult-projectile-recentf)
+  (advice-add 'projectile-switch-project :override #'consult-projectile-switch-project)
+  (advice-add 'projectile-ripgrep :override #'consult-ripgrep))
 #+end_src
 
 * Scrollbar
@@ -619,5 +642,403 @@ tree-sitter によるシンタックスハイライトを優先して使う。
   :hook (dired-mode-hook . dired-hide-details-mode)
   :config
   (require 'dired-x))
+#+end_src
+
+* Window
+
+=ace-window= でウィンドウ間を素早く移動する。
+
+#+begin_src emacs-lisp :tangle init.el
+(packlet ace-window
+  :setq (aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l))
+  :bind ("M-o" . ace-window))
+#+end_src
+
+* Search
+
+=anzu= で検索・置換のカウントを表示する。
+
+#+begin_src emacs-lisp :tangle init.el
+(packlet anzu
+  :setq ((anzu-replace-threshold 1000)
+         (anzu-search-threshold 1000))
+  :bind (("M-%" . anzu-query-replace)
+         ("C-M-%" . anzu-query-replace-regex))
+  :hook (after-init-hook . global-anzu-mode)
+  :config
+  (copy-face 'mode-line 'anzu-mode-line))
+
+(packlet rg)
+#+end_src
+
+* Multiple cursors
+
+=hydra= と =pretty-hydra= を使った =multiple-cursors= 操作。
+
+#+begin_src emacs-lisp :tangle init.el
+(packlet hydra
+  :demand t)
+
+(packlet pretty-hydra
+  :file "major-mode-hydra"
+  :after hydra
+  :demand t
+  :config
+  (require 'pretty-hydra))
+
+(packlet multiple-cursors
+  :after (hydra pretty-hydra)
+  :config
+  (require 'pretty-hydra)
+  (defvar multiple-cursors--title "Multiple cursors")
+  (pretty-hydra-define multiple-cursors
+    (:foreign-keys warn :title multiple-cursors--title :quit-key "q")
+    ("Mark"
+     (("n" mc/mark-next-like-this "next")
+      ("N" mc/unmark-next-like-this "unmark next")
+      ("p" mc/mark-previous-like-this "previous")
+      ("P" mc/unmark-previous-like-this "unmark previous")
+      ("e" mc/mark-more-like-this-extended "extend"))
+     "Many"
+     (("a" mc/mark-all-in-region "all in region" :exit t)
+      ("*" mc/mark-all-like-this "all" :exit t))))
+  :bind ("C-*" . multiple-cursors/body))
+#+end_src
+
+* Highlight
+
+シンボルのハイライトと編集結果の視覚的フィードバック。
+
+#+begin_src emacs-lisp :tangle init.el
+(packlet highlight-symbol
+  :hook (prog-mode-hook . highlight-symbol-mode))
+
+(packlet volatile-highlights
+  :demand t
+  :config
+  (volatile-highlights-mode t)
+  (set-face-attribute
+   'vhl/default-face nil :foreground "#FF3333" :background "#FFCDCD"))
+
+(packlet rainbow-mode
+  :hook (prog-mode-hook . rainbow-mode))
+#+end_src
+
+* Keycast
+
+入力中のキーとコマンドを mode line に表示する。
+
+#+begin_src emacs-lisp :tangle init.el
+(packlet keycast
+  :after moody
+  :config
+  (define-minor-mode keycast-mode
+    "Show current command and its key binding in the mode line."
+    :global t
+    (if keycast-mode
+        (add-hook 'pre-command-hook 'keycast--update t)
+      (remove-hook 'pre-command-hook 'keycast--update)))
+  (add-to-list 'global-mode-string '("" keycast-mode-line))
+  :bind ("C-c k" . keycast-mode))
+#+end_src
+
+* Ligature
+
+プログラミング用リガチャを有効にする。
+
+#+begin_src emacs-lisp :tangle init.el
+(packlet ligature
+  :demand t
+  :config
+  (ligature-set-ligatures 't '("www"))
+  (ligature-set-ligatures 'prog-mode
+    '("-->" "//" "/**" "/*" "*/" "<!--" ":=" "->>" "<<-" "->" "<-"
+      "<=>" "==" "!=" "<=" ">=" "=:=" "!==" "&&" "||" "..." ".."
+      "|||" "///" "&&&" "===" "++" "--" "=>" "|>" "<|" "||>" "<||"
+      "|||>" "<|||" ">>" "<<" "::=" "|]" "[|" "{|" "|}"
+      "[<" ">]" ":?>" ":?" "/=" "[||]" "!!" "?:" "?." "::"
+      "+++" "??" "###" "##" ":::" "####" ".?" "?=" "=!=" "<|>"
+      "<:" ":<" ":>" ">:" "<>" "***" ";;" "/==" ".=" ".-" "__"
+      "=/=" "<-<" "<<<" ">>>" "<=<" "<<=" "<==" "<==>" "==>" "=>>"
+      ">=>" ">>=" ">>-" ">-" "<~>" "-<" "-<<" "=<<" "---" "<-|"
+      "<=|" "/\\" "\\/" "|=>" "|~>" "<~~" "<~" "~~" "~~>" "~>"
+      "<$>" "<$" "$>" "<+>" "<+" "+>" "<*>" "<*" "*>" "</>" "</" "/>"
+      "<->" "..<" "~=" "~-" "-~" "~@" "^=" "-|" "_|_" "|-" "||-"
+      "|=" "||=" "#{" "#[" "]#" "#(" "#?" "#_" "#_(" "#:" "#!" "#="
+      "&="))
+  (global-ligature-mode t))
+#+end_src
+
+* Treemacs
+
+ファイルツリーを表示する。
+
+#+begin_src emacs-lisp :tangle init.el
+(packlet treemacs
+  :setq (treemacs-user-mode-line-format 'none)
+  :bind ("C-\\" . treemacs)
+  :config
+  (treemacs-fringe-indicator-mode t)
+  (treemacs-filewatch-mode t)
+  (treemacs-git-commit-diff-mode t)
+  (treemacs-git-mode 'deferred))
+
+(packlet treemacs-nerd-icons
+  :after treemacs
+  :config
+  (treemacs-load-theme "nerd-icons"))
+
+(packlet treemacs-projectile
+  :after (treemacs projectile)
+  :config
+  (treemacs-project-follow-mode t))
+
+(packlet treemacs-magit
+  :after (treemacs magit))
+
+(packlet treemacs-tab-bar
+  :after treemacs
+  :setq (treemacs-set-scope-type 'Tabs))
+#+end_src
+
+* Blamer
+
+Git blame の情報をインラインで表示する。
+
+#+begin_src emacs-lisp :tangle init.el
+(packlet blamer
+  :config
+  (custom-set-faces
+   '(blamer-face ((t :foreground "#7a88cf"
+                      :background nil
+                      :height 120
+                      :italic t)))))
+
+(packlet git-timemachine)
+#+end_src
+
+* Fill column indicator
+
+=git-commit-mode= で fill column を表示する。
+
+#+begin_src emacs-lisp :tangle init.el
+(packlet display-fill-column-indicator
+  :hook (git-commit-mode-hook . display-fill-column-indicator-mode))
+#+end_src
+
+* Flymake
+
+=flymake-popon= でエラーをポップアップ表示する。
+
+#+begin_src emacs-lisp :tangle init.el
+(packlet flymake-popon
+  :after flymake
+  :hook (flymake-mode-hook . flymake-popon-mode))
+#+end_src
+
+* Eldoc
+
+=eldoc-box= でドキュメントをホバー表示する。
+
+#+begin_src emacs-lisp :tangle init.el
+(packlet eldoc-box
+  :bind ("C-c q" . eldoc-box-hover-at-point-mode))
+#+end_src
+
+* Eglot
+
+=consult-eglot= で LSP シンボルを検索する。
+
+#+begin_src emacs-lisp :tangle init.el
+(packlet consult-eglot
+  :after eglot
+  :bind (:map eglot-mode-map ("C-c s" . consult-eglot-symbols)))
+#+end_src
+
+* Emacs Lisp
+
+=highlight-defined= と =highlight-quoted= で Emacs Lisp のシンタックスを強調する。
+
+#+begin_src emacs-lisp :tangle init.el
+(packlet highlight-defined
+  :hook (emacs-lisp-mode-hook . highlight-defined-mode))
+
+(packlet highlight-quoted
+  :hook (emacs-lisp-mode-hook . highlight-quoted-mode))
+#+end_src
+
+* Languages
+
+各言語の mode を設定する。
+
+#+begin_src emacs-lisp :tangle init.el
+(packlet dockerfile-mode)
+
+(packlet yaml-mode)
+
+(packlet groovy-mode
+  :hook (groovy-mode-hook
+         (lambda ()
+           (setq indent-tabs-mode t)
+           (setq tab-width 4))))
+
+(packlet kotlin-mode)
+
+(packlet scss-mode
+  :setq (css-indent-offset 2))
+
+(packlet scala-mode)
+
+(packlet sbt-mode
+  :setq (sbt:program-options '("-Dsbt.supershell=false"))
+  :config
+  (substitute-key-definition
+   'minibuffer-complete-word
+   'self-insert-command
+   minibuffer-local-completion-map))
+
+(packlet go-mode
+  :setq (gofmt-command "gofmt")
+  :hook (go-mode-hook
+         (lambda ()
+           (add-hook 'before-save-hook 'gofmt nil t))))
+
+(packlet web-mode
+  :config
+  (define-derived-mode astro-mode web-mode "astro")
+  (add-to-list 'auto-mode-alist '(".*\\.astro\\'" . astro-mode)))
+
+(packlet nginx-mode)
+
+(packlet coverlay)
+
+(packlet origami)
+
+(packlet proof-general
+  :config
+  (setq coq-prettify-symbols '(("forall" . "∀")
+                                ("exists" . "∃")
+                                ("False"  . "⊥")
+                                ("True"   . "⊤")
+                                ("~"      . "¬")
+                                ("~~"     . "¬¬")
+                                ("~~~"    . "¬¬¬")))
+  :hook ((coq-mode-hook
+          (lambda ()
+            (setq prettify-symbols-alist coq-prettify-symbols)
+            (prettify-symbols-mode 1)))
+         (coq-goals-mode-hook
+          (lambda ()
+            (setq prettify-symbols-alist coq-prettify-symbols)
+            (prettify-symbols-mode 1)))))
+
+(packlet lean4-mode)
+#+end_src
+
+* Org extensions
+
+=org-roam= でノートを管理する。
+
+#+begin_src emacs-lisp :tangle init.el
+(packlet org-roam
+  :setq ((org-roam-directory (file-truename "~/org-roam")))
+  :idle 5.0
+  :config
+  (require 'org-roam)
+  (define-prefix-command 'org-roam-prefix-map)
+  (org-roam-db-autosync-mode 1)
+  :bind ("C-c n" . org-roam-prefix-map)
+  :bind (:map org-roam-prefix-map
+         ("l" . org-roam-buffer-toggle)
+         ("f" . org-roam-node-find)
+         ("g" . org-roam-graph)
+         ("i" . org-roam-node-insert)
+         ("c" . org-roam-capture)
+         ("j" . org-roam-dailies-capture-today)))
+
+(packlet org-roam-ui
+  :after org-roam
+  :setq ((org-roam-ui-sync-theme t)
+         (org-roam-ui-follow t)
+         (org-roam-ui-update-on-save t)
+         (org-roam-ui-open-on-start t)))
+#+end_src
+
+* DAP
+
+=dap-mode= でデバッグを行う。
+
+#+begin_src emacs-lisp :tangle init.el
+(packlet dap-mode
+  :commands (dap-mode dap-ui-mode dap-auto-configure-mode)
+  :config
+  (defun my/enable-dap-for-scala ()
+    (require 'dap-mode)
+    (dap-auto-configure-mode 1)
+    (dap-mode 1)
+    (dap-ui-mode 1))
+  :hook (scala-mode-hook . my/enable-dap-for-scala))
+#+end_src
+
+* AI
+
+LLM 連携。
+
+#+begin_src emacs-lisp :tangle init.el
+(packlet ellama
+  :setq ((ellama-language "Japanese")
+         (ellama-naming-scheme 'ellama-generate-name-by-llm)))
+
+(packlet gptel
+  :config
+  (add-hook 'gptel-post-stream-hook 'gptel-auto-scroll)
+  (add-hook 'gptel-post-response-functions 'gptel-end-of-response)
+  (setq gptel-model 'qwq
+        gptel-backend (gptel-make-ollama "Ollama"
+                        :host "localhost:11434"
+                        :stream t
+                        :models '(gemma3:27b gemma3:12b qwq))))
+
+(packlet aidermacs
+  :bind ("C-c a" . aidermacs-transient-menu))
+#+end_src
+
+* System
+
+=exec-path-from-shell= で GUI Emacs の PATH を正しく設定する。
+
+#+begin_src emacs-lisp :tangle init.el
+(packlet exec-path-from-shell
+  :demand t
+  :config
+  (when (or (display-graphic-p) (daemonp))
+    (setq exec-path-from-shell-arguments '("-l"))
+    (dolist (var '("SSH_AUTH_SOCK" "SSH_AGENT_PID" "GPG_AGENT_INFO"
+                   "LANG" "LC_CTYPE" "NIX_SSL_CERT_FILE" "NIX_PATH"
+                   "LSP_USE_PLISTS"))
+      (add-to-list 'exec-path-from-shell-variables var))
+    (exec-path-from-shell-initialize)))
+#+end_src
+
+* macOS
+
+macOS 固有の設定。
+
+#+begin_src emacs-lisp :tangle init.el
+(when (eq system-type 'darwin)
+  (defun copy-from-osx ()
+    (shell-command-to-string "pbpaste"))
+  (defun paste-to-osx (text &optional push)
+    (let ((process-connection-type nil))
+      (let ((proc (start-process "pbcopy" "*Messages*" "pbcopy")))
+        (process-send-string proc text)
+        (process-send-eof proc))))
+  (setq interprogram-cut-function 'paste-to-osx)
+  (setq interprogram-paste-function 'copy-from-osx))
+
+(when (and (eq system-type 'darwin) (display-graphic-p))
+  (add-hook 'window-setup-hook
+            (lambda ()
+              (set-frame-parameter nil 'fullscreen 'fullboth))))
 #+end_src
 

@@ -37,40 +37,87 @@
         sharedLibraryExt = pkgs.stdenv.hostPlatform.extensions.sharedLibrary;
         emacsWithPackages = epkgs.emacsWithPackages (
           epkgs': with epkgs'; [
+            ace-window
+            aidermacs
+            anzu
             avy
+            blamer
             cape
             catppuccin-theme
             consult
+            consult-eglot
             consult-ghq
+            consult-projectile
             corfu
             corfu-prescient
             corfu-terminal
+            coverlay
+            dap-mode
             ddskk
+            ddskk-posframe
+            dockerfile-mode
             editorconfig
+            eldoc-box
+            ellama
             embark
             embark-consult
+            exec-path-from-shell
+            flymake-popon
             git-gutter
             git-modes
+            git-timemachine
+            go-mode
+            gptel
+            groovy-mode
+            highlight-defined
+            highlight-quoted
+            highlight-symbol
+            hydra
+            keycast
+            kotlin-mode
+            lean4-mode
+            ligature
             magit
+            major-mode-hydra
             marginalia
             markdown-mode
             mlscroll
             minions
+            multiple-cursors
             nerd-icons
             nerd-icons-completion
             nerd-icons-corfu
             nerd-icons-dired
+            nginx-mode
             nix-mode
             moody
-
             orderless
+            org-roam
+            org-roam-ui
+            origami
             projectile
             prescient
+            proof-general
             rainbow-delimiters
+            rainbow-mode
+            rg
+            sbt-mode
+            scala-mode
+            scss-mode
+            treemacs
+            treemacs-magit
+            treemacs-nerd-icons
+            treemacs-projectile
+            treemacs-tab-bar
+            treesit-auto
             undohist
             vertico
+            vertico-prescient
+            volatile-highlights
             vundo
+            web-mode
             which-key
+            yaml-mode
           ]
         );
         treeSitterGrammars = pkgs.linkFarm "emacs-tree-sitter-grammars" [
