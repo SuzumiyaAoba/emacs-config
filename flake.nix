@@ -75,7 +75,6 @@
             hydra
             keycast
             kotlin-mode
-            lean4-mode
             ligature
             magit
             major-mode-hydra
