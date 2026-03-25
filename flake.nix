@@ -62,7 +62,7 @@
             nerd-icons-dired
             nix-mode
             moody
-            org-modern
+
             orderless
             projectile
             prescient

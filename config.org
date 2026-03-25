@@ -72,12 +72,10 @@
 (setq create-lockfiles nil)
 (setq auto-save-default nil)
 (setq delete-by-moving-to-trash t)
-(setq vc-follow-symlinks t)
 (setq ring-bell-function 'ignore)
 (defalias 'yes-or-no-p 'y-or-n-p)
 (setq kill-whole-line t)
 (setq-default indent-tabs-mode nil)
-(blink-cursor-mode -1)
 #+end_src
 
 ** trailing whitespace
@@ -98,41 +96,12 @@
   (add-hook hook #'my/disable-trailing-whitespace))
 #+end_src
 
-** auto-revert
-
-外部で変更されたファイルを自動で再読み込みする。
-
-#+begin_src emacs-lisp :tangle init.el
-(packlet autorevert
-  :hook (after-init-hook . global-auto-revert-mode))
-#+end_src
-
 ** recentf
 
-最近開いたファイルを記録する。
+=emacs-batteries= が有効にするが、保存数だけ上書きする。
 
 #+begin_src emacs-lisp :tangle init.el
-(packlet recentf
-  :setq (recentf-max-saved-items 100)
-  :hook (after-init-hook . recentf-mode))
-#+end_src
-
-** delete-selection
-
-選択範囲を上書き入力できるようにする。
-
-#+begin_src emacs-lisp :tangle init.el
-(packlet delsel
-  :hook (after-init-hook . delete-selection-mode))
-#+end_src
-
-** so-long
-
-長い行を含むファイルのパフォーマンスを改善する。
-
-#+begin_src emacs-lisp :tangle init.el
-(packlet so-long
-  :hook (after-init-hook . global-so-long-mode))
+(setq recentf-max-saved-items 100)
 #+end_src
 
 * Language environment
@@ -142,16 +111,6 @@
 #+begin_src emacs-lisp :tangle init.el
 (set-language-environment "Japanese")
 (prefer-coding-system 'utf-8)
-#+end_src
-
-** Case ignore
-
-補完時の大文字小文字を無視する。
-
-#+begin_src emacs-lisp :tangle init.el
-(setq read-file-name-completion-ignore-case t)
-(setq read-buffer-completion-ignore-case t)
-(setq completion-ignore-case t)
 #+end_src
 
 * Input method
@@ -164,6 +123,7 @@
          (skk-user-directory (expand-file-name "skk/" user-emacs-directory)))
   :load "ddskk-autoloads"
   :init
+  (require 'ccc-autoloads nil t)
   (make-directory skk-user-directory t)
   (defconst skk-isearch-really-early-advice nil
     "Neutralised – the old defadvice mechanism is obsolete.")
@@ -249,10 +209,6 @@ When SKK is newly enabled, switch to ASCII mode."
 (setq scroll-margin 0)
 (setq scroll-conservatively 100000)
 (setq scroll-preserve-screen-position t)
-
-(when (and (display-graphic-p)
-           (eq system-type 'darwin))
-  (pixel-scroll-precision-mode t))
 #+end_src
 
 * Line numbers
@@ -263,8 +219,7 @@ When SKK is newly enabled, switch to ASCII mode."
 (setq display-line-numbers-grow-only t)
 
 (packlet display-line-numbers
-  :hook ((prog-mode-hook . display-line-numbers-mode)
-         (text-mode-hook . display-line-numbers-mode)))
+  :hook (text-mode-hook . display-line-numbers-mode))
 #+end_src
 
 * Theme
@@ -286,13 +241,18 @@ When SKK is newly enabled, switch to ASCII mode."
 
 #+begin_src emacs-lisp :tangle init.el
 (packlet moody
-  :demand t
-  :config
-  (moody-replace-mode-line-front-space)
-  (moody-replace-mode-line-buffer-identification)
-  (moody-replace-vc-mode)
-  (set-face-attribute 'mode-line-active nil :box 'unspecified)
-  (set-face-attribute 'mode-line-inactive nil :box 'unspecified))
+  :commands (moody-replace-mode-line-front-space
+             moody-replace-mode-line-buffer-identification
+             moody-replace-vc-mode)
+  :init
+  (defun my/setup-moody ()
+    "Set up moody mode line."
+    (moody-replace-mode-line-front-space)
+    (moody-replace-mode-line-buffer-identification)
+    (moody-replace-vc-mode)
+    (set-face-attribute 'mode-line-active nil :box 'unspecified)
+    (set-face-attribute 'mode-line-inactive nil :box 'unspecified))
+  :hook (after-init-hook . my/setup-moody))
 #+end_src
 
 * Minor modes
@@ -301,19 +261,14 @@ When SKK is newly enabled, switch to ASCII mode."
 
 #+begin_src emacs-lisp :tangle init.el
 (packlet minions
-  :demand t
-  :config
-  (minions-mode 1))
+  :hook (after-init-hook . minions-mode))
 #+end_src
 
 * Editing
 
-=electric-pair= と =rainbow-delimiters= を有効にする。
+=rainbow-delimiters= を有効にする。=electric-pair= は =emacs-batteries= が提供。
 
 #+begin_src emacs-lisp :tangle init.el
-(packlet elec-pair
-  :hook (after-init-hook . electric-pair-mode))
-
 (packlet rainbow-delimiters
   :hook (prog-mode-hook . rainbow-delimiters-mode))
 #+end_src
@@ -323,9 +278,6 @@ When SKK is newly enabled, switch to ASCII mode."
 =vertico=, =consult=, =corfu=, =cape= などで補完体験を整える。
 
 #+begin_src emacs-lisp :tangle init.el
-(packlet savehist
-  :hook (after-init-hook . savehist-mode))
-
 (packlet vertico
   :hook (after-init-hook . vertico-mode))
 
@@ -333,12 +285,18 @@ When SKK is newly enabled, switch to ASCII mode."
   :hook (after-init-hook . marginalia-mode))
 
 (packlet orderless
-  :setq ((completion-styles '(orderless basic))
-         (orderless-matching-styles
+  :commands (orderless-literal orderless-regexp orderless-initialism)
+  :init
+  (defun my/setup-orderless ()
+    "Load orderless and configure completion styles."
+    (require 'orderless)
+    (setq completion-styles '(orderless basic))
+    (setq orderless-matching-styles
           '(orderless-literal orderless-regexp orderless-initialism))
-         (completion-category-defaults nil)
-         (completion-category-overrides
-          '((file (styles orderless partial-completion basic))))))
+    (setq completion-category-defaults nil)
+    (setq completion-category-overrides
+          '((file (styles orderless partial-completion basic)))))
+  :hook (after-init-hook . my/setup-orderless))
 
 (defun my/consult-fd-current-directory-items ()
   "Return non-hidden entries in `default-directory' for `my/consult-fd'."
@@ -439,7 +397,6 @@ prompt with PROMPT starting from `default-directory'."
 
 (packlet nerd-icons-corfu
   :after corfu
-  :demand t
   :config
   (add-to-list 'corfu-margin-formatters #'nerd-icons-corfu-formatter))
 
@@ -486,7 +443,6 @@ prompt with PROMPT starting from `default-directory'."
 
 (packlet nerd-icons-completion
   :after marginalia
-  :demand t
   :hook (marginalia-mode-hook . nerd-icons-completion-marginalia-setup)
   :config
   (nerd-icons-completion-mode))
@@ -503,7 +459,9 @@ prompt with PROMPT starting from `default-directory'."
           (expand-file-name "projectile-cache.eld" user-emacs-directory))
          (projectile-known-projects-file
           (expand-file-name "projectile-bookmarks.eld" user-emacs-directory)))
-  :hook (after-init-hook . projectile-mode)
+  :idle 1.0
+  :config
+  (projectile-mode 1)
   :after-load
   (consult
    (setq consult-project-function
@@ -523,8 +481,7 @@ prompt with PROMPT starting from `default-directory'."
 
 #+begin_src emacs-lisp :tangle init.el
 (packlet mlscroll
-  :after (moody)
-  :demand t
+  :after moody
   :config
   (mlscroll-mode 1))
 #+end_src
@@ -567,16 +524,15 @@ tree-sitter によるシンタックスハイライトを優先して使う。
 
 * Org
 
-=org-mode= の基本設定。インデント表示、ソースブロックのフォント、日本語向けタイムスタンプなどを整える。
+=org-mode= の基本設定。日本語向けタイムスタンプなどを整える。
 
 #+begin_src emacs-lisp :tangle init.el
 (packlet org
-  :setq ((org-startup-indented t)
-         (org-log-done 'time)
+  :setq ((org-log-done 'time)
          (org-src-fontify-natively t)
          (org-src-preserve-indentation t)
          (org-src-tab-acts-natively t)
-         (org-startup-with-inline-images t)
+         (org-startup-with-inline-images nil)
          (org-ellipsis " ▼")
          (org-hide-emphasis-markers t)
          (org-fontify-quote-and-verse-blocks t)
@@ -585,7 +541,7 @@ tree-sitter によるシンタックスハイライトを優先して使う。
          (org-special-ctrl-a/e t)
          (org-auto-align-tags nil)
          (org-tags-column 0)
-         (org-display-custom-times t)
+         (org-display-custom-times nil)
          (org-image-actual-width nil)
          (org-todo-keywords
           '((sequence "TODO(t)" "DOING(i)" "WAIT(w)" "|" "DONE(d)" "CANCELED(c@)")))
@@ -601,7 +557,7 @@ tree-sitter によるシンタックスハイライトを優先して使う。
             " ┄┄┄┄┄ " "┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄"))
          (org-agenda-current-time-string
           "⭠ now ─────────────────────────────────────────────────"))
-  :hook (org-mode-hook . (lambda () (setq truncate-lines nil)))
+  :hook (org-mode-hook (lambda () (setq truncate-lines nil)) 0.5)
   :config
   (org-set-emph-re 'org-emphasis-regexp-components
                    '("-[:space:]('\"{[:nonascii:]"
@@ -610,21 +566,6 @@ tree-sitter によるシンタックスハイライトを優先して使う。
                      "."
                      1))
   (org-element-update-syntax))
-#+end_src
-
-** org-modern
-
-=org-modern= で見出しやタイムスタンプの表示を改善する。
-
-#+begin_src emacs-lisp :tangle init.el
-(packlet org-modern
-  :setq ((org-modern-table nil)
-         (org-modern-hide-stars nil)
-         (org-modern-timestamp '(" %Y年%m月%d日(%a) " . " %H時%M分 "))
-         (org-modern-star 'replace))
-  :hook (org-mode-hook . org-modern-mode)
-  :config
-  (set-face-attribute 'org-table nil :inherit 'fixed-pitch))
 #+end_src
 
 * Markdown
@@ -687,8 +628,9 @@ tree-sitter によるシンタックスハイライトを優先して使う。
   :setq ((git-gutter:modified-sign " ")
          (git-gutter:added-sign " ")
          (git-gutter:deleted-sign " "))
-  :hook (after-init-hook . global-git-gutter-mode)
+  :idle 2.0
   :config
+  (global-git-gutter-mode 1)
   (set-face-background 'git-gutter:modified "purple")
   (set-face-background 'git-gutter:added "green")
   (set-face-background 'git-gutter:deleted "red"))
@@ -715,15 +657,6 @@ tree-sitter によるシンタックスハイライトを優先して使う。
          ("C-x M-g" . magit-dispatch)))
 #+end_src
 
-* Which-key
-
-キーバインドのヘルプを表示する。
-
-#+begin_src emacs-lisp :tangle init.el
-(packlet which-key
-  :hook (after-init-hook . which-key-mode))
-#+end_src
-
 * Navigation
 
 =avy= で画面上の任意の位置にジャンプする。
@@ -746,15 +679,6 @@ tree-sitter によるシンタックスハイライトを優先して使う。
   :hook (dired-mode-hook . dired-hide-details-mode)
   :config
   (require 'dired-x))
-#+end_src
-
-* Editorconfig
-
-=.editorconfig= に基づいてインデントやエンコーディングを自動設定する。
-
-#+begin_src emacs-lisp :tangle init.el
-(packlet editorconfig
-  :hook (after-init-hook . editorconfig-mode))
 #+end_src
 
 * Eldoc
