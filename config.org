@@ -888,8 +888,7 @@ Git blame の情報をインラインで表示する。
 
 (packlet go-mode
   :setq (gofmt-command "gofmt")
-  :hook (go-mode-hook . (lambda ()
-                          (add-hook 'before-save-hook 'gofmt nil t))))
+  :hook-add (go-mode-hook before-save-hook gofmt :local t))
 
 (packlet web-mode
   :derived-mode (astro-mode web-mode "astro")
@@ -905,11 +904,6 @@ Git blame の情報をインラインで表示する。
 
 (packlet proof-general
   :mode ("\\.v\\'" . coq-mode)
-  :init
-  (defun my/coq-prettify-symbols-mode ()
-    "Enable prettified symbols in Coq buffers."
-    (setq-local prettify-symbols-alist coq-prettify-symbols)
-    (prettify-symbols-mode 1))
   :config
   (setq coq-prettify-symbols '(("forall" . "∀")
                                 ("exists" . "∃")
@@ -918,8 +912,10 @@ Git blame の情報をインラインで表示する。
                                 ("~"      . "¬")
                                 ("~~"     . "¬¬")
                                 ("~~~"    . "¬¬¬")))
-  :hook ((coq-mode-hook . my/coq-prettify-symbols-mode)
-         (coq-goals-mode-hook . my/coq-prettify-symbols-mode)))
+  :hook-setq ((coq-mode-hook (prettify-symbols-alist coq-prettify-symbols))
+              (coq-goals-mode-hook (prettify-symbols-alist coq-prettify-symbols)))
+  :hook-enable ((coq-mode-hook prettify-symbols-mode)
+                (coq-goals-mode-hook prettify-symbols-mode)))
 
 (packlet lean4-mode
   :mode ("\\.lean\\'" . lean4-mode))
