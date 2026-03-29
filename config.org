@@ -349,8 +349,7 @@ prompt with PROMPT starting from `default-directory'."
 
 (packlet corfu-prescient
   :after (corfu prescient)
-  :config
-  (corfu-prescient-mode 1))
+  :enable corfu-prescient-mode)
 
 (packlet nerd-icons-corfu
   :after corfu
@@ -363,8 +362,7 @@ prompt with PROMPT starting from `default-directory'."
   :hook (after-init-hook . my/enable-corfu-terminal-mode))
 
 (packlet cape
-  :init
-  (add-to-list 'completion-at-point-functions #'cape-file)
+  :list (completion-at-point-functions #'cape-file)
   :autoload (cape-file)
   :bind ("M-/" . cape-dabbrev))
 
@@ -385,13 +383,13 @@ prompt with PROMPT starting from `default-directory'."
 (packlet embark
   :bind (("C-." . embark-act)
          ("C-;" . embark-dwim))
-  :init
-  (add-to-list 'display-buffer-alist
-               '("\\*Embark Actions\\*"
-                 (display-buffer-in-side-window)
-                 (side . bottom)
-                 (slot . 0)
-                 (window-height . 0.5))))
+  :alist
+  (display-buffer-alist
+   '("\\*Embark Actions\\*"
+     (display-buffer-in-side-window)
+     (side . bottom)
+     (slot . 0)
+     (window-height . 0.5))))
 
 (packlet embark-consult
   :after (consult embark))
@@ -399,14 +397,12 @@ prompt with PROMPT starting from `default-directory'."
 (packlet vertico-prescient
   :after (vertico prescient)
   :setq (vertico-prescient-enable-filtering nil)
-  :config
-  (vertico-prescient-mode 1))
+  :enable vertico-prescient-mode)
 
 (packlet nerd-icons-completion
   :after marginalia
   :hook (marginalia-mode-hook . nerd-icons-completion-marginalia-setup)
-  :config
-  (nerd-icons-completion-mode))
+  :enable nerd-icons-completion-mode)
 #+end_src
 
 * Project
@@ -421,8 +417,7 @@ prompt with PROMPT starting from `default-directory'."
           (expand-file-name "projectile-bookmarks.eld" user-emacs-directory)))
   :idle 1.0
   :bind-keymap ("C-c p" . projectile-command-map)
-  :config
-  (projectile-mode 1)
+  :enable projectile-mode
   :after-load
   (consult
    (setq consult-project-function
@@ -437,13 +432,12 @@ prompt with PROMPT starting from `default-directory'."
 
 (packlet consult-projectile
   :after (consult projectile)
-  :config
-  (advice-add 'projectile-switch-to-buffer :override #'consult-projectile-switch-to-buffer)
-  (advice-add 'projectile-find-dir :override #'consult-projectile-find-dir)
-  (advice-add 'projectile-find-file :override #'consult-projectile-find-file)
-  (advice-add 'projectile-recentf :override #'consult-projectile-recentf)
-  (advice-add 'projectile-switch-project :override #'consult-projectile-switch-project)
-  (advice-add 'projectile-ripgrep :override #'consult-ripgrep))
+  :advice ((projectile-switch-to-buffer :override consult-projectile-switch-to-buffer)
+           (projectile-find-dir :override consult-projectile-find-dir)
+           (projectile-find-file :override consult-projectile-find-file)
+           (projectile-recentf :override consult-projectile-recentf)
+           (projectile-switch-project :override consult-projectile-switch-project)
+           (projectile-ripgrep :override consult-ripgrep)))
 #+end_src
 
 * Scrollbar
@@ -453,8 +447,7 @@ prompt with PROMPT starting from `default-directory'."
 #+begin_src emacs-lisp :tangle init.el
 (packlet mlscroll
   :after moody
-  :config
-  (mlscroll-mode 1))
+  :enable mlscroll-mode)
 #+end_src
 
 * Tree-sitter
@@ -593,8 +586,8 @@ tree-sitter によるシンタックスハイライトを優先して使う。
          (git-gutter:added-sign " ")
          (git-gutter:deleted-sign " "))
   :idle 2.0
+  :enable global-git-gutter-mode
   :config
-  (global-git-gutter-mode 1)
   (set-face-background 'git-gutter:modified "purple")
   (set-face-background 'git-gutter:added "green")
   (set-face-background 'git-gutter:deleted "red"))
@@ -715,8 +708,8 @@ tree-sitter によるシンタックスハイライトを優先して使う。
 
 (packlet volatile-highlights
   :demand t
+  :enable (volatile-highlights-mode t)
   :config
-  (volatile-highlights-mode t)
   (set-face-attribute
    'vhl/default-face nil :foreground "#FF3333" :background "#FFCDCD"))
 
@@ -731,6 +724,7 @@ tree-sitter によるシンタックスハイライトを優先して使う。
 #+begin_src emacs-lisp :tangle init.el
 (packlet keycast
   :after moody
+  :list (global-mode-string '("" keycast-mode-line))
   :config
   (define-minor-mode keycast-mode
     "Show current command and its key binding in the mode line."
@@ -738,7 +732,6 @@ tree-sitter によるシンタックスハイライトを優先して使う。
     (if keycast-mode
         (add-hook 'pre-command-hook 'keycast--update t)
       (remove-hook 'pre-command-hook 'keycast--update)))
-  (add-to-list 'global-mode-string '("" keycast-mode-line))
   :bind ("C-c k" . keycast-mode))
 #+end_src
 
@@ -749,6 +742,7 @@ tree-sitter によるシンタックスハイライトを優先して使う。
 #+begin_src emacs-lisp :tangle init.el
 (packlet ligature
   :demand t
+  :enable global-ligature-mode
   :config
   (ligature-set-ligatures 't '("www"))
   (ligature-set-ligatures 'prog-mode
@@ -765,8 +759,7 @@ tree-sitter によるシンタックスハイライトを優先して使う。
       "<$>" "<$" "$>" "<+>" "<+" "+>" "<*>" "<*" "*>" "</>" "</" "/>"
       "<->" "..<" "~=" "~-" "-~" "~@" "^=" "-|" "_|_" "|-" "||-"
       "|=" "||=" "#{" "#[" "]#" "#(" "#?" "#_" "#_(" "#:" "#!" "#="
-      "&="))
-  (global-ligature-mode t))
+      "&=")))
 #+end_src
 
 * Treemacs
@@ -777,11 +770,10 @@ tree-sitter によるシンタックスハイライトを優先して使う。
 (packlet treemacs
   :setq (treemacs-user-mode-line-format 'none)
   :bind ("C-\\" . treemacs)
-  :config
-  (treemacs-fringe-indicator-mode t)
-  (treemacs-filewatch-mode t)
-  (treemacs-git-commit-diff-mode t)
-  (treemacs-git-mode 'deferred))
+  :enable ((treemacs-fringe-indicator-mode t)
+           (treemacs-filewatch-mode t)
+           (treemacs-git-commit-diff-mode t)
+           (treemacs-git-mode 'deferred)))
 
 (packlet treemacs-nerd-icons
   :after treemacs
@@ -790,8 +782,7 @@ tree-sitter によるシンタックスハイライトを優先して使う。
 
 (packlet treemacs-projectile
   :after (treemacs projectile)
-  :config
-  (treemacs-project-follow-mode t))
+  :enable (treemacs-project-follow-mode t))
 
 (packlet treemacs-magit
   :after (treemacs magit))
@@ -948,11 +939,9 @@ Git blame の情報をインラインで表示する。
 (packlet org-roam
   :setq ((org-roam-directory (file-truename "~/org-roam")))
   :idle 5.0
+  :prefix-map org-roam-prefix-map
+  :enable org-roam-db-autosync-mode
   :bind-keymap ("C-c n" . org-roam-prefix-map)
-  :config
-  (require 'org-roam)
-  (define-prefix-command 'org-roam-prefix-map)
-  (org-roam-db-autosync-mode 1)
   :bind (:map org-roam-prefix-map
          ("l" . org-roam-buffer-toggle)
          ("f" . org-roam-node-find)
