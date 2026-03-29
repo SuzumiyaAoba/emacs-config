@@ -877,18 +877,23 @@ Git blame の情報をインラインで表示する。
 (packlet yaml-mode)
 
 (packlet groovy-mode
+  :mode ("\\.gradle\\'" . groovy-mode)
+  :interpreter ("groovy" . groovy-mode)
   :hook (groovy-mode-hook . (lambda ()
                               (setq indent-tabs-mode t)
                               (setq tab-width 4))))
 
-(packlet kotlin-mode)
+(packlet kotlin-mode
+  :mode ("\\.kts?\\'" . kotlin-mode))
 
 (packlet scss-mode
   :setq (css-indent-offset 2))
 
-(packlet scala-mode)
+(packlet scala-mode
+  :mode ("\\.scala\\'" . scala-mode))
 
 (packlet sbt-mode
+  :mode ("\\.sbt\\'" . sbt-mode)
   :setq (sbt:program-options '("-Dsbt.supershell=false"))
   :config
   (substitute-key-definition
@@ -902,17 +907,20 @@ Git blame の情報をインラインで表示する。
                           (add-hook 'before-save-hook 'gofmt nil t))))
 
 (packlet web-mode
-  :config
+  :init
   (define-derived-mode astro-mode web-mode "astro")
-  (add-to-list 'auto-mode-alist '(".*\\.astro\\'" . astro-mode)))
+  :mode ("\\.astro\\'" . astro-mode))
 
-(packlet nginx-mode)
+(packlet nginx-mode
+  :mode (("nginx\\.conf\\'" . nginx-mode)
+         ("/nginx/.+\\.conf\\'" . nginx-mode)))
 
 (packlet coverlay)
 
 (packlet origami)
 
 (packlet proof-general
+  :mode ("\\.v\\'" . coq-mode)
   :config
   (setq coq-prettify-symbols '(("forall" . "∀")
                                 ("exists" . "∃")
@@ -928,7 +936,8 @@ Git blame の情報をインラインで表示する。
                                   (setq prettify-symbols-alist coq-prettify-symbols)
                                   (prettify-symbols-mode 1)))))
 
-(packlet lean4-mode)
+(packlet lean4-mode
+  :mode ("\\.lean\\'" . lean4-mode))
 #+end_src
 
 * Org extensions
@@ -986,9 +995,9 @@ LLM 連携。
          (ellama-naming-scheme 'ellama-generate-name-by-llm)))
 
 (packlet gptel
+  :hook ((gptel-post-stream-hook . gptel-auto-scroll)
+         (gptel-post-response-functions . gptel-end-of-response))
   :config
-  (add-hook 'gptel-post-stream-hook 'gptel-auto-scroll)
-  (add-hook 'gptel-post-response-functions 'gptel-end-of-response)
   (setq gptel-model 'qwq
         gptel-backend (gptel-make-ollama "Ollama"
                         :host "localhost:11434"
