@@ -411,16 +411,16 @@ prompt with PROMPT starting from `default-directory'."
 
 * Project
 
-=projectile= を有効にし、project 操作をまとめる。
+=projectile= を有効にし、lazy prefix key で project 操作をまとめる。
 
 #+begin_src emacs-lisp :tangle init.el
 (packlet projectile
-  :setq ((projectile-keymap-prefix (kbd "C-c p"))
-         (projectile-cache-file
+  :setq ((projectile-cache-file
           (expand-file-name "projectile-cache.eld" user-emacs-directory))
          (projectile-known-projects-file
           (expand-file-name "projectile-bookmarks.eld" user-emacs-directory)))
   :idle 1.0
+  :bind-keymap ("C-c p" . projectile-command-map)
   :config
   (projectile-mode 1)
   :after-load
@@ -933,17 +933,17 @@ Git blame の情報をインラインで表示する。
 
 * Org extensions
 
-=org-roam= でノートを管理する。
+=org-roam= を lazy prefix key 付きで使う。
 
 #+begin_src emacs-lisp :tangle init.el
 (packlet org-roam
   :setq ((org-roam-directory (file-truename "~/org-roam")))
   :idle 5.0
+  :bind-keymap ("C-c n" . org-roam-prefix-map)
   :config
   (require 'org-roam)
   (define-prefix-command 'org-roam-prefix-map)
   (org-roam-db-autosync-mode 1)
-  :bind ("C-c n" . org-roam-prefix-map)
   :bind (:map org-roam-prefix-map
          ("l" . org-roam-buffer-toggle)
          ("f" . org-roam-node-find)
@@ -1037,4 +1037,3 @@ macOS 固有の設定。
             (lambda ()
               (set-frame-parameter nil 'fullscreen 'fullboth))))
 #+end_src
-
