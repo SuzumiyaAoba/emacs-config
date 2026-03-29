@@ -68,9 +68,9 @@
 バックアップ無効化。=emacs-batteries= が有効にする安全なバックアップ設定を上書き。
 
 #+begin_src emacs-lisp :tangle init.el
-(setq make-backup-files nil)
-(setq create-lockfiles nil)
-(setq auto-save-default nil)
+(setq make-backup-files nil
+      create-lockfiles nil
+      auto-save-default nil)
 #+end_src
 
 * Language environment
@@ -150,8 +150,7 @@ When SKK is newly enabled, switch to ASCII mode."
       (let ((input-method-verbose-flag nil))
         (deactivate-input-method)))))
   (my/skk-shortcut-mode 1)
-  :hook ((after-init-hook my/enable-skk-by-default 1.0)
-         (after-change-major-mode-hook my/enable-skk-by-default 1.0))
+  :hook (after-init-hook my/enable-skk-by-default 1.0)
   :commands (skk-mode))
 
 (packlet ddskk-posframe
@@ -667,20 +666,17 @@ tree-sitter によるシンタックスハイライトを優先して使う。
 =hydra= と =pretty-hydra= を使った =multiple-cursors= 操作。
 
 #+begin_src emacs-lisp :tangle init.el
-(packlet hydra
-  :demand t)
+(packlet hydra)
 
 (packlet pretty-hydra
   :file "major-mode-hydra"
   :after hydra
-  :demand t
   :config
   (require 'pretty-hydra))
 
 (packlet multiple-cursors
   :after (hydra pretty-hydra)
   :config
-  (require 'pretty-hydra)
   (defvar multiple-cursors--title "Multiple cursors")
   (pretty-hydra-define multiple-cursors
     (:foreign-keys warn :title multiple-cursors--title :quit-key "q")
@@ -706,8 +702,7 @@ tree-sitter によるシンタックスハイライトを優先して使う。
 
 (packlet volatile-highlights
   :demand t
-  :enable (volatile-highlights-mode t)
-  :faces ((vhl/default-face :foreground "#FF3333" :background "#FFCDCD")))
+  :enable (volatile-highlights-mode t))
 
 (packlet rainbow-mode
   :hook (prog-mode-hook . rainbow-mode))
@@ -955,9 +950,8 @@ Git blame の情報をインラインで表示する。
 #+begin_src emacs-lisp :tangle init.el
 (packlet dap-mode
   :commands (dap-mode dap-ui-mode dap-auto-configure-mode)
-  :config
+  :init
   (defun my/enable-dap-for-scala ()
-    (require 'dap-mode)
     (dap-auto-configure-mode 1)
     (dap-mode 1)
     (dap-ui-mode 1))
@@ -996,11 +990,12 @@ LLM 連携。
   :demand t
   :config
   (when (or (display-graphic-p) (daemonp))
-    (setq exec-path-from-shell-arguments '("-l"))
-    (dolist (var '("SSH_AUTH_SOCK" "SSH_AGENT_PID" "GPG_AGENT_INFO"
-                   "LANG" "LC_CTYPE" "NIX_SSL_CERT_FILE" "NIX_PATH"
-                   "LSP_USE_PLISTS"))
-      (add-to-list 'exec-path-from-shell-variables var))
+    (setq exec-path-from-shell-arguments '("-l")
+          exec-path-from-shell-variables
+          (append '("SSH_AUTH_SOCK" "SSH_AGENT_PID" "GPG_AGENT_INFO"
+                    "LANG" "LC_CTYPE" "NIX_SSL_CERT_FILE" "NIX_PATH"
+                    "LSP_USE_PLISTS")
+                  exec-path-from-shell-variables))
     (exec-path-from-shell-initialize)))
 #+end_src
 
@@ -1013,15 +1008,14 @@ macOS 固有の設定。
   (defun copy-from-osx ()
     (shell-command-to-string "pbpaste"))
   (defun paste-to-osx (text &optional push)
-    (let ((process-connection-type nil))
-      (let ((proc (start-process "pbcopy" "*Messages*" "pbcopy")))
-        (process-send-string proc text)
-        (process-send-eof proc))))
-  (setq interprogram-cut-function 'paste-to-osx)
-  (setq interprogram-paste-function 'copy-from-osx))
-
-(when (and (eq system-type 'darwin) (display-graphic-p))
-  (add-hook 'window-setup-hook
-            (lambda ()
-              (set-frame-parameter nil 'fullscreen 'fullboth))))
+    (let ((process-connection-type nil)
+          (proc (start-process "pbcopy" "*Messages*" "pbcopy")))
+      (process-send-string proc text)
+      (process-send-eof proc)))
+  (setq interprogram-cut-function 'paste-to-osx
+        interprogram-paste-function 'copy-from-osx)
+  (when (display-graphic-p)
+    (add-hook 'window-setup-hook
+              (lambda ()
+                (set-frame-parameter nil 'fullscreen 'fullboth)))))
 #+end_src
