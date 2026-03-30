@@ -273,7 +273,7 @@ When FILE is empty, open DIR itself."
    (expand-file-name (if (string-empty-p file) "." file) dir)))
 
 (defun my/consult-fd (&optional dir initial)
-  "Select a file in DIR, showing current directory entries and `fd' results."
+  "Select or create a file in DIR, showing current directory entries and `fd' results."
   (interactive "P")
   (require 'consult)
   (let* ((dir (my/consult-read-directory "Fd directory: " dir))
@@ -286,6 +286,7 @@ When FILE is empty, open DIR itself."
                          :face consult-file
                          :history file-name-history
                          :state ,#'consult--file-preview
+                         :new ,open
                          :action ,open))
                  (sources
                   `(,`(:name "Current" :narrow ?c
@@ -300,18 +301,14 @@ When FILE is empty, open DIR itself."
                                      (lambda (x) (string-remove-prefix "./" x)))
                          :highlight t
                          :file-handler t)))))
-      (pcase (consult--multi
-              sources
-              :prompt prompt
-              :sort nil
-              :require-match nil
-              :initial initial
-              :add-history (thing-at-point 'filename)
-              :history '(:input consult--find-history))
-        (`(,candidate . ,rest)
-         (if (plist-get rest :match)
-             (funcall open candidate)
-           (dired dir)))))))
+      (consult--multi
+       sources
+       :prompt prompt
+       :sort nil
+       :require-match nil
+       :initial initial
+       :add-history (thing-at-point 'filename)
+       :history '(:input consult--find-history)))))
 
 (defun my/consult-read-directory (prompt dir &optional default)
   "Return directory for consult commands.
