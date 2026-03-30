@@ -557,6 +557,7 @@ tree-sitter によるシンタックスハイライトを優先して使う。
 #+begin_src emacs-lisp :tangle init.el
 (packlet org
   :setq ((org-log-done 'time)
+         (org-startup-folded 'content)
          (org-ellipsis " ▼")
          (org-hide-emphasis-markers t)
          (org-fontify-quote-and-verse-blocks t)
