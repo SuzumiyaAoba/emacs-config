@@ -394,10 +394,11 @@ prompt with PROMPT starting from `default-directory'."
   :setq (vertico-prescient-enable-filtering nil)
   :enable vertico-prescient-mode)
 
-(packlet nerd-icons-completion
-  :after marginalia
-  :hook (marginalia-mode-hook . nerd-icons-completion-marginalia-setup)
-  :enable nerd-icons-completion-mode)
+;; Disabled because it causes cursor misalignment in terminal minibuffers.
+;; (packlet nerd-icons-completion
+;;   :after marginalia
+;;   :hook (marginalia-mode-hook . nerd-icons-completion-marginalia-setup)
+;;   :enable nerd-icons-completion-mode)
 #+end_src
 
 * Project
