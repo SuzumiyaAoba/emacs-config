@@ -272,6 +272,11 @@ When FILE is empty, open DIR itself."
   (consult--file-action
    (expand-file-name (if (string-empty-p file) "." file) dir)))
 
+(defun my/consult-fd-open-new (dir file)
+  "Open new FILE relative to DIR.
+Ignore a leading `#' in FILE."
+  (my/consult-fd-open dir (string-remove-prefix "#" file)))
+
 (defun my/consult-fd (&optional dir initial)
   "Select or create a file in DIR, showing current directory entries and `fd' results."
   (interactive "P")
@@ -279,14 +284,15 @@ When FILE is empty, open DIR itself."
   (let* ((dir (my/consult-read-directory "Fd directory: " dir))
          (prompt (format "Fd (%s): " (consult--left-truncate-file dir)))
          (paths '("."))
-         (open (lambda (file) (my/consult-fd-open dir file))))
+         (open (lambda (file) (my/consult-fd-open dir file)))
+         (open-new (lambda (file) (my/consult-fd-open-new dir file))))
     (pcase-let* ((default-directory dir)
                  (builder (consult--fd-make-builder paths))
                  (base `(:category file
                          :face consult-file
                          :history file-name-history
                          :state ,#'consult--file-preview
-                         :new ,open
+                         :new ,open-new
                          :action ,open))
                  (sources
                   `(,`(:name "Current" :narrow ?c
