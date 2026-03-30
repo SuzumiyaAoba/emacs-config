@@ -515,6 +515,10 @@ tree-sitter によるシンタックスハイライトを優先して使う。
 #+begin_src emacs-lisp :tangle init.el
 (setq treesit-font-lock-level 4)
 
+(let ((treesit-directory (expand-file-name "tree-sitter/" my/config-root)))
+  (when (file-directory-p treesit-directory)
+    (add-to-list 'treesit-extra-load-path treesit-directory)))
+
 (when (and (fboundp 'treesit-available-p) (treesit-available-p))
   (dolist (entry '((bash sh-mode bash-ts-mode)
                    (c c-mode c-ts-mode)
@@ -1064,19 +1068,6 @@ LLM 連携。
 macOS 固有の設定。
 
 #+begin_src emacs-lisp :tangle init.el
-(packlet macos-clipboard
-  :when (eq system-type 'darwin)
-  :init
-  (defun my/copy-from-osx ()
-    (shell-command-to-string "pbpaste"))
-  (defun my/paste-to-osx (text &optional push)
-    (let ((process-connection-type nil)
-          (proc (start-process "pbcopy" "*Messages*" "pbcopy")))
-      (process-send-string proc text)
-      (process-send-eof proc)))
-  :setq ((interprogram-cut-function #'my/paste-to-osx)
-         (interprogram-paste-function #'my/copy-from-osx)))
-
 (packlet macos-frame
   :when (and (eq system-type 'darwin) (display-graphic-p))
   :hook-call
