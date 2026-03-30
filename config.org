@@ -419,6 +419,7 @@ prompt with PROMPT starting from `default-directory'."
   :enable projectile-mode
   :after-load
   (consult
+   (require 'projectile)
    (setq consult-project-function
          (lambda (&optional may-prompt)
            (or (projectile-project-root)
