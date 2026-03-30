@@ -155,9 +155,8 @@ When SKK is newly enabled, switch to ASCII mode."
 
 (packlet ddskk-posframe
   :after skk
-  :config
-  (when (display-graphic-p)
-    (ddskk-posframe-mode t)))
+  :when (display-graphic-p)
+  :enable (ddskk-posframe-mode t))
 #+end_src
 
 * Startup
@@ -184,7 +183,7 @@ When SKK is newly enabled, switch to ASCII mode."
 (setq display-line-numbers-grow-only t)
 
 (packlet display-line-numbers
-  :hook (text-mode-hook . display-line-numbers-mode))
+  :hook-enable (text-mode-hook display-line-numbers-mode))
 #+end_src
 
 * Theme
@@ -221,7 +220,7 @@ When SKK is newly enabled, switch to ASCII mode."
 
 #+begin_src emacs-lisp :tangle init.el
 (packlet minions
-  :hook (after-init-hook . minions-mode))
+  :startup-enable minions-mode)
 #+end_src
 
 * Editing
@@ -230,7 +229,7 @@ When SKK is newly enabled, switch to ASCII mode."
 
 #+begin_src emacs-lisp :tangle init.el
 (packlet rainbow-delimiters
-  :hook (prog-mode-hook . rainbow-delimiters-mode))
+  :hook-enable (prog-mode-hook rainbow-delimiters-mode))
 #+end_src
 
 * Completion
@@ -239,10 +238,10 @@ When SKK is newly enabled, switch to ASCII mode."
 
 #+begin_src emacs-lisp :tangle init.el
 (packlet vertico
-  :hook (after-init-hook . vertico-mode))
+  :startup-enable vertico-mode)
 
 (packlet marginalia
-  :hook (after-init-hook . marginalia-mode))
+  :startup-enable marginalia-mode)
 
 (packlet orderless
   :demand t
@@ -336,17 +335,12 @@ prompt with PROMPT starting from `default-directory'."
                               (consult--project-root))
    initial))
 
-(defun my/enable-corfu-terminal-mode ()
-  "Enable `corfu-terminal-mode' in non-graphical Emacs sessions."
-  (unless (display-graphic-p)
-    (corfu-terminal-mode 1)))
-
 (packlet corfu
   :setq (corfu-cycle t)
-  :hook (after-init-hook . global-corfu-mode))
+  :startup-enable global-corfu-mode)
 
 (packlet prescient
-  :hook (after-init-hook . prescient-persist-mode))
+  :startup-enable prescient-persist-mode)
 
 (packlet corfu-prescient
   :after (corfu prescient)
@@ -354,13 +348,13 @@ prompt with PROMPT starting from `default-directory'."
 
 (packlet nerd-icons-corfu
   :after corfu
-  :config
-  (add-to-list 'corfu-margin-formatters #'nerd-icons-corfu-formatter))
+  :list (corfu-margin-formatters #'nerd-icons-corfu-formatter))
 
 (packlet corfu-terminal
   :after corfu
   :autoload corfu-terminal-mode
-  :hook (after-init-hook . my/enable-corfu-terminal-mode))
+  :unless (display-graphic-p)
+  :startup-enable corfu-terminal-mode)
 
 (packlet cape
   :list (completion-at-point-functions #'cape-file)
@@ -515,7 +509,9 @@ tree-sitter によるシンタックスハイライトを優先して使う。
             " ┄┄┄┄┄ " "┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄"))
          (org-agenda-current-time-string
           "⭠ now ─────────────────────────────────────────────────"))
-  :hook (org-mode-hook (lambda () (setq truncate-lines nil)) 0.5)
+  :hook-setq (org-mode-hook
+              (truncate-lines nil)
+              :delay 0.5)
   :config
   (org-set-emph-re 'org-emphasis-regexp-components
                    '("-[:space:]('\"{[:nonascii:]"
@@ -559,7 +555,7 @@ tree-sitter によるシンタックスハイライトを優先して使う。
 
 #+begin_src emacs-lisp :tangle init.el
 (packlet nerd-icons-dired
-  :hook (dired-mode-hook . nerd-icons-dired-mode))
+  :hook-enable (dired-mode-hook nerd-icons-dired-mode))
 #+end_src
 
 * Undo
@@ -571,7 +567,7 @@ tree-sitter によるシンタックスハイライトを優先して使う。
   :setq (undohist-directory
          (expand-file-name "undohist/" user-emacs-directory))
   :autoload undohist-initialize
-  :hook (after-init-hook . undohist-initialize))
+  :startup undohist-initialize)
 
 (packlet vundo
   :bind ("C-x u" . vundo))
@@ -632,7 +628,7 @@ tree-sitter によるシンタックスハイライトを優先して使う。
 (packlet dired
   :setq ((dired-do-revert-buffer t)
          (dired-isearch-filenames t))
-  :hook (dired-mode-hook . dired-hide-details-mode)
+  :hook-enable (dired-mode-hook dired-hide-details-mode)
   :config
   (require 'dired-x))
 #+end_src
@@ -657,7 +653,7 @@ tree-sitter によるシンタックスハイライトを優先して使う。
          (anzu-search-threshold 1000))
   :bind (("M-%" . anzu-query-replace)
          ("C-M-%" . anzu-query-replace-regex))
-  :hook (after-init-hook . global-anzu-mode)
+  :startup-enable global-anzu-mode
   :faces ((anzu-mode-line :copy mode-line)))
 
 (packlet rg)
@@ -700,14 +696,14 @@ tree-sitter によるシンタックスハイライトを優先して使う。
 
 #+begin_src emacs-lisp :tangle init.el
 (packlet highlight-symbol
-  :hook (prog-mode-hook . highlight-symbol-mode))
+  :hook-enable (prog-mode-hook highlight-symbol-mode))
 
 (packlet volatile-highlights
   :demand t
   :enable (volatile-highlights-mode t))
 
 (packlet rainbow-mode
-  :hook (prog-mode-hook . rainbow-mode))
+  :hook-enable (prog-mode-hook rainbow-mode))
 #+end_src
 
 * Keycast
@@ -805,7 +801,7 @@ Git blame の情報をインラインで表示する。
 
 #+begin_src emacs-lisp :tangle init.el
 (packlet display-fill-column-indicator
-  :hook (git-commit-mode-hook . display-fill-column-indicator-mode))
+  :hook-enable (git-commit-mode-hook display-fill-column-indicator-mode))
 #+end_src
 
 * Flymake
@@ -815,7 +811,7 @@ Git blame の情報をインラインで表示する。
 #+begin_src emacs-lisp :tangle init.el
 (packlet flymake-popon
   :after flymake
-  :hook (flymake-mode-hook . flymake-popon-mode))
+  :hook-enable (flymake-mode-hook flymake-popon-mode))
 #+end_src
 
 * Eldoc
@@ -843,10 +839,10 @@ Git blame の情報をインラインで表示する。
 
 #+begin_src emacs-lisp :tangle init.el
 (packlet highlight-defined
-  :hook (emacs-lisp-mode-hook . highlight-defined-mode))
+  :hook-enable (emacs-lisp-mode-hook highlight-defined-mode))
 
 (packlet highlight-quoted
-  :hook (emacs-lisp-mode-hook . highlight-quoted-mode))
+  :hook-enable (emacs-lisp-mode-hook highlight-quoted-mode))
 #+end_src
 
 * Languages
@@ -989,16 +985,15 @@ LLM 連携。
 
 #+begin_src emacs-lisp :tangle init.el
 (packlet exec-path-from-shell
+  :when (or (display-graphic-p) (daemonp))
   :demand t
+  :setq (exec-path-from-shell-arguments '("-l"))
+  :list (exec-path-from-shell-variables
+         "SSH_AUTH_SOCK" "SSH_AGENT_PID" "GPG_AGENT_INFO"
+         "LANG" "LC_CTYPE" "NIX_SSL_CERT_FILE" "NIX_PATH"
+         "LSP_USE_PLISTS")
   :config
-  (when (or (display-graphic-p) (daemonp))
-    (setq exec-path-from-shell-arguments '("-l")
-          exec-path-from-shell-variables
-          (append '("SSH_AUTH_SOCK" "SSH_AGENT_PID" "GPG_AGENT_INFO"
-                    "LANG" "LC_CTYPE" "NIX_SSL_CERT_FILE" "NIX_PATH"
-                    "LSP_USE_PLISTS")
-                  exec-path-from-shell-variables))
-    (exec-path-from-shell-initialize)))
+  (exec-path-from-shell-initialize))
 #+end_src
 
 * macOS
@@ -1006,18 +1001,21 @@ LLM 連携。
 macOS 固有の設定。
 
 #+begin_src emacs-lisp :tangle init.el
-(when (eq system-type 'darwin)
-  (defun copy-from-osx ()
+(packlet macos-clipboard
+  :when (eq system-type 'darwin)
+  :init
+  (defun my/copy-from-osx ()
     (shell-command-to-string "pbpaste"))
-  (defun paste-to-osx (text &optional push)
+  (defun my/paste-to-osx (text &optional push)
     (let ((process-connection-type nil)
           (proc (start-process "pbcopy" "*Messages*" "pbcopy")))
       (process-send-string proc text)
       (process-send-eof proc)))
-  (setq interprogram-cut-function 'paste-to-osx
-        interprogram-paste-function 'copy-from-osx)
-  (when (display-graphic-p)
-    (add-hook 'window-setup-hook
-              (lambda ()
-                (set-frame-parameter nil 'fullscreen 'fullboth)))))
+  :setq ((interprogram-cut-function #'my/paste-to-osx)
+         (interprogram-paste-function #'my/copy-from-osx)))
+
+(packlet macos-frame
+  :when (and (eq system-type 'darwin) (display-graphic-p))
+  :hook-call
+  (window-setup-hook set-frame-parameter nil 'fullscreen 'fullboth))
 #+end_src

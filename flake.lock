@@ -105,11 +105,11 @@
     "packlet": {
       "flake": false,
       "locked": {
-        "lastModified": 1774770279,
-        "narHash": "sha256-hEq6tZ0F8UxNoImBeY0TxHjg5OYkr5LI8O4YRNDEt60=",
+        "lastModified": 1774836422,
+        "narHash": "sha256-qiEfQD6Kbc5ZGvtws6xDWb66yZOvaCaJCspzSXQDQtI=",
         "owner": "SuzumiyaAoba",
         "repo": "packlet",
-        "rev": "aa004b70f4a8ae39593624216016fbd136b625b1",
+        "rev": "341d48342e0d214c1b00774b5c0caf1cd0285838",
         "type": "github"
       },
       "original": {
