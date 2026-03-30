@@ -663,13 +663,14 @@ tree-sitter によるシンタックスハイライトを優先して使う。
 #+begin_src emacs-lisp :tangle init.el
 (packlet magit
   :setq ((magit-define-global-key-bindings nil)
-         (magit-status-show-untracked-files nil)
+         (magit-status-show-untracked-files "normal")
          (magit-diff-refine-hunk nil)
          (magit-log-section-commit-count 10)
          (magit-refresh-status-buffer nil)
          (magit-save-repository-buffers 'dontask)
          (magit-status-sections-hook
           '(magit-insert-status-headers
+            magit-insert-untracked-files
             magit-insert-unstaged-changes
             magit-insert-staged-changes)))
   :commands (magit-status magit-dispatch)
