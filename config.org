@@ -256,14 +256,16 @@ When SKK is newly enabled, switch to ASCII mode."
 
 (defun my/consult-fd-current-directory-items ()
   "Return non-hidden entries in `default-directory' for `my/consult-fd'."
-  (sort
-   (mapcar
-    (lambda (name)
-      (if (file-directory-p (expand-file-name name default-directory))
-          (concat name "/")
-        name))
-    (directory-files default-directory nil directory-files-no-dot-files-regexp))
-   #'string-lessp))
+  (cons
+   "./"
+   (sort
+    (mapcar
+     (lambda (name)
+       (if (file-directory-p (expand-file-name name default-directory))
+           (concat name "/")
+         name))
+     (directory-files default-directory nil directory-files-no-dot-files-regexp))
+    #'string-lessp)))
 
 (defun my/consult-fd-open (dir file)
   "Open FILE relative to DIR.
