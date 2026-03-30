@@ -89,13 +89,16 @@
 (packlet skk
   :setq ((default-input-method "japanese-skk")
          (skk-user-directory (expand-file-name "skk/" user-emacs-directory)))
-  :load "ddskk-autoloads"
+  :autoload ((skk-activate "skk-leim" t)
+             (skk-auto-fill-activate "skk-leim" t)
+             (skk-isearch-mode-setup "skk-isearch")
+             (skk-isearch-mode-cleanup "skk-isearch"))
+  :hook-if-feature ((isearch-mode-hook skk skk-isearch-mode-setup)
+                    (isearch-mode-end-hook skk skk-isearch-mode-cleanup))
   :init
   (require 'ccc-autoloads nil t)
   (require 'ddskk-posframe-autoloads nil t)
   (make-directory skk-user-directory t)
-  (defconst skk-isearch-really-early-advice nil
-    "Neutralised – the old defadvice mechanism is obsolete.")
   (register-input-method
    "japanese-skk" "Japanese" #'skk-activate ""
    "Simple Kana to Kanji conversion program")
@@ -368,13 +371,20 @@ prompt with PROMPT starting from `default-directory'."
   :bind ("M-/" . cape-dabbrev))
 
 (packlet consult
+  :prefix-map my/search-prefix-map
   :bind (("C-s" . consult-line)
          ("C-x b" . consult-buffer)
          ("C-x C-f" . my/consult-fd)
          ("M-s r" . my/consult-ripgrep)
          ("M-g g" . consult-goto-line)
          ("M-g i" . consult-imenu)
-         ("M-y" . consult-yank-pop)))
+         ("M-y" . consult-yank-pop))
+  :bind-keymap ("C-c s" . my/search-prefix-map)
+  :bind (:map my/search-prefix-map
+         ("f" . my/project-find-file)
+         ("g" . my/consult-ripgrep)
+         ("i" . consult-imenu)
+         ("l" . consult-line)))
 
 (packlet consult-ghq
   :after consult
@@ -412,6 +422,49 @@ prompt with PROMPT starting from `default-directory'."
 =projectile= を有効にし、lazy prefix key で project 操作をまとめる。
 
 #+begin_src emacs-lisp :tangle init.el
+(defun my/project-switch-to-buffer ()
+  "Switch to a project buffer with Consult when available."
+  (interactive)
+  (require 'projectile)
+  (if (require 'consult-projectile nil t)
+      (consult-projectile-switch-to-buffer)
+    (projectile-switch-to-buffer)))
+
+(defun my/project-find-dir (&optional invalidate-cache)
+  "Find a project directory with Consult when available."
+  (interactive "P")
+  (require 'projectile)
+  (if (and (not invalidate-cache)
+           (require 'consult-projectile nil t))
+      (consult-projectile-find-dir)
+    (projectile-find-dir invalidate-cache)))
+
+(defun my/project-find-file (&optional invalidate-cache)
+  "Find a project file with Consult when available."
+  (interactive "P")
+  (require 'projectile)
+  (if (and (not invalidate-cache)
+           (require 'consult-projectile nil t))
+      (consult-projectile-find-file)
+    (projectile-find-file invalidate-cache)))
+
+(defun my/project-recentf ()
+  "Browse project recent files with Consult when available."
+  (interactive)
+  (require 'projectile)
+  (if (require 'consult-projectile nil t)
+      (consult-projectile-recentf)
+    (projectile-recentf)))
+
+(defun my/project-switch-project (&optional arg)
+  "Switch projects with Consult, preserving Projectile prefix behavior."
+  (interactive "P")
+  (require 'projectile)
+  (if (and (not arg)
+           (require 'consult-projectile nil t))
+      (consult-projectile-switch-project)
+    (projectile-switch-project arg)))
+
 (packlet projectile
   :setq ((projectile-cache-file
           (expand-file-name "projectile-cache.eld" user-emacs-directory))
@@ -419,10 +472,17 @@ prompt with PROMPT starting from `default-directory'."
           (expand-file-name "projectile-bookmarks.eld" user-emacs-directory)))
   :idle 1.0
   :bind-keymap ("C-c p" . projectile-command-map)
-  :enable projectile-mode
+  :bind-after-load
+  (projectile
+   (:map projectile-command-map
+    ("b" . my/project-switch-to-buffer)
+    ("d" . my/project-find-dir)
+    ("e" . my/project-recentf)
+    ("f" . my/project-find-file)
+    ("p" . my/project-switch-project)
+    ("s r" . my/consult-ripgrep)))
   :after-load
-  (consult
-   (require 'projectile)
+  (projectile
    (setq consult-project-function
          (lambda (&optional may-prompt)
            (or (projectile-project-root)
@@ -431,16 +491,11 @@ prompt with PROMPT starting from `default-directory'."
                   (projectile-completing-read
                    "Switch to project: "
                    (projectile-relevant-known-projects)))
-                 (projectile-project-root)))))))
+                 (projectile-project-root))))))
+  :enable projectile-mode)
 
 (packlet consult-projectile
-  :after (consult projectile)
-  :advice ((projectile-switch-to-buffer :override consult-projectile-switch-to-buffer)
-           (projectile-find-dir :override consult-projectile-find-dir)
-           (projectile-find-file :override consult-projectile-find-file)
-           (projectile-recentf :override consult-projectile-recentf)
-           (projectile-switch-project :override consult-projectile-switch-project)
-           (projectile-ripgrep :override consult-ripgrep)))
+  :after (consult projectile))
 #+end_src
 
 * Scrollbar
