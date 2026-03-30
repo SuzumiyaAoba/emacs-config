@@ -348,7 +348,10 @@ prompt with PROMPT starting from `default-directory'."
 
 (packlet nerd-icons-corfu
   :after corfu
-  :list (corfu-margin-formatters #'nerd-icons-corfu-formatter))
+  :after-load
+  (corfu
+   (require 'nerd-icons-corfu)
+   (add-to-list 'corfu-margin-formatters #'nerd-icons-corfu-formatter)))
 
 (packlet corfu-terminal
   :after corfu
