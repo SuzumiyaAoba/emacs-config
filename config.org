@@ -181,12 +181,14 @@ When SKK is newly enabled, switch to ASCII mode."
 * Line numbers
 
 =emacs-batteries= が =prog-mode= を担当するので =text-mode= だけ追加する。
+=org-mode= は折り返し表示と組み合わせると重くなりやすいため除外する。
 
 #+begin_src emacs-lisp :tangle init.el
 (setq display-line-numbers-grow-only t)
 
 (packlet display-line-numbers
-  :hook-enable (text-mode-hook display-line-numbers-mode))
+  :hook-enable (text-mode-hook display-line-numbers-mode)
+  :hook-disable (org-mode-hook display-line-numbers-mode))
 #+end_src
 
 * Theme
