@@ -258,69 +258,6 @@ When SKK is newly enabled, switch to ASCII mode."
   (setq completion-category-overrides
         '((file (styles orderless partial-completion basic)))))
 
-(defun my/consult-find-current-directory-items ()
-  "Return non-hidden entries in `default-directory' for `my/consult-find'."
-  (cons
-   "./"
-   (sort
-    (mapcar
-     (lambda (name)
-       (if (file-directory-p (expand-file-name name default-directory))
-           (concat name "/")
-         name))
-     (directory-files default-directory nil directory-files-no-dot-files-regexp))
-    #'string-lessp)))
-
-(defun my/consult-find-open (dir file)
-  "Open FILE relative to DIR.
-When FILE is empty, open DIR itself."
-  (consult--file-action
-   (expand-file-name (if (string-empty-p file) "." file) dir)))
-
-(defun my/consult-find-open-new (dir file)
-  "Open new FILE relative to DIR.
-Ignore a leading `#' in FILE."
-  (my/consult-find-open dir (string-remove-prefix "#" file)))
-
-(defun my/consult-find (&optional dir initial)
-  "Select or create a file in DIR, showing current directory entries and `find' results."
-  (interactive "P")
-  (require 'consult)
-  (let* ((dir (my/consult-read-directory "Find directory: " dir))
-         (prompt (format "Find (%s): " (consult--left-truncate-file dir)))
-         (paths '("."))
-         (open (lambda (file) (my/consult-find-open dir file)))
-         (open-new (lambda (file) (my/consult-find-open-new dir file))))
-    (pcase-let* ((default-directory dir)
-                 (builder (consult--find-make-builder paths))
-                 (base `(:category file
-                         :face consult-file
-                         :history file-name-history
-                         :state ,#'consult--file-preview
-                         :new ,open-new
-                         :action ,open))
-                 (sources
-                  `(,`(:name "Current" :narrow ?c
-                       ,@base
-                       :items ,#'my/consult-find-current-directory-items)
-                    ,`(:name "find" :narrow ?f
-                       ,@base
-                       :async
-                       ,(consult--process-collection
-                         builder
-                         :transform (consult--async-map
-                                     (lambda (x) (string-remove-prefix "./" x)))
-                         :highlight t
-                         :file-handler t)))))
-      (consult--multi
-       sources
-       :prompt prompt
-       :sort nil
-       :require-match nil
-       :initial initial
-       :add-history (thing-at-point 'filename)
-       :history '(:input consult--find-history)))))
-
 (defun my/consult-read-directory (prompt dir &optional default)
   "Return directory for consult commands.
 Use DIR when given, otherwise use DEFAULT or `default-directory'.
@@ -376,7 +313,7 @@ prompt with PROMPT starting from `default-directory'."
   :prefix-map my/search-prefix-map
   :bind (("C-s" . consult-line)
          ("C-x b" . consult-buffer)
-         ("C-x C-f" . my/consult-find)
+         ("C-x C-f" . consult-find)
          ("M-s r" . my/consult-ripgrep)
          ("M-g g" . consult-goto-line)
          ("M-g i" . consult-imenu)
@@ -390,7 +327,7 @@ prompt with PROMPT starting from `default-directory'."
 
 (packlet consult-ghq
   :after consult
-  :custom (consult-ghq-find-function #'my/consult-find)
+  :custom (consult-ghq-find-function #'consult-find)
   :bind ("C-c C-g" . consult-ghq-find))
 
 (packlet embark
