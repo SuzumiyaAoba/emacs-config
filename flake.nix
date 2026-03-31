@@ -235,7 +235,7 @@
             "${initDirectory}/tree-sitter"
 
           export EMACS_CONFIG_ROOT="${initDirectory}"
-          export PATH="${pkgs.lib.makeBinPath [ pkgs.fd pkgs.ripgrep ]}:$PATH"
+          export PATH="${pkgs.lib.makeBinPath [ pkgs.ripgrep ]}:$PATH"
 
           exec ${emacsWithPackages}/bin/emacs \
             --init-directory="${initDirectory}" \

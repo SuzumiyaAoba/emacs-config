@@ -16,7 +16,6 @@ Minimal Emacs configuration based on [`emacs-batteries`](https://github.com/Suzu
 - installs `corfu-prescient` via Nix
 - installs `corfu-terminal` via Nix
 - installs `ddskk` via Nix
-- installs `fd` via Nix
 - installs `git-gutter` via Nix
 - installs `git-modes` via Nix
 - installs `ripgrep` via Nix
