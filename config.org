@@ -280,6 +280,11 @@ prompt with PROMPT starting from `default-directory'."
                               (consult--project-root))
    initial))
 
+(defun my/find-file-in-default-directory (&optional _dir)
+  "Call `find-file' interactively from `default-directory'."
+  (interactive)
+  (call-interactively #'find-file))
+
 (packlet corfu
   :setq (corfu-cycle t)
   :startup-enable global-corfu-mode)
@@ -313,7 +318,7 @@ prompt with PROMPT starting from `default-directory'."
   :prefix-map my/search-prefix-map
   :bind (("C-s" . consult-line)
          ("C-x b" . consult-buffer)
-         ("C-x C-f" . consult-find)
+         ("C-x C-f" . find-file)
          ("M-s r" . my/consult-ripgrep)
          ("M-g g" . consult-goto-line)
          ("M-g i" . consult-imenu)
@@ -327,7 +332,7 @@ prompt with PROMPT starting from `default-directory'."
 
 (packlet consult-ghq
   :after consult
-  :custom (consult-ghq-find-function #'consult-find)
+  :custom (consult-ghq-find-function #'my/find-file-in-default-directory)
   :bind ("C-c C-g" . consult-ghq-find))
 
 (packlet embark
