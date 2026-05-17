@@ -35,6 +35,32 @@
         emacs = pkgs.emacs-unstable;
         epkgs = pkgs.emacsPackagesFor emacs;
         sharedLibraryExt = pkgs.stdenv.hostPlatform.extensions.sharedLibrary;
+        toml-mdiin = epkgs.trivialBuild {
+          pname = "toml";
+          version = "1.0.0";
+          src = pkgs.fetchzip {
+            url = "https://github.com/mdiin/emacs-toml/archive/c1ac308a7677a6447bbabee7c9f9dcbeb63be9cb.tar.gz";
+            hash = "sha256-g1bqOWJz/Btq4gc+oZaUkwsC3fvMnZx3kuka86G0rEI=";
+          };
+        };
+        eglot-supplements = epkgs.trivialBuild {
+          pname = "eglot-supplements";
+          version = "0-unstable-2026-04-18";
+          src = pkgs.fetchzip {
+            url = "https://codeberg.org/harald/eglot-supplements/archive/af5221f2f49a6d5c3a38adca4ca89bd05595a71c.tar.gz";
+            hash = "sha256-q3eAjc3zweVMdn1OZKcr6JeKtSgOf3QapyDHNMH/UXY=";
+          };
+          packageRequires = [ epkgs.eglot ];
+        };
+        flix-mode = epkgs.trivialBuild {
+          pname = "flix-mode";
+          version = "1.0.1";
+          src = pkgs.fetchzip {
+            url = "https://codeberg.org/mdiin/flix-mode/archive/cff79298157b757a5db7032b06583ea5bf5eac9e.tar.gz";
+            hash = "sha256-POh79s4J1Tl4eaWOR6sZWr43HesNXuOZKH+sf/Pu/W8=";
+          };
+          packageRequires = [ toml-mdiin ];
+        };
         emacsWithPackages = epkgs.emacsWithPackages (
           epkgs': with epkgs'; [
             ace-window
@@ -57,11 +83,14 @@
             ddskk-posframe
             dockerfile-mode
             editorconfig
+            eglot-booster
+            eglot-supplements
             eldoc-box
             ellama
             embark
             embark-consult
             exec-path-from-shell
+            flix-mode
             flymake-popon
             git-gutter
             git-modes
@@ -235,7 +264,13 @@
             "${initDirectory}/tree-sitter"
 
           export EMACS_CONFIG_ROOT="${initDirectory}"
-          export PATH="${pkgs.lib.makeBinPath [ pkgs.ripgrep ]}:$PATH"
+          export PATH="${
+            pkgs.lib.makeBinPath [
+              pkgs.emacs-lsp-booster
+              pkgs.jdk
+              pkgs.ripgrep
+            ]
+          }:$PATH"
 
           exec ${emacsWithPackages}/bin/emacs \
             --init-directory="${initDirectory}" \

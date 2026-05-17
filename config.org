@@ -839,11 +839,66 @@ Git blame の情報をインラインで表示する。
 * Eglot
 
 =consult-eglot= で LSP シンボルを検索する。
+=eglot-booster= で LSP 通信を補助し、=eglot-semtok= で semantic tokens による強調を使う。
 
 #+begin_src emacs-lisp :tangle init.el
 (packlet consult-eglot
   :after eglot
   :bind (:map eglot-mode-map ("C-c s" . consult-eglot-symbols)))
+
+(packlet eglot-booster
+  :after eglot
+  :enable eglot-booster-mode)
+
+(packlet eglot-semtok
+  :after eglot
+  :config
+  (add-hook 'eglot-connect-hook #'eglot-semtok-on-connected)
+  (defun my/eglot-semtok-enable-for-flix ()
+    "Enable semantic token font-lock for managed Flix buffers."
+    (when (and (derived-mode-p 'flix-mode)
+               (eglot-current-server)
+               (eglot-server-capable :semanticTokensProvider))
+      (eglot-semtok-font-lock-init)
+      (font-lock-flush)))
+  (add-hook 'eglot-managed-mode-hook #'my/eglot-semtok-enable-for-flix)
+  (setq eglot-semtok-faces
+        '("class"
+          (("" "" font-lock-type-face))
+          "interface"
+          (("" "" font-lock-type-face))
+          "typeParameter"
+          (("" "" font-lock-type-face))
+          "parameter"
+          (("" "" font-lock-variable-name-face))
+          "variable"
+          (("" "" font-lock-variable-name-face))
+          "property"
+          (("" "" font-lock-constant-face))
+          "enumMember"
+          (("" "" font-lock-constant-face))
+          "function"
+          (("" "" font-lock-function-name-face))
+          "method"
+          (("" "" font-lock-function-name-face))
+          "member"
+          (("" "" font-lock-property-name-face))
+          "keyword"
+          (("" "" font-lock-keyword-face))
+          "modifier"
+          (("" "" default))
+          "decorator"
+          (("" "" font-lock-keyword-face))
+          "annotation"
+          (("" "" font-lock-keyword-face))
+          "type"
+          (("" "" font-lock-type-face))
+          "string"
+          (("" "" font-lock-string-face))
+          "number"
+          (("" "" font-lock-constant-face))
+          "comment"
+          (("" "" font-lock-comment-face)))))
 #+end_src
 
 * Emacs Lisp
@@ -873,6 +928,55 @@ Git blame の情報をインラインで表示する。
   :hook-setq (groovy-mode-hook
               (indent-tabs-mode t)
               (tab-width 4)))
+
+(packlet flix-mode
+  :mode ("\\.flix\\'" . flix-mode)
+  :config
+  (require 'project)
+  (defconst my/flix-mode-font-lock-keywords
+    `((,(regexp-opt
+         '("alias" "case" "catch" "class" "def" "eff" "else" "enum"
+           "false" "fix" "if" "import" "index" "instance" "law" "let"
+           "match" "mod" "namespace" "new" "pub" "query" "region" "rel"
+           "select" "then" "throw" "trait" "true" "type" "use" "where"
+           "with" "yield")
+         'symbols)
+       . font-lock-keyword-face)
+      ("\\_<\\(?:class\\|eff\\|enum\\|trait\\|type\\)\\_>\\s-+\\([[:word:]_']+\\)"
+       1 font-lock-type-face)
+      ("\\_<\\(?:def\\|rel\\)\\_>\\s-+\\([[:word:]_']+\\)"
+       1 font-lock-function-name-face)
+      ("\\_<[A-Z][[:word:]_']*\\_>" . font-lock-type-face)
+      ("@[[:word:]_.]+" . font-lock-preprocessor-face))
+    "Basic Flix font-lock rules used before semantic tokens are available.")
+  (defun my/flix-mode-setup-syntax ()
+    "Set up Flix syntax and fallback font-lock for the current buffer."
+    (modify-syntax-entry ?_ "w")
+    (modify-syntax-entry ?/ ". 124b")
+    (modify-syntax-entry ?* ". 23")
+    (modify-syntax-entry ?\n "> b")
+    (setq-local comment-start "// "
+                comment-end ""
+                comment-start-skip "\\(?://+\\|/\\*+\\)\\s-*"
+                font-lock-defaults '(my/flix-mode-font-lock-keywords nil nil))
+    (font-lock-add-keywords nil my/flix-mode-font-lock-keywords 'prepend))
+  (defun my/flix-project-try (dir)
+    "Return a Flix project when DIR belongs to one."
+    (when-let ((root (locate-dominating-file dir flix-mode-project-file)))
+      (cons 'flix root)))
+  (cl-defmethod project-root ((project (head flix)))
+    (cdr project))
+  (add-hook 'project-find-functions #'my/flix-project-try)
+  (with-eval-after-load 'eglot
+    (add-to-list 'eglot-server-programs
+                 '(flix-mode . flix-mode-server-path)))
+  (defun my/flix-mode-setup ()
+    "Set up Flix LSP integration for the current buffer."
+    (my/flix-mode-setup-syntax)
+    (when (locate-dominating-file default-directory flix-mode-project-file)
+      (flix-mode-ensure)
+      (eglot-ensure)))
+  (add-hook 'flix-mode-hook #'my/flix-mode-setup))
 
 (packlet kotlin-mode
   :mode ("\\.kts?\\'" . kotlin-mode))
@@ -1001,11 +1105,11 @@ LLM 連携。
   :when (or (display-graphic-p) (daemonp))
   :demand t
   :setq (exec-path-from-shell-arguments '("-l"))
-  :list (exec-path-from-shell-variables
-         "SSH_AUTH_SOCK" "SSH_AGENT_PID" "GPG_AGENT_INFO"
-         "LANG" "LC_CTYPE" "NIX_SSL_CERT_FILE" "NIX_PATH"
-         "LSP_USE_PLISTS")
   :config
+  (dolist (var '("SSH_AUTH_SOCK" "SSH_AGENT_PID" "GPG_AGENT_INFO"
+                 "LANG" "LC_CTYPE" "NIX_SSL_CERT_FILE" "NIX_PATH"
+                 "LSP_USE_PLISTS"))
+    (add-to-list 'exec-path-from-shell-variables var))
   (exec-path-from-shell-initialize))
 #+end_src
 
