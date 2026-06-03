@@ -109,8 +109,9 @@
             major-mode-hydra
             marginalia
             markdown-mode
-            mlscroll
             minions
+            mlscroll
+            moody
             multiple-cursors
             nerd-icons
             nerd-icons-completion
@@ -118,13 +119,12 @@
             nerd-icons-dired
             nginx-mode
             nix-mode
-            moody
             orderless
             org-roam
             org-roam-ui
             origami
-            projectile
             prescient
+            projectile
             proof-general
             rainbow-delimiters
             rainbow-mode
@@ -148,76 +148,19 @@
             yaml-mode
           ]
         );
-        treeSitterGrammars = pkgs.linkFarm "emacs-tree-sitter-grammars" [
-          {
-            name = "libtree-sitter-bash${sharedLibraryExt}";
-            path = "${pkgs.tree-sitter-grammars.tree-sitter-bash}/parser";
-          }
-          {
-            name = "libtree-sitter-c${sharedLibraryExt}";
-            path = "${pkgs.tree-sitter-grammars.tree-sitter-c}/parser";
-          }
-          {
-            name = "libtree-sitter-cmake${sharedLibraryExt}";
-            path = "${pkgs.tree-sitter-grammars.tree-sitter-cmake}/parser";
-          }
-          {
-            name = "libtree-sitter-cpp${sharedLibraryExt}";
-            path = "${pkgs.tree-sitter-grammars.tree-sitter-cpp}/parser";
-          }
-          {
-            name = "libtree-sitter-css${sharedLibraryExt}";
-            path = "${pkgs.tree-sitter-grammars.tree-sitter-css}/parser";
-          }
-          {
-            name = "libtree-sitter-dockerfile${sharedLibraryExt}";
-            path = "${pkgs.tree-sitter-grammars.tree-sitter-dockerfile}/parser";
-          }
-          {
-            name = "libtree-sitter-go${sharedLibraryExt}";
-            path = "${pkgs.tree-sitter-grammars.tree-sitter-go}/parser";
-          }
-          {
-            name = "libtree-sitter-html${sharedLibraryExt}";
-            path = "${pkgs.tree-sitter-grammars.tree-sitter-html}/parser";
-          }
-          {
-            name = "libtree-sitter-java${sharedLibraryExt}";
-            path = "${pkgs.tree-sitter-grammars.tree-sitter-java}/parser";
-          }
-          {
-            name = "libtree-sitter-javascript${sharedLibraryExt}";
-            path = "${pkgs.tree-sitter-grammars.tree-sitter-javascript}/parser";
-          }
-          {
-            name = "libtree-sitter-json${sharedLibraryExt}";
-            path = "${pkgs.tree-sitter-grammars.tree-sitter-json}/parser";
-          }
-          {
-            name = "libtree-sitter-python${sharedLibraryExt}";
-            path = "${pkgs.tree-sitter-grammars.tree-sitter-python}/parser";
-          }
-          {
-            name = "libtree-sitter-rust${sharedLibraryExt}";
-            path = "${pkgs.tree-sitter-grammars.tree-sitter-rust}/parser";
-          }
-          {
-            name = "libtree-sitter-toml${sharedLibraryExt}";
-            path = "${pkgs.tree-sitter-grammars.tree-sitter-toml}/parser";
-          }
-          {
-            name = "libtree-sitter-tsx${sharedLibraryExt}";
-            path = "${pkgs.tree-sitter-grammars.tree-sitter-tsx}/parser";
-          }
-          {
-            name = "libtree-sitter-typescript${sharedLibraryExt}";
-            path = "${pkgs.tree-sitter-grammars.tree-sitter-typescript}/parser";
-          }
-          {
-            name = "libtree-sitter-yaml${sharedLibraryExt}";
-            path = "${pkgs.tree-sitter-grammars.tree-sitter-yaml}/parser";
-          }
-        ];
+        treeSitterGrammars =
+          let
+            langs = [
+              "bash" "c" "cmake" "cpp" "css" "dockerfile" "go" "html"
+              "java" "javascript" "json" "python" "rust" "toml" "tsx"
+              "typescript" "yaml"
+            ];
+            mkGrammar = lang: {
+              name = "libtree-sitter-${lang}${sharedLibraryExt}";
+              path = "${pkgs.tree-sitter-grammars."tree-sitter-${lang}"}/parser";
+            };
+          in
+          pkgs.linkFarm "emacs-tree-sitter-grammars" (map mkGrammar langs);
         initDirectory = "$HOME/.local/share/emacs/SuzumiyaAoba";
 
         emacsConfig = pkgs.stdenvNoCC.mkDerivation {
