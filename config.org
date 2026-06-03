@@ -366,48 +366,46 @@ prompt with PROMPT starting from `default-directory'."
 =projectile= を有効にし、lazy prefix key で project 操作をまとめる。
 
 #+begin_src emacs-lisp :tangle init.el
+(defun my/project-dispatch (consult-fn projectile-fn &optional arg)
+  "Call CONSULT-FN if consult-projectile is available and ARG is nil.
+Otherwise call PROJECTILE-FN, passing ARG when non-nil."
+  (require 'projectile)
+  (if (and (not arg) (require 'consult-projectile nil t))
+      (funcall consult-fn)
+    (if arg (funcall projectile-fn arg) (funcall projectile-fn))))
+
 (defun my/project-switch-to-buffer ()
-  "Switch to a project buffer with Consult when available."
+  "Switch to a project buffer, preferring consult-projectile."
   (interactive)
-  (require 'projectile)
-  (if (require 'consult-projectile nil t)
-      (consult-projectile-switch-to-buffer)
-    (projectile-switch-to-buffer)))
+  (my/project-dispatch #'consult-projectile-switch-to-buffer
+                       #'projectile-switch-to-buffer))
 
-(defun my/project-find-dir (&optional invalidate-cache)
-  "Find a project directory with Consult when available."
+(defun my/project-find-dir (&optional arg)
+  "Find a project directory, preferring consult-projectile.
+With prefix ARG, bypass consult-projectile and invalidate the cache."
   (interactive "P")
-  (require 'projectile)
-  (if (and (not invalidate-cache)
-           (require 'consult-projectile nil t))
-      (consult-projectile-find-dir)
-    (projectile-find-dir invalidate-cache)))
+  (my/project-dispatch #'consult-projectile-find-dir
+                       #'projectile-find-dir arg))
 
-(defun my/project-find-file (&optional invalidate-cache)
-  "Find a project file with Consult when available."
+(defun my/project-find-file (&optional arg)
+  "Find a project file, preferring consult-projectile.
+With prefix ARG, bypass consult-projectile and invalidate the cache."
   (interactive "P")
-  (require 'projectile)
-  (if (and (not invalidate-cache)
-           (require 'consult-projectile nil t))
-      (consult-projectile-find-file)
-    (projectile-find-file invalidate-cache)))
+  (my/project-dispatch #'consult-projectile-find-file
+                       #'projectile-find-file arg))
 
 (defun my/project-recentf ()
-  "Browse project recent files with Consult when available."
+  "Browse recent project files, preferring consult-projectile."
   (interactive)
-  (require 'projectile)
-  (if (require 'consult-projectile nil t)
-      (consult-projectile-recentf)
-    (projectile-recentf)))
+  (my/project-dispatch #'consult-projectile-recentf
+                       #'projectile-recentf))
 
 (defun my/project-switch-project (&optional arg)
-  "Switch projects with Consult, preserving Projectile prefix behavior."
+  "Switch projects, preferring consult-projectile.
+With prefix ARG, bypass consult-projectile."
   (interactive "P")
-  (require 'projectile)
-  (if (and (not arg)
-           (require 'consult-projectile nil t))
-      (consult-projectile-switch-project)
-    (projectile-switch-project arg)))
+  (my/project-dispatch #'consult-projectile-switch-project
+                       #'projectile-switch-project arg))
 
 (packlet projectile
   :setq ((projectile-cache-file
@@ -915,13 +913,11 @@ Git blame の情報をインラインで表示する。
 
 * Languages
 
-各言語の mode を設定する。
+** JVM
+
+Groovy, Kotlin, Scala, SBT の設定。
 
 #+begin_src emacs-lisp :tangle init.el
-(packlet dockerfile-mode)
-
-(packlet yaml-mode)
-
 (packlet groovy-mode
   :mode ("\\.gradle\\'" . groovy-mode)
   :interpreter ("groovy" . groovy-mode)
@@ -929,6 +925,56 @@ Git blame の情報をインラインで表示する。
               (indent-tabs-mode t)
               (tab-width 4)))
 
+(packlet kotlin-mode
+  :mode ("\\.kts?\\'" . kotlin-mode))
+
+(packlet scala-mode
+  :mode ("\\.scala\\'" . scala-mode))
+
+(packlet sbt-mode
+  :mode ("\\.sbt\\'" . sbt-mode)
+  :setq (sbt:program-options '("-Dsbt.supershell=false"))
+  :config
+  (substitute-key-definition
+   'minibuffer-complete-word
+   'self-insert-command
+   minibuffer-local-completion-map))
+#+end_src
+
+** Web & DevOps
+
+Web フロントエンドとインフラ系の設定。
+
+#+begin_src emacs-lisp :tangle init.el
+(packlet dockerfile-mode)
+
+(packlet yaml-mode)
+
+(packlet web-mode
+  :derived-mode (astro-mode web-mode "astro")
+  :mode ("\\.astro\\'" . astro-mode))
+
+(packlet nginx-mode
+  :mode (("nginx\\.conf\\'" . nginx-mode)
+         ("/nginx/.+\\.conf\\'" . nginx-mode)))
+
+(packlet scss-mode
+  :setq (css-indent-offset 2))
+#+end_src
+
+** Go
+
+#+begin_src emacs-lisp :tangle init.el
+(packlet go-mode
+  :setq (gofmt-command "gofmt")
+  :hook-add (go-mode-hook before-save-hook gofmt :local t))
+#+end_src
+
+** Proof assistants
+
+Flix, Coq, Lean4 の設定。
+
+#+begin_src emacs-lisp :tangle init.el
 (packlet flix-mode
   :mode ("\\.flix\\'" . flix-mode)
   :config
@@ -978,40 +1024,6 @@ Git blame の情報をインラインで表示する。
       (eglot-ensure)))
   (add-hook 'flix-mode-hook #'my/flix-mode-setup))
 
-(packlet kotlin-mode
-  :mode ("\\.kts?\\'" . kotlin-mode))
-
-(packlet scss-mode
-  :setq (css-indent-offset 2))
-
-(packlet scala-mode
-  :mode ("\\.scala\\'" . scala-mode))
-
-(packlet sbt-mode
-  :mode ("\\.sbt\\'" . sbt-mode)
-  :setq (sbt:program-options '("-Dsbt.supershell=false"))
-  :config
-  (substitute-key-definition
-   'minibuffer-complete-word
-   'self-insert-command
-   minibuffer-local-completion-map))
-
-(packlet go-mode
-  :setq (gofmt-command "gofmt")
-  :hook-add (go-mode-hook before-save-hook gofmt :local t))
-
-(packlet web-mode
-  :derived-mode (astro-mode web-mode "astro")
-  :mode ("\\.astro\\'" . astro-mode))
-
-(packlet nginx-mode
-  :mode (("nginx\\.conf\\'" . nginx-mode)
-         ("/nginx/.+\\.conf\\'" . nginx-mode)))
-
-(packlet coverlay)
-
-(packlet origami)
-
 (packlet proof-general
   :mode ("\\.v\\'" . coq-mode)
   :config
@@ -1029,6 +1041,16 @@ Git blame の情報をインラインで表示する。
 
 (packlet lean4-mode
   :mode ("\\.lean\\'" . lean4-mode))
+#+end_src
+
+** Misc
+
+コードカバレッジと折り畳みのユーティリティ。
+
+#+begin_src emacs-lisp :tangle init.el
+(packlet coverlay)
+
+(packlet origami)
 #+end_src
 
 * Org extensions
