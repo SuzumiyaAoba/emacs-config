@@ -189,9 +189,9 @@
           '';
         };
 
-        wrappedEmacs = pkgs.writeShellScriptBin "emacs" ''
-          set -eu
-
+        # Shared prelude: link the tangled config and runtime deps into the
+        # init directory and export the environment both entrypoints need.
+        commonSetup = ''
           mkdir -p "${initDirectory}/site-lisp"
           mkdir -p "${initDirectory}/var"
 
@@ -214,14 +214,48 @@
               pkgs.ripgrep
             ]
           }:$PATH"
+        '';
 
+        # One-shot launch: a fresh Emacs process per invocation.
+        wrappedEmacs = pkgs.writeShellScriptBin "emacs" ''
+          set -eu
+          ${commonSetup}
           exec ${emacsWithPackages}/bin/emacs \
             --init-directory="${initDirectory}" \
             "$@"
         '';
+
+        # Daemon-backed launch: start the daemon on first use, then connect
+        # with emacsclient so every subsequent frame opens near-instantly.
+        wrappedEmacsclient = pkgs.writeShellScriptBin "emacsclient" ''
+          set -eu
+          ${commonSetup}
+
+          socket="emacs-config"
+          client="${emacsWithPackages}/bin/emacsclient"
+
+          if ! "$client" -s "$socket" --eval t >/dev/null 2>&1; then
+            ${emacsWithPackages}/bin/emacs \
+              --init-directory="${initDirectory}" \
+              --daemon="$socket"
+          fi
+
+          exec "$client" -s "$socket" -c "$@"
+        '';
       in
       {
         packages.default = wrappedEmacs;
+        packages.emacs = wrappedEmacs;
+        packages.client = wrappedEmacsclient;
+
+        apps.default = {
+          type = "app";
+          program = "${wrappedEmacs}/bin/emacs";
+        };
+        apps.client = {
+          type = "app";
+          program = "${wrappedEmacsclient}/bin/emacsclient";
+        };
       }
     );
 }

@@ -31,6 +31,18 @@
 (set-fontset-font t '(#xE000 . #xF8FF) "Symbols Nerd Font Mono" nil 'prepend)
 #+end_src
 
+** Frame size
+
+起動時に最大化する。macOS のネイティブ全画面（スペース切り替えアニメーション）を避けて
+描画を即時に出すため、=default-frame-alist= で =maximized= を指定する。
+=default-frame-alist= に置くことで、ワンショット起動の初期フレームと
+=emacsclient= が daemon から作るフレームの両方に適用される。
+
+#+begin_src emacs-lisp :tangle early-init.el
+(when (eq system-type 'darwin)
+  (push '(fullscreen . maximized) default-frame-alist))
+#+end_src
+
 * init.el
 
 =packlet= と =emacs-batteries= を読み込み、基本セットアップを有効化する。
@@ -96,6 +108,9 @@
   :hook-if-feature ((isearch-mode-hook skk skk-isearch-mode-setup)
                     (isearch-mode-end-hook skk skk-isearch-mode-cleanup))
   :init
+  ;; DDSKK 本体の autoload を読み込む。これがないと `skk-mode-invoke' が呼ぶ
+  ;; `skk-cus-setup' などが未定義のままで void-function エラーになる。
+  (require 'ddskk-autoloads nil t)
   (require 'ccc-autoloads nil t)
   (require 'ddskk-posframe-autoloads nil t)
   (make-directory skk-user-directory t)
@@ -710,7 +725,7 @@ tree-sitter によるシンタックスハイライトを優先して使う。
   :hook-enable (prog-mode-hook highlight-symbol-mode))
 
 (packlet volatile-highlights
-  :demand t
+  :idle 0.3
   :enable (volatile-highlights-mode t))
 
 (packlet rainbow-mode
@@ -741,7 +756,7 @@ tree-sitter によるシンタックスハイライトを優先して使う。
 
 #+begin_src emacs-lisp :tangle init.el
 (packlet ligature
-  :demand t
+  :idle 0.5
   :enable global-ligature-mode
   :config
   (ligature-set-ligatures 't '("www"))
@@ -1137,11 +1152,6 @@ LLM 連携。
 
 * macOS
 
-macOS 固有の設定。
-
-#+begin_src emacs-lisp :tangle init.el
-(packlet macos-frame
-  :when (and (eq system-type 'darwin) (display-graphic-p))
-  :hook-call
-  (window-setup-hook set-frame-parameter nil 'fullscreen 'fullboth))
-#+end_src
+macOS 固有の設定。フレームの最大化は early-init.el の =default-frame-alist= で
+行うため、ここではフルスクリーン化は行わない（ネイティブ全画面のアニメーションを避け、
+daemon 経由のフレームにも最大化を効かせるため）。
