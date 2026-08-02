@@ -24,7 +24,11 @@
 フォントを設定する。
 
 #+begin_src emacs-lisp :tangle early-init.el
-(set-face-attribute 'default nil :family "UDEV Gothic JPDOC" :height 145)
+(set-face-attribute 'default nil
+                    :family "UDEV Gothic JPDOC"
+                    :height 145
+                    :background "#24273a"
+                    :foreground "#cad3f5")
 
 ;; Nerd Icons live in the Private Use Area.
 (set-fontset-font t '(#xE000 . #xF8FF) "Symbols Nerd Font Mono" nil 'prepend)
@@ -61,11 +65,35 @@
   ;; Expand the deferred hydra definition while compiling init.el.
   (require 'pretty-hydra))
 
-(require 'packlet-source)
-(require 'packlet-parse)
-(autoload 'packlet "packlet-expand" nil nil 'macro)
+(require 'packlet-runtime)
+(autoload 'packlet "packlet" nil nil 'macro)
+
+;; Compatibility for the pinned packlet revision.  Newer packlet versions
+;; provide this runtime helper without loading the parser.
+(unless (fboundp 'packlet--idle-delay)
+  (defun packlet--idle-delay (value)
+    "Normalize runtime VALUE for packlet's `:idle' keyword."
+    (cond
+     ((null value) nil)
+     ((eq value t) 1.0)
+     ((and (numberp value) (>= value 0)) value)
+     (t
+      (error
+       "packlet: :idle must evaluate to t, nil, or a non-negative number")))))
+
 (require 'emacs-batteries)
 (emacs-batteries-setup)
+
+;; Build-time expansion sites have no source scope, so their cleanup objects
+;; can never be used.  Avoid allocating that bookkeeping while retaining full
+;; behavior when source tracking is loaded for interactive evaluation later.
+(defun my/packlet-register-static-entry (original scope id install cleanup)
+  "Install a compiled packlet entry without unused source bookkeeping."
+  (if (or scope packlet--active-source-scope)
+      (funcall original scope id install cleanup)
+    (funcall install)))
+(advice-add 'packlet--register-source-entry
+            :around #'my/packlet-register-static-entry)
 
 ;; Nix already exposes every package on `load-path'.  Avoid searching for and
 ;; loading dozens of separate *-autoloads files; packlet installs a direct
@@ -194,17 +222,30 @@ When SKK is newly enabled, switch to ASCII mode."
 
 * Startup
 
-ファイル指定なしで起動したときは、起動ディレクトリを =dired= で開く。
+ファイル指定なしで起動したときは、最初のフレームを表示した後の idle 時に
+起動ディレクトリを =dired= で開く。先に入力が始まった場合はバッファを奪わない。
 
 #+begin_src emacs-lisp :tangle init.el
 (packlet startup
   :init
-  (defun my/open-startup-directory-in-dired ()
-    "Open the startup directory in Dired when Emacs starts on *scratch*."
-    (when (and (string= (buffer-name) "*scratch*")
-               (file-directory-p default-directory))
-      (switch-to-buffer (dired-noselect default-directory))))
-  :hook (window-setup-hook . my/open-startup-directory-in-dired))
+  (defun my/open-startup-directory-in-dired (buffer directory)
+    "Open DIRECTORY in Dired when BUFFER is still the untouched *scratch*."
+    (when (and (buffer-live-p buffer)
+               (eq buffer (window-buffer (selected-window)))
+               (file-directory-p directory)
+               (with-current-buffer buffer
+                 (and (string= (buffer-name) "*scratch*")
+                      (not (buffer-modified-p)))))
+      (switch-to-buffer (dired-noselect directory))))
+  (defun my/schedule-startup-directory ()
+    "Schedule the initial Dired buffer after the first frame is usable."
+    (when-let ((buffer (get-buffer "*scratch*")))
+      (run-with-idle-timer
+       0.1 nil
+       #'my/open-startup-directory-in-dired
+       buffer
+       (buffer-local-value 'default-directory buffer))))
+  :hook (window-setup-hook . my/schedule-startup-directory))
 #+end_src
 
 
@@ -223,11 +264,12 @@ When SKK is newly enabled, switch to ASCII mode."
 
 * Theme
 
-=catppuccin-theme= の =macchiato= を起動時に有効化する。
+=catppuccin-theme= の =macchiato= を最初のフレーム表示後に有効化する。
+early-init で同じ背景色と前景色を設定し、切り替え時のちらつきを防ぐ。
 
 #+begin_src emacs-lisp :tangle init.el
 (packlet catppuccin-theme
-  :demand t
+  :idle 0.05
   :setq (catppuccin-flavor 'macchiato)
   :config
   (mapc #'disable-theme custom-enabled-themes)
@@ -240,7 +282,7 @@ When SKK is newly enabled, switch to ASCII mode."
 
 #+begin_src emacs-lisp :tangle init.el
 (packlet moody
-  :demand t
+  :idle 0.1
   :faces ((mode-line-active :box 'unspecified)
           (mode-line-inactive :box 'unspecified))
   :config

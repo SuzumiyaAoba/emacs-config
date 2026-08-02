@@ -7,7 +7,7 @@ Minimal Emacs configuration based on [`emacs-batteries`](https://github.com/Suzu
 - tangles `config.org` into `init.el` and `early-init.el`
 - byte-compiles the tangled `init.el` and `early-init.el` during the Nix build
 - packages `packlet` and `emacs-batteries` as byte-compiled Emacs packages
-- loads only the `packlet` runtime support at startup; macro parsing and expansion happen at build time
+- loads only the small `packlet` runtime at startup; parsing, expansion, and source tracking stay off the synchronous path
 - loads `emacs-batteries` and runs `emacs-batteries-setup` from `init.el`
 - installs `cape` via Nix
 - installs `catppuccin-theme` via Nix
@@ -79,6 +79,10 @@ invocation starts a dedicated daemon; later frames reuse it.
 ```shell
 nix run .#client
 ```
+
+Theme, mode-line decoration, and the initial Dired buffer finish loading during
+idle time after the first frame is available. If input starts first, the initial
+Dired task leaves the active buffer alone.
 
 ## Structure
 
