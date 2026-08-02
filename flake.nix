@@ -32,7 +32,12 @@
           inherit system;
           overlays = [ emacs-overlay.overlay ];
         };
-        emacs = pkgs.emacs-unstable;
+        # mailutils 3.21 currently fails to link on Darwin. Emacs only uses it
+        # for movemail, so keep the integration enabled on other platforms.
+        emacs = pkgs.emacs-unstable.override {
+          withMailutils = !pkgs.stdenv.hostPlatform.isDarwin;
+        };
+        emacsLspBooster = pkgs.emacs-lsp-booster.override { inherit emacs; };
         epkgs = pkgs.emacsPackagesFor emacs;
         sharedLibraryExt = pkgs.stdenv.hostPlatform.extensions.sharedLibrary;
         packletPackage = epkgs.trivialBuild {
@@ -243,7 +248,7 @@
           export EMACS_CONFIG_ROOT="${initDirectory}"
           export PATH="${
             pkgs.lib.makeBinPath [
-              pkgs.emacs-lsp-booster
+              emacsLspBooster
               pkgs.jdk
               pkgs.ripgrep
             ]
