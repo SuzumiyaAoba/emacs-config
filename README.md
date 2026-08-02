@@ -15,7 +15,6 @@ Minimal Emacs configuration based on [`emacs-batteries`](https://github.com/Suzu
 - installs `consult-ghq` via Nix
 - installs `corfu` via Nix
 - installs `corfu-prescient` via Nix
-- installs `corfu-terminal` via Nix
 - installs `ddskk` via Nix
 - installs `eglot-booster` and `emacs-lsp-booster` via Nix
 - installs `flix-mode` via Nix

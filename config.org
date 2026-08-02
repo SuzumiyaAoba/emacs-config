@@ -380,13 +380,6 @@ prompt with PROMPT starting from `default-directory'."
    (require 'nerd-icons-corfu)
    (add-to-list 'corfu-margin-formatters #'nerd-icons-corfu-formatter)))
 
-(packlet corfu-terminal
-  :after corfu
-  :autoload corfu-terminal-mode
-  :unless (display-graphic-p)
-  :idle 0.6
-  :enable corfu-terminal-mode)
-
 (packlet cape
   :list (completion-at-point-functions #'cape-file)
   :autoload (cape-file)

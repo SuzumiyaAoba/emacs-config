@@ -76,22 +76,6 @@
           };
           packageRequires = [ toml-mdiin ];
         };
-        # Version 0.7 dispatches on its mode variable before declaring it,
-        # which emits a free-variable warning when Emacs loads the package.
-        corfuTerminalPackage = epkgs.trivialBuild {
-          pname = "corfu-terminal";
-          inherit (epkgs.corfu-terminal) version src meta;
-          packageRequires = with epkgs; [
-            corfu
-            popon
-          ];
-          postPatch = ''
-            substituteInPlace corfu-terminal.el \
-              --replace-fail \
-                '(defvar corfu-terminal--popon nil' \
-                $'(defvar corfu-terminal-mode nil)\n\n(defvar corfu-terminal--popon nil'
-          '';
-        };
         emacsWithPackages = epkgs.emacsWithPackages (
           epkgs': with epkgs'; [
             packletPackage
@@ -109,7 +93,6 @@
             consult-projectile
             corfu
             corfu-prescient
-            corfuTerminalPackage
             coverlay
             dap-mode
             ddskk
