@@ -35,6 +35,16 @@
         emacs = pkgs.emacs-unstable;
         epkgs = pkgs.emacsPackagesFor emacs;
         sharedLibraryExt = pkgs.stdenv.hostPlatform.extensions.sharedLibrary;
+        packletPackage = epkgs.trivialBuild {
+          pname = "packlet";
+          version = "0.1.0";
+          src = packlet;
+        };
+        emacsBatteriesPackage = epkgs.trivialBuild {
+          pname = "emacs-batteries";
+          version = "0.1.0";
+          src = emacs-batteries;
+        };
         toml-mdiin = epkgs.trivialBuild {
           pname = "toml";
           version = "1.0.0";
@@ -63,6 +73,8 @@
         };
         emacsWithPackages = epkgs.emacsWithPackages (
           epkgs': with epkgs'; [
+            packletPackage
+            emacsBatteriesPackage
             ace-window
             aidermacs
             anzu
@@ -167,15 +179,22 @@
           pname = "emacs-config";
           version = "0.1.0";
           src = self;
-          nativeBuildInputs = [ emacs ];
+          nativeBuildInputs = [ emacsWithPackages ];
           dontConfigure = true;
           dontFixup = true;
 
           buildPhase = ''
             runHook preBuild
-            emacs --batch \
+            emacs --quick --batch \
               --eval "(require 'org)" \
               --eval "(org-babel-tangle-file \"config.org\")"
+            emacs --quick --batch \
+              --eval "(require 'packlet)" \
+              --eval "(setq packlet--compile-site-counter 0)" \
+              --eval "(advice-add 'packlet--expansion-site :override (lambda (feature _body) (list 'compiled feature (cl-incf packlet--compile-site-counter))))" \
+              --eval "(setq byte-compile-warnings '(not free-vars unresolved noruntime lexical make-local))" \
+              --eval "(byte-compile-file \"init.el\")" \
+              --eval "(byte-compile-file \"early-init.el\")"
             runHook postBuild
           '';
 
@@ -184,25 +203,24 @@
             mkdir -p $out/.emacs.d
             cp config.org $out/config.org
             mv init.el $out/.emacs.d/init.el
+            mv init.elc $out/.emacs.d/init.elc
             mv early-init.el $out/.emacs.d/early-init.el
+            mv early-init.elc $out/.emacs.d/early-init.elc
             runHook postInstall
           '';
         };
 
-        # Shared prelude: link the tangled config and runtime deps into the
-        # init directory and export the environment both entrypoints need.
+        # Shared prelude: link the compiled config and tree-sitter grammars
+        # into the init directory and export the environment both entrypoints need.
         commonSetup = ''
-          mkdir -p "${initDirectory}/site-lisp"
           mkdir -p "${initDirectory}/var"
 
-          ln -sfn "${emacsConfig}/.emacs.d/init.el" \
-            "${initDirectory}/init.el"
-          ln -sfn "${emacsConfig}/.emacs.d/early-init.el" \
-            "${initDirectory}/early-init.el"
-          ln -sfn "${packlet}" \
-            "${initDirectory}/site-lisp/packlet"
-          ln -sfn "${emacs-batteries}" \
-            "${initDirectory}/site-lisp/emacs-batteries"
+          ln -sfn \
+            "${emacsConfig}/.emacs.d/init.el" \
+            "${emacsConfig}/.emacs.d/init.elc" \
+            "${emacsConfig}/.emacs.d/early-init.el" \
+            "${emacsConfig}/.emacs.d/early-init.elc" \
+            "${initDirectory}/"
           ln -sfn "${treeSitterGrammars}" \
             "${initDirectory}/tree-sitter"
 

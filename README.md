@@ -5,8 +5,9 @@ Minimal Emacs configuration based on [`emacs-batteries`](https://github.com/Suzu
 ## What This Repository Does
 
 - tangles `config.org` into `init.el` and `early-init.el`
-- loads `emacs-batteries-early-init.el` from `early-init.el`
-- loads the external `packlet` DSL from `init.el`
+- byte-compiles the tangled `init.el` and `early-init.el` during the Nix build
+- packages `packlet` and `emacs-batteries` as byte-compiled Emacs packages
+- loads only the `packlet` runtime support at startup; macro parsing and expansion happen at build time
 - loads `emacs-batteries` and runs `emacs-batteries-setup` from `init.el`
 - installs `cape` via Nix
 - installs `catppuccin-theme` via Nix
@@ -70,6 +71,13 @@ cd emacs-config
 nix build .
 nix run .
 nix run . -- -nw
+```
+
+For the fastest repeated GUI startup, use the daemon-backed client. The first
+invocation starts a dedicated daemon; later frames reuse it.
+
+```shell
+nix run .#client
 ```
 
 ## Structure

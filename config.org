@@ -2,9 +2,11 @@
 
 * early-init.el
 
-=emacs-batteries= が提供する early-init 用の設定だけを読み込む。
+=emacs-batteries= が提供する byte-compile 済みの early-init 用設定を読み込む。
 
 #+begin_src emacs-lisp :tangle early-init.el
+;; early-init.el --- Early startup setup -*- lexical-binding: t; coding: utf-8 -*-
+
 (defconst my/config-root
   (file-name-as-directory
    (expand-file-name
@@ -14,10 +16,7 @@
 (setq user-emacs-directory (expand-file-name "var/" my/config-root)
       user-emacs-directory-warning nil)
 
-(load (expand-file-name
-       "site-lisp/emacs-batteries/emacs-batteries-early-init.el"
-       my/config-root)
-      nil 'nomessage)
+(require 'emacs-batteries-early-init)
 #+end_src
 
 ** Fonts
@@ -45,7 +44,8 @@
 
 * init.el
 
-=packlet= と =emacs-batteries= を読み込み、基本セットアップを有効化する。
+=packlet= はビルド時だけ全体を読み込んでマクロを展開し、起動時は小さな runtime だけを
+読み込む。=emacs-batteries= も Nix で byte-compile 済みのものを使う。
 
 #+begin_src emacs-lisp :tangle init.el
 ;; init.el --- Minimal emacs-batteries setup -*- lexical-binding: t; coding: utf-8 -*-
@@ -56,23 +56,37 @@
     (or (getenv "EMACS_CONFIG_ROOT")
         (file-name-directory (or load-file-name user-init-file))))))
 
-(let ((root (expand-file-name user-emacs-directory))
-      kept)
-  (dolist (dir load-path)
-    (unless (and (stringp dir)
-                 (string-equal (file-name-as-directory (expand-file-name dir))
-                               root))
-      (push dir kept)))
-  (setq load-path (nreverse kept)))
+(eval-when-compile
+  (require 'packlet)
+  ;; Expand the deferred hydra definition while compiling init.el.
+  (require 'pretty-hydra))
 
-(add-to-list 'load-path
-             (expand-file-name "site-lisp/packlet" my/config-root))
-(add-to-list 'load-path
-             (expand-file-name "site-lisp/emacs-batteries" my/config-root))
-
-(require 'packlet)
+(require 'packlet-source)
+(require 'packlet-parse)
+(autoload 'packlet "packlet-expand" nil nil 'macro)
 (require 'emacs-batteries)
 (emacs-batteries-setup)
+
+;; Nix already exposes every package on `load-path'.  Avoid searching for and
+;; loading dozens of separate *-autoloads files; packlet installs a direct
+;; fallback autoload for each configured command, mode, and hook instead.
+(defun my/packlet-skip-package-autoloads (&rest _args)
+  "Let packlet install fallback autoloads without loading package autoload files."
+  nil)
+(advice-add 'packlet--maybe-load-autoloads
+            :override #'my/packlet-skip-package-autoloads)
+
+;; Persistent history, auto-revert, which-key, and editorconfig are useful
+;; after the first frame but do not need to delay it.
+(defun my/schedule-emacs-batteries-services ()
+  "Start deferred emacs-batteries services after Emacs becomes idle."
+  (remove-hook 'emacs-startup-hook
+               #'my/schedule-emacs-batteries-services)
+  (run-with-idle-timer 1.0 nil #'emacs-batteries--run-deferred))
+(when emacs-batteries--deferred-functions
+  (remove-hook 'emacs-startup-hook #'emacs-batteries--run-deferred)
+  (add-hook 'emacs-startup-hook
+            #'my/schedule-emacs-batteries-services 90))
 #+end_src
 
 * Basic behavior
@@ -144,6 +158,7 @@
   (define-minor-mode my/skk-shortcut-mode
     "Provide global keybindings for SKK."
     :global t
+    :group 'convenience
     :lighter ""
     :keymap my/skk-shortcut-mode-map)
   (defun my/skk-auto-enable-p ()
@@ -240,7 +255,8 @@ When SKK is newly enabled, switch to ASCII mode."
 
 #+begin_src emacs-lisp :tangle init.el
 (packlet minions
-  :startup-enable minions-mode)
+  :idle 0.1
+  :enable minions-mode)
 #+end_src
 
 * Editing
@@ -258,13 +274,15 @@ When SKK is newly enabled, switch to ASCII mode."
 
 #+begin_src emacs-lisp :tangle init.el
 (packlet vertico
-  :startup-enable vertico-mode)
+  :idle 0.2
+  :enable vertico-mode)
 
 (packlet marginalia
-  :startup-enable marginalia-mode)
+  :idle 0.3
+  :enable marginalia-mode)
 
 (packlet orderless
-  :demand t
+  :idle 0.15
   :config
   (setq completion-styles '(orderless basic))
   (setq orderless-matching-styles
@@ -302,10 +320,12 @@ prompt with PROMPT starting from `default-directory'."
 
 (packlet corfu
   :setq (corfu-cycle t)
-  :startup-enable global-corfu-mode)
+  :idle 0.5
+  :enable global-corfu-mode)
 
 (packlet prescient
-  :startup-enable prescient-persist-mode)
+  :idle 0.7
+  :enable prescient-persist-mode)
 
 (packlet corfu-prescient
   :after (corfu prescient)
@@ -322,7 +342,8 @@ prompt with PROMPT starting from `default-directory'."
   :after corfu
   :autoload corfu-terminal-mode
   :unless (display-graphic-p)
-  :startup-enable corfu-terminal-mode)
+  :idle 0.6
+  :enable corfu-terminal-mode)
 
 (packlet cape
   :list (completion-at-point-functions #'cape-file)
@@ -331,6 +352,7 @@ prompt with PROMPT starting from `default-directory'."
 
 (packlet consult
   :prefix-map my/search-prefix-map
+  :autoload ((consult-imenu "consult-imenu" t))
   :bind (("C-s" . consult-line)
          ("C-x b" . consult-buffer)
          ("C-x C-f" . find-file)
@@ -576,11 +598,12 @@ tree-sitter によるシンタックスハイライトを優先して使う。
 
 * Icons
 
-=dired= では =nerd-icons-dired= を有効にする。
+=dired= では =nerd-icons-dired= を有効にする。初期 Dired の表示をブロックしないよう、
+アイコン生成は短い idle 後に行う。
 
 #+begin_src emacs-lisp :tangle init.el
 (packlet nerd-icons-dired
-  :hook-enable (dired-mode-hook nerd-icons-dired-mode))
+  :hook ((dired-mode-hook nerd-icons-dired-mode 0.25)))
 #+end_src
 
 * Undo
@@ -592,7 +615,9 @@ tree-sitter によるシンタックスハイライトを優先して使う。
   :setq (undohist-directory
          (expand-file-name "undohist/" user-emacs-directory))
   :autoload undohist-initialize
-  :startup undohist-initialize)
+  :idle 1.0
+  :config
+  (undohist-initialize))
 
 (packlet vundo
   :bind ("C-x u" . vundo))
@@ -631,7 +656,8 @@ tree-sitter によるシンタックスハイライトを優先して使う。
             magit-insert-untracked-files
             magit-insert-unstaged-changes
             magit-insert-staged-changes)))
-  :commands (magit-status magit-dispatch)
+  :commands magit-dispatch
+  :autoload ((magit-status "magit-status" t))
   :bind (("C-x g" . magit-status)
          ("C-x M-g" . magit-dispatch)))
 #+end_src
@@ -679,7 +705,8 @@ tree-sitter によるシンタックスハイライトを優先して使う。
          (anzu-search-threshold 1000))
   :bind (("M-%" . anzu-query-replace)
          ("C-M-%" . anzu-query-replace-regex))
-  :startup-enable global-anzu-mode
+  :idle 0.8
+  :enable global-anzu-mode
   :faces ((anzu-mode-line :copy mode-line)))
 
 (packlet rg)
@@ -700,6 +727,13 @@ tree-sitter によるシンタックスハイライトを優先して使う。
 
 (packlet multiple-cursors
   :after (hydra pretty-hydra)
+  :autoload ((mc/mark-next-like-this "mc-mark-more" t)
+             (mc/unmark-next-like-this "mc-mark-more" t)
+             (mc/mark-previous-like-this "mc-mark-more" t)
+             (mc/unmark-previous-like-this "mc-mark-more" t)
+             (mc/mark-more-like-this-extended "mc-mark-more" t)
+             (mc/mark-all-in-region "mc-mark-more" t)
+             (mc/mark-all-like-this "mc-mark-more" t))
   :config
   (defvar multiple-cursors--title "Multiple cursors")
   (pretty-hydra-define multiple-cursors
@@ -744,6 +778,7 @@ tree-sitter によるシンタックスハイライトを優先して使う。
   (define-minor-mode keycast-mode
     "Show current command and its key binding in the mode line."
     :global t
+    :group 'convenience
     (if keycast-mode
         (add-hook 'pre-command-hook 'keycast--update t)
       (remove-hook 'pre-command-hook 'keycast--update)))
@@ -784,6 +819,8 @@ tree-sitter によるシンタックスハイライトを優先して使う。
 #+begin_src emacs-lisp :tangle init.el
 (packlet treemacs
   :setq (treemacs-user-mode-line-format 'none)
+  :autoload ((treemacs-git-commit-diff-mode
+              "treemacs-git-commit-diff-mode" t))
   :bind ("C-\\" . treemacs)
   :enable ((treemacs-fringe-indicator-mode t)
            (treemacs-filewatch-mode t)
@@ -797,6 +834,8 @@ tree-sitter によるシンタックスハイライトを優先して使う。
 
 (packlet treemacs-projectile
   :after (treemacs projectile)
+  :autoload ((treemacs-project-follow-mode
+              "treemacs-project-follow-mode" t))
   :enable (treemacs-project-follow-mode t))
 
 (packlet treemacs-magit
@@ -1040,6 +1079,7 @@ Flix, Coq, Lean4 の設定。
   (add-hook 'flix-mode-hook #'my/flix-mode-setup))
 
 (packlet proof-general
+  :autoload ((coq-mode "coq-mode" t))
   :mode ("\\.v\\'" . coq-mode)
   :config
   (setq coq-prettify-symbols '(("forall" . "∀")
@@ -1076,6 +1116,12 @@ Flix, Coq, Lean4 の設定。
 (packlet org-roam
   :setq ((org-roam-directory (file-truename "~/org-roam")))
   :idle 5.0
+  :autoload ((org-roam-capture "org-roam-capture" t)
+             (org-roam-dailies-capture-today "org-roam-dailies" t)
+             (org-roam-graph "org-roam-graph" t)
+             (org-roam-db-autosync-mode "org-roam-db" t)
+             (org-roam-node-find "org-roam-node" t)
+             (org-roam-node-insert "org-roam-node" t))
   :prefix-map org-roam-prefix-map
   :enable org-roam-db-autosync-mode
   :bind-keymap ("C-c n" . org-roam-prefix-map)
@@ -1101,7 +1147,8 @@ Flix, Coq, Lean4 の設定。
 
 #+begin_src emacs-lisp :tangle init.el
 (packlet dap-mode
-  :commands (dap-mode dap-ui-mode dap-auto-configure-mode)
+  :commands (dap-mode dap-auto-configure-mode)
+  :autoload ((dap-ui-mode "dap-ui" t))
   :init
   (defun my/enable-dap-for-scala ()
     (dap-auto-configure-mode 1)
@@ -1120,6 +1167,7 @@ LLM 連携。
          (ellama-naming-scheme 'ellama-generate-name-by-llm)))
 
 (packlet gptel
+  :autoload ((gptel-make-ollama "gptel-ollama"))
   :hook ((gptel-post-stream-hook . gptel-auto-scroll)
          (gptel-post-response-functions . gptel-end-of-response))
   :config
@@ -1140,7 +1188,7 @@ LLM 連携。
 #+begin_src emacs-lisp :tangle init.el
 (packlet exec-path-from-shell
   :when (or (display-graphic-p) (daemonp))
-  :demand t
+  :idle 2.0
   :setq (exec-path-from-shell-arguments '("-l"))
   :config
   (dolist (var '("SSH_AUTH_SOCK" "SSH_AGENT_PID" "GPG_AGENT_INFO"
