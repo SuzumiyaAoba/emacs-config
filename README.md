@@ -83,6 +83,11 @@ Theme, mode-line decoration, and the initial Dired buffer finish loading during
 idle time after the first frame is available. If input starts first, the initial
 Dired task leaves the active buffer alone.
 
+Tree-sitter grammars, including JSDoc for JavaScript, are packaged by Nix
+and checked and loaded when a matching file is opened.
+Startup does not load every installed grammar. If a grammar is unavailable,
+Emacs uses the previous major mode or the remaining file name associations.
+
 ## Structure
 
 - `config.org`: source of truth for the Emacs configuration

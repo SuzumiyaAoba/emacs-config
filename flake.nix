@@ -168,7 +168,7 @@
           let
             langs = [
               "bash" "c" "cmake" "cpp" "css" "dockerfile" "go" "html"
-              "java" "javascript" "json" "python" "rust" "toml" "tsx"
+              "java" "javascript" "jsdoc" "json" "python" "rust" "toml" "tsx"
               "typescript" "yaml"
             ];
             mkGrammar = lang: {
