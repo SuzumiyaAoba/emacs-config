@@ -83,6 +83,10 @@ Theme, mode-line decoration, and the initial Dired buffer finish loading during
 idle time after the first frame is available. If input starts first, the initial
 Dired task leaves the active buffer alone.
 
+Nix library names are indexed during byte-compilation to narrow `load-path`
+searches. The index preserves directory order and leaves local or newly added
+directories searchable. Programming helpers load when needed by their mode hooks.
+
 Tree-sitter grammars, including JSDoc for JavaScript, are packaged by Nix
 and checked and loaded when a matching file is opened.
 Startup does not load every installed grammar. If a grammar is unavailable,

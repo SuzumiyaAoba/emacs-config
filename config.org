@@ -3,6 +3,8 @@
 * early-init.el
 
 =emacs-batteries= が提供する byte-compile 済みの early-init 用設定を読み込む。
+Nix のライブラリ一覧はビルド時に索引化し、起動時のファイル検索を減らす。
+ローカルの Lisp や後から追加したディレクトリは通常どおり検索する。
 
 #+begin_src emacs-lisp :tangle early-init.el
 ;; early-init.el --- Early startup setup -*- lexical-binding: t; coding: utf-8 -*-
@@ -15,6 +17,36 @@
 
 (setq user-emacs-directory (expand-file-name "var/" my/config-root)
       user-emacs-directory-warning nil)
+
+(defconst my/nix-library-index
+  (eval-when-compile
+    (let ((index (make-hash-table :test #'equal)))
+      (dolist (directory load-path)
+        (when (and (stringp directory)
+                   (string-prefix-p "/nix/store/" directory)
+                   (file-directory-p directory))
+          (let ((files (make-hash-table :test #'equal)))
+            (dolist (file (directory-files directory nil nil t))
+              (puthash (downcase file) t files))
+            (puthash directory files index))))
+      index))
+  "File names in immutable Nix load directories, indexed at build time.")
+
+(defun my/filter-nix-load-path (path file suffixes)
+  "Filter PATH for FILE and SUFFIXES using the compiled Nix library index."
+  (if (file-name-directory file)
+      path
+    (let ((names (mapcar (lambda (suffix) (downcase (concat file suffix)))
+                         (or suffixes '("")))))
+      (seq-filter
+       (lambda (directory)
+         (let ((files (gethash directory my/nix-library-index)))
+           (or (null files)
+               (seq-some (lambda (name) (gethash name files)) names))))
+       path))))
+
+(when (boundp 'load-path-filter-function)
+  (setq load-path-filter-function #'my/filter-nix-load-path))
 
 (require 'emacs-batteries-early-init)
 #+end_src
@@ -82,6 +114,22 @@
        "packlet: :idle must evaluate to t, nil, or a non-negative number")))))
 
 (require 'emacs-batteries)
+
+;; Do not autoload programming helpers just to disable them in *scratch*.
+;; Once loaded, they still run when leaving prog-mode to clean up their state.
+(defun my/skip-inactive-prog-mode-setup (feature original)
+  "Call ORIGINAL when its programming FEATURE is needed or already loaded."
+  (when (or (derived-mode-p 'prog-mode) (featurep feature))
+    (funcall original)))
+
+(dolist (entry '((emacs-batteries--maybe-enable-electric-pair . elec-pair)
+                 (emacs-batteries--maybe-enable-completion-preview . completion-preview)
+                 (emacs-batteries--maybe-enable-display-line-numbers . display-line-numbers)
+                 (emacs-batteries--maybe-enable-subword . subword)))
+  (advice-add (car entry) :around
+              (apply-partially #'my/skip-inactive-prog-mode-setup (cdr entry))
+              '((name . my/skip-inactive-prog-mode-setup))))
+
 (emacs-batteries-setup)
 
 ;; Build-time expansion sites have no source scope, so their cleanup objects
